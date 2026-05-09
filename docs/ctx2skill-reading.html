@@ -32,6 +32,36 @@
 
     a { color: var(--accent); text-decoration-thickness: .08em; text-underline-offset: .18em; }
 
+    .site-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 14px clamp(18px, 4vw, 44px);
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 253, 248, .92);
+    }
+
+    .brand {
+      color: var(--ink);
+      font-weight: 850;
+      text-decoration: none;
+    }
+
+    .top-nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 12px;
+      font-size: .94rem;
+    }
+
+    .top-nav a {
+      color: var(--accent);
+      text-decoration-thickness: .08em;
+      text-underline-offset: .18em;
+    }
+
     .hero {
       min-height: 78vh;
       display: grid;
@@ -357,6 +387,15 @@
   </style>
 </head>
 <body>
+  <header class="site-header">
+    <a class="brand" href="./">Article Pages</a>
+    <nav class="top-nav" aria-label="Site navigation">
+      <a href="./">Home</a>
+      <a href="./#articles">Articles</a>
+      <a href="https://arxiv.org/abs/2604.27660">arXiv</a>
+      <a href="https://github.com/Gin5050/article-pages">GitHub</a>
+    </nav>
+  </header>
   <header class="hero">
     <div class="hero-inner">
       <p class="kicker">Reading artifact / arXiv:2604.27660</p>

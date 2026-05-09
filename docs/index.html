@@ -5,17 +5,51 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Article Pages</title>
   <style>
+    :root {
+      --bg: #f7f5ef;
+      --paper: #fffdf8;
+      --ink: #1f2933;
+      --muted: #52606d;
+      --line: #ded8ca;
+      --accent: #0f766e;
+      --shadow: 0 16px 42px rgba(34, 31, 24, .10);
+    }
     body {
       margin: 0;
       font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #f7f5ef;
-      color: #1f2933;
+      background: var(--bg);
+      color: var(--ink);
       line-height: 1.7;
     }
+    .site-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 14px 22px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 253, 248, .9);
+    }
+    .brand {
+      color: var(--ink);
+      font-weight: 850;
+      text-decoration: none;
+    }
+    .top-nav {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: .94rem;
+    }
+    .top-nav a {
+      color: var(--accent);
+      text-decoration-thickness: .08em;
+      text-underline-offset: .18em;
+    }
     main {
-      max-width: 760px;
+      max-width: 920px;
       margin: 0 auto;
-      padding: 56px 22px;
+      padding: 48px 22px 70px;
     }
     h1 {
       margin: 0 0 10px;
@@ -24,28 +58,64 @@
       letter-spacing: 0;
     }
     p {
-      color: #52606d;
+      color: var(--muted);
       font-size: 1.05rem;
     }
-    a {
+    .cards {
+      display: grid;
+      gap: 14px;
+      margin-top: 28px;
+    }
+    .card {
       display: block;
-      margin-top: 24px;
-      padding: 18px 20px;
-      border: 1px solid #ded8ca;
+      padding: 20px;
+      border: 1px solid var(--line);
       border-radius: 8px;
-      background: #fffdf8;
-      color: #0f766e;
-      font-weight: 800;
+      background: var(--paper);
+      color: var(--ink);
       text-decoration: none;
-      box-shadow: 0 16px 42px rgba(34, 31, 24, .10);
+      box-shadow: var(--shadow);
+    }
+    .card strong {
+      display: block;
+      color: var(--accent);
+      font-size: 1.08rem;
+      margin-bottom: 6px;
+    }
+    .card span {
+      display: block;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .section-title {
+      margin-top: 34px;
+      font-size: .88rem;
+      color: var(--accent);
+      font-weight: 850;
+      text-transform: uppercase;
     }
   </style>
 </head>
 <body>
+  <header class="site-header">
+    <a class="brand" href="./">Article Pages</a>
+    <nav class="top-nav" aria-label="Site navigation">
+      <a href="./">Home</a>
+      <a href="#articles">Articles</a>
+      <a href="https://github.com/Gin5050/article-pages">GitHub</a>
+    </nav>
+  </header>
   <main>
     <h1>Article Pages</h1>
-    <p>公開用の読書 artifact と記事補助ページを置く場所です。</p>
-    <a href="./ctx2skill-reading.html">Ctx2Skill Reading Guide</a>
+    <p>公開用の読書 artifact と記事補助ページを置く場所です。本文転載ではなく、公開しやすい要約・読書導線・補助ビューを置きます。</p>
+
+    <div class="section-title" id="articles">Articles</div>
+    <div class="cards">
+      <a class="card" href="./ctx2skill-reading.html">
+        <strong>Ctx2Skill Reading Guide</strong>
+        <span>From Context to Skills を落合フォーマット寄りに読むための公開版 HTML。</span>
+      </a>
+    </div>
   </main>
 </body>
 </html>
