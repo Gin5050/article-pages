@@ -123,8 +123,6 @@
     }
 
     nav {
-      position: sticky;
-      top: 14px;
       background: rgba(255, 253, 248, .88);
       backdrop-filter: blur(14px);
       border: 1px solid var(--line);
@@ -149,6 +147,13 @@
     }
 
     nav a:hover { background: var(--soft); }
+
+    @media (min-width: 920px) {
+      nav {
+        position: sticky;
+        top: 14px;
+      }
+    }
 
     .section {
       background: var(--paper);
@@ -324,25 +329,14 @@
       color: var(--accent);
     }
 
-    .prompt-box {
+    .note-box {
       margin-top: 16px;
       padding: 16px;
       border-radius: 8px;
-      background: #1f2933;
-      color: #f8fafc;
-      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-      font-size: .91rem;
+      background: var(--soft);
+      color: #263b37;
       line-height: 1.62;
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-    }
-
-    .copy-status {
-      min-height: 24px;
-      margin-top: 8px;
-      color: var(--accent);
-      font-size: .92rem;
-      font-weight: 720;
+      border: 1px solid #cbe3dd;
     }
 
     .warning {
@@ -372,9 +366,8 @@
         Ctx2Skill を、長い context を毎回読み捨てず、次回使える skill に変換する仕組みとして眺めます。
       </p>
       <div class="hero-actions">
-        <a class="button primary" href="#route">読む順番へ</a>
+        <a class="button primary" href="#ochiai">落合フォーマットへ</a>
         <a class="button" href="https://arxiv.org/abs/2604.27660">arXiv を開く</a>
-        <a class="button" href="#copy">読後メモを作る</a>
       </div>
     </div>
   </header>
@@ -382,14 +375,16 @@
   <main class="wrap">
     <div class="reader-grid">
       <nav aria-label="Reading navigation">
-        <strong>読む順番</strong>
+        <strong>目次</strong>
         <a href="#why">なぜ今読むか</a>
-        <a href="#route">15 分ルート</a>
-        <a href="#loop">中核のループ</a>
-        <a href="#replay">Cross-Time Replay</a>
-        <a href="#numbers">結果の見方</a>
-        <a href="#risks">注意点</a>
-        <a href="#copy">読後メモ</a>
+        <a href="#ochiai">落合フォーマット</a>
+        <a href="#what">1. どんなもの？</a>
+        <a href="#difference">2. 先行研究との差分</a>
+        <a href="#method">3. 技術のキモ</a>
+        <a href="#validation">4. どう検証した？</a>
+        <a href="#discussion">5. 議論はある？</a>
+        <a href="#next">6. 次に読むべき論文</a>
+        <a href="#qa">読後Q&A</a>
       </nav>
 
       <div>
@@ -412,43 +407,102 @@
           </p>
         </section>
 
-        <section class="section" id="route">
-          <h2>15 分で入る読み方</h2>
+        <section class="section" id="ochiai">
+          <h2>公開版の落合フォーマット</h2>
+          <p class="lead">
+            保存用メモでは Abstract / Introduction / Related Work の原文と全文和訳を残しています。
+            ただしこのページは公開版なので、原文の長い転載は置かず、読書の入口になる要約だけにしています。
+          </p>
           <div class="route">
             <article class="step">
               <div class="num">1</div>
               <div>
-                <h3>Figure 1 で問題設定を見る</h3>
-                <p>長い context から、規則や手続きを skill として取り出す話だと掴みます。ここでは細かい評価は追わなくて大丈夫。</p>
+                <h3>まず 1〜3 を読む</h3>
+                <p>どんな問題で、既存研究と何が違い、技術の芯がどこにあるかだけ掴みます。ここまででだいたい 8 分。</p>
               </div>
             </article>
             <article class="step">
               <div class="num">2</div>
               <div>
-                <h3>Figure 2 で自己対戦ループを見る</h3>
-                <p>Challenger が問題を作り、Reasoner が解き、Judge が合否を返す。この三者が skill を育てる中核です。</p>
+                <h3>余裕があれば 4〜5 を読む</h3>
+                <p>数字の読み方と限界を見ます。絶対性能の低さまで含めて、この論文の距離感が分かります。</p>
               </div>
             </article>
             <article class="step">
               <div class="num">3</div>
               <div>
-                <h3>Cross-Time Replay だけ拾う</h3>
-                <p>最後の skill が最良とは限らない、という運用上の示唆を読む。skill 改善のやりすぎで特殊化する危険が見えます。</p>
-              </div>
-            </article>
-            <article class="step">
-              <div class="num">4</div>
-              <div>
-                <h3>結果は絶対値より差分を見る</h3>
-                <p>解決率はまだ低い。だから「完成した技術」ではなく、context を skill 化する方向の手応えとして読むのがよさそうです。</p>
+                <h3>次の行動は 6 と Q&A で決める</h3>
+                <p>Skill Retrieval、AgentSPEX、memory 系へ進むか、自分の skill 運用に戻すかを選びます。</p>
               </div>
             </article>
           </div>
         </section>
 
-        <section class="section" id="loop">
-          <h2>中核のループ</h2>
-          <p>Ctx2Skill の気持ちよさは、解く側だけでなく「良い問いを作る側」にも skill があるところです。</p>
+        <section class="section" id="what">
+          <h2>1. どんなもの？</h2>
+          <p>
+            Ctx2Skill は、長く複雑な文脈から、その文脈で何度も使える自然言語 skill を自動で作る手法です。
+            ここでいう文脈は、製品ドキュメント、臨床ガイドライン、実験データ、複雑な規則体系のように、
+            モデルが事前学習だけでは扱えない情報を指します。
+          </p>
+          <p>
+            重要なのは、文脈を単に要約するのではなく、次のタスクでも使える「手順」や「判断基準」として取り出すこと。
+            つまり、長い context を毎回読み捨てるのではなく、再利用可能な作業知に変換しようとしています。
+          </p>
+          <div class="note-box">
+            HTML artifact の話に引き寄せるなら、これは「情報をどう見せるか」より奥にある、
+            「見た情報を次回の実行能力にどう変えるか」の論文です。
+          </div>
+        </section>
+
+        <section class="section" id="difference">
+          <h2>2. 先行研究と比べてどこがすごい？</h2>
+          <p>
+            一番の差分は、外部フィードバックがない状況で skill を作ろうとしているところです。
+            既存の skill 構築は、テスト結果、正解、タスク完了報酬のような外部信号に頼れることが多い。
+            でも文脈学習では、「この文脈から作った skill が十分か」を教えてくれる正解がありません。
+          </p>
+          <p>
+            Ctx2Skill はこの問題を、自己対戦の形に変えます。
+            Challenger が文脈理解を試す課題と採点基準を作り、Reasoner が skill を使って解き、
+            Judge が合否を返す。失敗は Reasoner の skill 更新へ、簡単に解けた課題は Challenger の強化へ回ります。
+          </p>
+        </section>
+
+        <section class="section" id="method">
+          <h2>3. 技術や手法のキモは？</h2>
+          <div class="route">
+            <article class="step">
+              <div class="num">1</div>
+              <div>
+                <h3>Challenger が問いを作る</h3>
+                <p>文脈を読めているかを試す課題と採点基準を作ります。解く側だけでなく、問いを作る側にも skill があるのが面白い点です。</p>
+              </div>
+            </article>
+            <article class="step">
+              <div class="num">2</div>
+              <div>
+                <h3>Reasoner が解く</h3>
+                <p>文脈と現在の Reasoner skill を使って回答します。失敗したら、欠けていた文脈知識を診断して skill を更新します。</p>
+              </div>
+            </article>
+            <article class="step">
+              <div class="num">3</div>
+              <div>
+                <h3>Judge が合否を返す</h3>
+                <p>採点基準ごとに pass / fail を返します。答えを教える先生ではなく、失敗を検出する圧力として働きます。</p>
+              </div>
+            </article>
+            <article class="step">
+              <div class="num">4</div>
+              <div>
+                <h3>Cross-Time Replay で選び直す</h3>
+                <p>最後の skill をそのまま採用せず、過去の skill 候補を代表課題で評価し直します。最新が最良とは限らない、というのが大事です。</p>
+              </div>
+            </article>
+          </div>
+
+          <h3>中核のループ</h3>
           <div class="diagram" aria-label="Ctx2Skill loop diagram">
             <div class="node">
               <b>Challenger</b>
@@ -468,26 +522,8 @@
           </div>
         </section>
 
-        <section class="section" id="replay">
-          <h2>Cross-Time Replay が効く理由</h2>
-          <p>
-            自己改善は、進めるほど良くなるとは限りません。後半の Challenger が極端な課題を作ると、Reasoner skill はその特殊ケースに寄りすぎます。
-            Cross-Time Replay は、途中で作られた複数の skill を代表課題で評価し直し、難しい課題にも簡単な課題にも崩れにくいものを選びます。
-          </p>
-          <div class="toggle-list">
-            <details>
-              <summary>実務に置き換えると？</summary>
-              <p>skill や AGENTS.md は、最後に直した版が常に最良とは限りません。直近の失敗に合わせすぎると、普通の依頼で過剰反応することがあります。</p>
-            </details>
-            <details>
-              <summary>なぜ「代表課題」が必要？</summary>
-              <p>改善対象の失敗だけで再評価すると、その失敗には強くなっても汎用性が落ちます。普段の成功ケースも含めて戻りテストする発想が大事です。</p>
-            </details>
-          </div>
-        </section>
-
-        <section class="section" id="numbers">
-          <h2>結果の読み方</h2>
+        <section class="section" id="validation">
+          <h2>4. どうやって有効だと検証した？</h2>
           <p>数字は派手ではありません。でも、文脈学習が難しいタスクで一貫して改善している点を見るのがよさそうです。</p>
           <div class="score-grid">
             <div class="metric">
@@ -509,34 +545,51 @@
           </p>
         </section>
 
-        <section class="section warning" id="risks">
-          <h2>注意して読むところ</h2>
+        <section class="section warning" id="discussion">
+          <h2>5. 議論はある？</h2>
           <p><strong>コスト:</strong> 各文脈ごとに課題生成、回答、採点、skill 更新を回すので、一回しか使わない文脈には重いです。</p>
           <p><strong>Judge 依存:</strong> 採点器が文脈理解の深い失敗を拾えるかは別問題です。pass / fail が正しければ強いけど、そこが揺れると危ない。</p>
           <p><strong>過剰適応:</strong> Cross-Time Replay があるとはいえ、自己対戦は特殊な課題へ寄りやすい。ここは実運用でも同じ匂いがします。</p>
         </section>
 
-        <section class="section" id="copy">
-          <h2>読後メモを作る</h2>
-          <p>読み終えたら、この短いメモだけ返せば次の一本につなげやすいです。</p>
-          <button class="button primary" id="copyButton" type="button">読後メモテンプレをコピー</button>
-          <div class="copy-status" id="copyStatus" aria-live="polite"></div>
-          <div class="prompt-box" id="promptText">Ctx2Skill 読んだ。
+        <section class="section" id="next">
+          <h2>6. 次に読むべき論文は？</h2>
+          <div class="toggle-list">
+            <details open>
+              <summary>Skill Retrieval Augmentation for Agentic AI</summary>
+              <p>作った skill が増えたあと、必要なものをどう検索して使うかを見る次の候補です。Ctx2Skill の後に一番つながります。</p>
+            </details>
+            <details>
+              <summary>AgentSPEX</summary>
+              <p>抽出した skill や手続きを、実行可能な agent workflow の仕様にどう載せるかを見る候補です。</p>
+            </details>
+            <details>
+              <summary>Storage Is Not Memory</summary>
+              <p>wiki や Obsidian に保存するだけでは記憶にならない、という問題意識を深掘りする候補です。</p>
+            </details>
+          </div>
+        </section>
 
-刺さった点:
-- 
-
-まだ怪しい点:
-- 
-
-自分の skill / wiki / AGENTS.md 運用に使うなら:
-- 
-
-次に読みたい方向:
-- Skill Retrieval
-- Storage Is Not Memory
-- AgentSPEX
-</div>
+        <section class="section" id="qa">
+          <h2>読後Q&A</h2>
+          <div class="toggle-list">
+            <details open>
+              <summary>これは要するに RAG なの？</summary>
+              <p>近いけど違います。RAG は外部文書から根拠を取り出して回答に使うことが中心です。Ctx2Skill は、文脈から規則や手続きを取り出し、次のタスクでも使える skill として保存する方向です。</p>
+            </details>
+            <details>
+              <summary>どうして Challenger にも skill があるの？</summary>
+              <p>Challenger はランダムに問題を出す役ではなく、文脈理解の弱点を突く課題と採点基準を作る役だからです。簡単に解かれた課題は、次にもっと鋭い問いを作るための材料になります。</p>
+            </details>
+            <details>
+              <summary>Cross-Time Replay はなぜ必要？</summary>
+              <p>自己対戦は進めるほど良くなるとは限らないからです。後半の skill は特殊な課題に寄りすぎることがあるので、過去の候補を代表課題で評価し直して選びます。</p>
+            </details>
+            <details>
+              <summary>実務でそのまま使える？</summary>
+              <p>そのまま導入するには重いです。ただ、skill や AGENTS.md を更新するときに、直近の失敗だけでなく代表課題で戻りテストする、という考え方はかなり使えます。</p>
+            </details>
+          </div>
         </section>
 
         <footer>
@@ -546,19 +599,5 @@
     </div>
   </main>
 
-  <script>
-    const button = document.querySelector("#copyButton");
-    const status = document.querySelector("#copyStatus");
-    const promptText = document.querySelector("#promptText");
-
-    button.addEventListener("click", async () => {
-      try {
-        await navigator.clipboard.writeText(promptText.innerText);
-        status.textContent = "コピーしたよ。読後の一言を足せば、そのまま次の相談に使える。";
-      } catch (error) {
-        status.textContent = "コピーできなかったので、下のテンプレを選択して使ってね。";
-      }
-    });
-  </script>
 </body>
 </html>
