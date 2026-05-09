@@ -1,0 +1,564 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ctx2Skill Reading Guide</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f7f5ef;
+      --paper: #fffdf8;
+      --ink: #1f2933;
+      --muted: #64707d;
+      --line: #ded8ca;
+      --accent: #0f766e;
+      --accent-2: #b45309;
+      --soft: #e8f3ef;
+      --soft-2: #f7e9d3;
+      --danger: #9f1239;
+      --shadow: 0 18px 50px rgba(34, 31, 24, .10);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.72;
+    }
+
+    a { color: var(--accent); text-decoration-thickness: .08em; text-underline-offset: .18em; }
+
+    .hero {
+      min-height: 78vh;
+      display: grid;
+      align-items: end;
+      padding: clamp(28px, 6vw, 84px);
+      background:
+        linear-gradient(180deg, rgba(15, 118, 110, .12), rgba(247, 245, 239, 1)),
+        linear-gradient(120deg, rgba(180, 83, 9, .22), rgba(15, 118, 110, .10)),
+        var(--bg);
+      border-bottom: 1px solid var(--line);
+    }
+
+    .hero-inner {
+      max-width: 980px;
+    }
+
+    .kicker {
+      margin: 0 0 12px;
+      color: var(--accent);
+      font-weight: 800;
+      font-size: .86rem;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 900px;
+      margin: 0;
+      font-size: clamp(2.4rem, 6vw, 5.7rem);
+      line-height: .98;
+      letter-spacing: 0;
+    }
+
+    .hero p {
+      max-width: 720px;
+      margin: 22px 0 0;
+      font-size: clamp(1.05rem, 2vw, 1.32rem);
+      color: #31404c;
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      background: var(--paper);
+      color: var(--ink);
+      border-radius: 7px;
+      font-weight: 760;
+      text-decoration: none;
+      box-shadow: 0 5px 14px rgba(31, 41, 51, .06);
+      cursor: pointer;
+    }
+
+    .button.primary {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .wrap {
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 26px clamp(18px, 4vw, 44px) 80px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: 24px;
+    }
+
+    .reader-grid {
+      display: grid;
+      gap: 20px;
+    }
+
+    @media (min-width: 920px) {
+      .reader-grid {
+        grid-template-columns: 270px minmax(0, 1fr);
+        align-items: start;
+      }
+    }
+
+    nav {
+      position: sticky;
+      top: 14px;
+      background: rgba(255, 253, 248, .88);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    nav strong {
+      display: block;
+      margin-bottom: 10px;
+      font-size: .92rem;
+    }
+
+    nav a {
+      display: block;
+      padding: 8px 9px;
+      border-radius: 6px;
+      color: var(--ink);
+      text-decoration: none;
+      font-size: .94rem;
+    }
+
+    nav a:hover { background: var(--soft); }
+
+    .section {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: clamp(18px, 4vw, 36px);
+      box-shadow: var(--shadow);
+      margin-bottom: 18px;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: clamp(1.45rem, 3vw, 2.15rem);
+      line-height: 1.18;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 24px 0 8px;
+      font-size: 1.05rem;
+      letter-spacing: 0;
+    }
+
+    p { margin: 0 0 14px; }
+
+    .lead {
+      font-size: 1.08rem;
+      color: #31404c;
+    }
+
+    .pill-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 18px 0 4px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      background: var(--soft);
+      color: #14534d;
+      border: 1px solid #cbe3dd;
+      font-size: .88rem;
+      font-weight: 720;
+    }
+
+    .route {
+      display: grid;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .step {
+      display: grid;
+      grid-template-columns: 42px minmax(0, 1fr);
+      gap: 12px;
+      align-items: start;
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fffaf0;
+    }
+
+    .num {
+      display: grid;
+      place-items: center;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: white;
+      font-weight: 850;
+    }
+
+    .step h3 {
+      margin-top: 2px;
+    }
+
+    .diagram {
+      display: grid;
+      gap: 10px;
+      margin: 20px 0;
+    }
+
+    @media (min-width: 760px) {
+      .diagram {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .node {
+      min-height: 132px;
+      padding: 16px;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: white;
+    }
+
+    .node b {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--accent);
+      font-size: 1rem;
+    }
+
+    .flow-note {
+      padding: 14px 16px;
+      border-left: 5px solid var(--accent-2);
+      background: var(--soft-2);
+      border-radius: 7px;
+      color: #51331a;
+    }
+
+    .toggle-list {
+      display: grid;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
+    details {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+      overflow: hidden;
+    }
+
+    summary {
+      cursor: pointer;
+      padding: 13px 15px;
+      font-weight: 800;
+      color: var(--ink);
+    }
+
+    details p {
+      padding: 0 15px 15px;
+      color: #3c4852;
+    }
+
+    .score-grid {
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    @media (min-width: 720px) {
+      .score-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    .metric {
+      padding: 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: white;
+    }
+
+    .metric span {
+      display: block;
+      color: var(--muted);
+      font-size: .88rem;
+      font-weight: 720;
+    }
+
+    .metric strong {
+      display: block;
+      margin-top: 4px;
+      font-size: 1.5rem;
+      color: var(--accent);
+    }
+
+    .prompt-box {
+      margin-top: 16px;
+      padding: 16px;
+      border-radius: 8px;
+      background: #1f2933;
+      color: #f8fafc;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: .91rem;
+      line-height: 1.62;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .copy-status {
+      min-height: 24px;
+      margin-top: 8px;
+      color: var(--accent);
+      font-size: .92rem;
+      font-weight: 720;
+    }
+
+    .warning {
+      border-color: #f4b4bf;
+      background: #fff5f6;
+    }
+
+    .warning h2,
+    .warning strong {
+      color: var(--danger);
+    }
+
+    footer {
+      color: var(--muted);
+      font-size: .9rem;
+      padding: 10px 0 0;
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="kicker">Reading artifact / arXiv:2604.27660</p>
+      <h1>From Context to Skills を読むための小さな地図</h1>
+      <p>
+        これは論文全文の代替ではなく、最初の 15 分で「何が面白いのか」を掴むための読書ビューです。
+        Ctx2Skill を、長い context を毎回読み捨てず、次回使える skill に変換する仕組みとして眺めます。
+      </p>
+      <div class="hero-actions">
+        <a class="button primary" href="#route">読む順番へ</a>
+        <a class="button" href="https://arxiv.org/abs/2604.27660">arXiv を開く</a>
+        <a class="button" href="#copy">読後メモを作る</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="reader-grid">
+      <nav aria-label="Reading navigation">
+        <strong>読む順番</strong>
+        <a href="#why">なぜ今読むか</a>
+        <a href="#route">15 分ルート</a>
+        <a href="#loop">中核のループ</a>
+        <a href="#replay">Cross-Time Replay</a>
+        <a href="#numbers">結果の見方</a>
+        <a href="#risks">注意点</a>
+        <a href="#copy">読後メモ</a>
+      </nav>
+
+      <div>
+        <section class="section" id="why">
+          <h2>いま面白い理由</h2>
+          <p class="lead">
+            HTML artifact、Obsidian、Markdown、トークン効率の話は、見た目のフォーマット問題に見えます。
+            でも Ctx2Skill が扱うのは、その一段奥にある「文脈をどう再利用可能な作業知に変えるか」です。
+          </p>
+          <div class="pill-row">
+            <span class="pill">context engineering</span>
+            <span class="pill">agent skills</span>
+            <span class="pill">memory</span>
+            <span class="pill">wiki / AGENTS.md</span>
+          </div>
+          <p>
+            長い文書を毎回プロンプトに入れるのは重い。要約だけだと、手順や判断基準が落ちる。
+            そこでこの論文は、文脈から「次のタスクでも使える自然言語 skill」を自動で取り出す。
+            ここが、ただの RAG や要約と違うところです。
+          </p>
+        </section>
+
+        <section class="section" id="route">
+          <h2>15 分で入る読み方</h2>
+          <div class="route">
+            <article class="step">
+              <div class="num">1</div>
+              <div>
+                <h3>Figure 1 で問題設定を見る</h3>
+                <p>長い context から、規則や手続きを skill として取り出す話だと掴みます。ここでは細かい評価は追わなくて大丈夫。</p>
+              </div>
+            </article>
+            <article class="step">
+              <div class="num">2</div>
+              <div>
+                <h3>Figure 2 で自己対戦ループを見る</h3>
+                <p>Challenger が問題を作り、Reasoner が解き、Judge が合否を返す。この三者が skill を育てる中核です。</p>
+              </div>
+            </article>
+            <article class="step">
+              <div class="num">3</div>
+              <div>
+                <h3>Cross-Time Replay だけ拾う</h3>
+                <p>最後の skill が最良とは限らない、という運用上の示唆を読む。skill 改善のやりすぎで特殊化する危険が見えます。</p>
+              </div>
+            </article>
+            <article class="step">
+              <div class="num">4</div>
+              <div>
+                <h3>結果は絶対値より差分を見る</h3>
+                <p>解決率はまだ低い。だから「完成した技術」ではなく、context を skill 化する方向の手応えとして読むのがよさそうです。</p>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="section" id="loop">
+          <h2>中核のループ</h2>
+          <p>Ctx2Skill の気持ちよさは、解く側だけでなく「良い問いを作る側」にも skill があるところです。</p>
+          <div class="diagram" aria-label="Ctx2Skill loop diagram">
+            <div class="node">
+              <b>Challenger</b>
+              文脈理解を試す課題と採点基準を作る。簡単に解かれたら、次はもっと鋭い問いを作るように更新される。
+            </div>
+            <div class="node">
+              <b>Reasoner</b>
+              文脈と現在の skill を使って回答する。失敗したら、足りなかった文脈知識を skill に反映する。
+            </div>
+            <div class="node">
+              <b>Judge</b>
+              採点基準ごとに pass / fail を返す。詳しい答えを教える先生ではなく、失敗を検知する圧力として働く。
+            </div>
+          </div>
+          <div class="flow-note">
+            ポイント: 更新されるのはモデル重みではなく、自然言語の skill set。だから閉じたモデルにも差し込めるし、wiki や AGENTS.md の運用にも近い。
+          </div>
+        </section>
+
+        <section class="section" id="replay">
+          <h2>Cross-Time Replay が効く理由</h2>
+          <p>
+            自己改善は、進めるほど良くなるとは限りません。後半の Challenger が極端な課題を作ると、Reasoner skill はその特殊ケースに寄りすぎます。
+            Cross-Time Replay は、途中で作られた複数の skill を代表課題で評価し直し、難しい課題にも簡単な課題にも崩れにくいものを選びます。
+          </p>
+          <div class="toggle-list">
+            <details>
+              <summary>実務に置き換えると？</summary>
+              <p>skill や AGENTS.md は、最後に直した版が常に最良とは限りません。直近の失敗に合わせすぎると、普通の依頼で過剰反応することがあります。</p>
+            </details>
+            <details>
+              <summary>なぜ「代表課題」が必要？</summary>
+              <p>改善対象の失敗だけで再評価すると、その失敗には強くなっても汎用性が落ちます。普段の成功ケースも含めて戻りテストする発想が大事です。</p>
+            </details>
+          </div>
+        </section>
+
+        <section class="section" id="numbers">
+          <h2>結果の読み方</h2>
+          <p>数字は派手ではありません。でも、文脈学習が難しいタスクで一貫して改善している点を見るのがよさそうです。</p>
+          <div class="score-grid">
+            <div class="metric">
+              <span>GPT-4.1</span>
+              <strong>11.1% → 16.5%</strong>
+            </div>
+            <div class="metric">
+              <span>GPT-5.1</span>
+              <strong>21.2% → 25.8%</strong>
+            </div>
+            <div class="metric">
+              <span>評価カテゴリ</span>
+              <strong>4 種類</strong>
+            </div>
+          </div>
+          <p>
+            絶対性能はまだ低いので、「これで文脈学習は解決」とは読まないほうがいいです。
+            ただ、skill を外部化して推論時に差し込む方向が、複数モデルで効いているのはかなりおいしい示唆です。
+          </p>
+        </section>
+
+        <section class="section warning" id="risks">
+          <h2>注意して読むところ</h2>
+          <p><strong>コスト:</strong> 各文脈ごとに課題生成、回答、採点、skill 更新を回すので、一回しか使わない文脈には重いです。</p>
+          <p><strong>Judge 依存:</strong> 採点器が文脈理解の深い失敗を拾えるかは別問題です。pass / fail が正しければ強いけど、そこが揺れると危ない。</p>
+          <p><strong>過剰適応:</strong> Cross-Time Replay があるとはいえ、自己対戦は特殊な課題へ寄りやすい。ここは実運用でも同じ匂いがします。</p>
+        </section>
+
+        <section class="section" id="copy">
+          <h2>読後メモを作る</h2>
+          <p>読み終えたら、この短いメモだけ返せば次の一本につなげやすいです。</p>
+          <button class="button primary" id="copyButton" type="button">読後メモテンプレをコピー</button>
+          <div class="copy-status" id="copyStatus" aria-live="polite"></div>
+          <div class="prompt-box" id="promptText">Ctx2Skill 読んだ。
+
+刺さった点:
+- 
+
+まだ怪しい点:
+- 
+
+自分の skill / wiki / AGENTS.md 運用に使うなら:
+- 
+
+次に読みたい方向:
+- Skill Retrieval
+- Storage Is Not Memory
+- AgentSPEX
+</div>
+        </section>
+
+        <footer>
+          Source: arXiv:2604.27660 / From Context to Skills: Can Language Models Learn from Context Skillfully? This page is a reading aid, not a substitute for the paper.
+        </footer>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const button = document.querySelector("#copyButton");
+    const status = document.querySelector("#copyStatus");
+    const promptText = document.querySelector("#promptText");
+
+    button.addEventListener("click", async () => {
+      try {
+        await navigator.clipboard.writeText(promptText.innerText);
+        status.textContent = "コピーしたよ。読後の一言を足せば、そのまま次の相談に使える。";
+      } catch (error) {
+        status.textContent = "コピーできなかったので、下のテンプレを選択して使ってね。";
+      }
+    });
+  </script>
+</body>
+</html>
