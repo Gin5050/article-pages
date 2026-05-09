@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Ctx2Skill Reading Guide</title>
+  <title>Ctx2Skill | From Context to Skills</title>
   <style>
     :root {
       color-scheme: light;
@@ -100,6 +100,26 @@
       margin: 22px 0 0;
       font-size: clamp(1.05rem, 2vw, 1.32rem);
       color: #31404c;
+    }
+
+    .paper-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 22px;
+    }
+
+    .meta-chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 5px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(15, 118, 110, .24);
+      background: rgba(255, 253, 248, .72);
+      color: #23423e;
+      font-size: .9rem;
+      font-weight: 720;
     }
 
     .hero-actions {
@@ -391,21 +411,25 @@
     <a class="brand" href="./">Article Pages</a>
     <nav class="top-nav" aria-label="Site navigation">
       <a href="./">Home</a>
-      <a href="./#articles">Articles</a>
       <a href="https://arxiv.org/abs/2604.27660">arXiv</a>
-      <a href="https://github.com/Gin5050/article-pages">GitHub</a>
     </nav>
   </header>
   <header class="hero">
     <div class="hero-inner">
       <p class="kicker">Reading artifact / arXiv:2604.27660</p>
-      <h1>From Context to Skills を読むための小さな地図</h1>
+      <h1>Ctx2Skill</h1>
       <p>
-        これは論文全文の代替ではなく、最初の 15 分で「何が面白いのか」を掴むための読書ビューです。
-        Ctx2Skill を、長い文脈を毎回読み捨てず、次回使えるスキルに変換する仕組みとして眺めます。
+        From Context to Skills: Can Language Models Learn from Context Skillfully?
       </p>
+      <div class="paper-meta" aria-label="Paper metadata">
+        <span class="meta-chip">公開年: 2026</span>
+        <span class="meta-chip">arXiv: 2604.27660</span>
+        <span class="meta-chip">文脈学習</span>
+        <span class="meta-chip">エージェントのスキル</span>
+        <span class="meta-chip">自己改善</span>
+        <span class="meta-chip">自然言語の手続き知</span>
+      </div>
       <div class="hero-actions">
-        <a class="button primary" href="#paper">本文へ</a>
         <a class="button" href="https://arxiv.org/abs/2604.27660">arXiv を開く</a>
       </div>
     </div>
@@ -420,8 +444,8 @@
         <a href="#method">手法のしくみ</a>
         <a href="#validation">検証結果</a>
         <a href="#discussion">限界と読みどころ</a>
-        <a href="#next">次に読むなら</a>
         <a href="#qa">読後Q&A</a>
+        <a href="#next">次に読むなら</a>
       </nav>
 
       <div>
@@ -431,16 +455,19 @@
             <strong>From Context to Skills: Can Language Models Learn from Context Skillfully?</strong> は、
             長い文書や複雑なルールから、言語モデルがあとで再利用できる「自然言語のスキル」を自動で作れるかを調べた論文です。
           </p>
-          <div class="pill-row">
-            <span class="pill">文脈学習</span>
-            <span class="pill">エージェントのスキル</span>
-            <span class="pill">自己改善</span>
-            <span class="pill">自然言語の手続き知</span>
-          </div>
           <p>
             ここでいう「文脈」は、製品ドキュメント、臨床ガイドライン、実験データ、複雑な規則体系のように、
             モデルが事前学習だけでは知らない情報です。この論文は、その文脈を毎回読み直すのではなく、
             「こう判断する」「この手順で進める」という再利用可能な作業知に変換することを狙っています。
+          </p>
+          <p>
+            たとえば、人間なら新しい製品仕様書を読んだあと、「障害切り分けはこの順番で見る」「この条件では例外扱いにする」
+            という作業の型を覚えます。論文が問うているのは、言語モデルも同じように、長い文脈から作業の型を取り出し、
+            次の未見タスクで使える形にできるのか、ということです。
+          </p>
+          <p>
+            単なる要約と違うのは、情報を短くすることが目的ではない点です。目的は、文脈に含まれる規則、手順、判断基準を、
+            推論時に差し込める自然言語のスキルとして残すことです。
           </p>
           <div class="note-box">
             名前だけ出てくる Ctx2Skill は、この論文が提案する手法名です。
@@ -584,28 +611,22 @@
           <p><strong>読みどころ:</strong> この論文は、すぐ使える完成品というより、長い文脈を「保存」や「要約」で終わらせず、再利用できる作業能力へ変換する発想を見ると面白いです。</p>
         </section>
 
-        <section class="section" id="next">
-          <h2>次に読むなら</h2>
-          <div class="toggle-list">
-            <details open>
-              <summary>Skill Retrieval Augmentation for Agentic AI</summary>
-              <p>作ったスキルが増えたあと、必要なスキルをどう検索して使うかを見る論文です。Ctx2Skill の次に一番自然につながります。</p>
-            </details>
-            <details>
-              <summary>AgentSPEX: An Agent Specification and Execution Language</summary>
-              <p>抽出したスキルや手続きを、エージェントが実行できる仕様にどう載せるかを見る候補です。</p>
-            </details>
-            <details>
-              <summary>Storage Is Not Memory</summary>
-              <p>wiki や Obsidian に保存するだけでは記憶にならない、という問題意識を深掘りする論文です。</p>
-            </details>
-          </div>
-        </section>
-
         <section class="section" id="qa">
           <h2>読後Q&A</h2>
           <div class="toggle-list">
             <details open>
+              <summary>何がすごいの？</summary>
+              <p>正解データや人間の注釈なしに、長い文脈から使い回せるスキルを作ろうとしている点です。しかも、解く側だけでなく、問題を作る側も改善していくので、「よい課題で自分を鍛える」構造になっています。</p>
+            </details>
+            <details>
+              <summary>手法をわかりやすく説明すると？</summary>
+              <p>まず、問題を作る役が文脈を読んでテスト問題を作ります。次に、解く役が現在のスキルを使って答えます。採点役が合否を返し、失敗したら解く側のスキルを直し、簡単すぎたら問題を作る側を強くします。最後に、途中でできたスキル候補を評価し直して、偏りすぎていないものを選びます。</p>
+            </details>
+            <details>
+              <summary>どんな実験でどんな結果だった？</summary>
+              <p>CL-bench という、複雑な文脈を読んで領域知識・規則・手続き・発見を扱えるかを見る評価セットで試しています。結果は、GPT-4.1 で 11.1% から 16.5%、GPT-5.1 で 21.2% から 25.8% に改善しました。絶対値はまだ低いですが、複数モデルで一貫して上がった点がポイントです。</p>
+            </details>
+            <details>
               <summary>これは要するに検索拡張生成なの？</summary>
               <p>近いけど違います。検索拡張生成、いわゆる RAG は「検索で外部文書を取り出し、回答の根拠に使う」方法です。Ctx2Skill は、文脈から規則や手続きを取り出し、次のタスクでも使えるスキルとして保存する方向です。</p>
             </details>
@@ -620,6 +641,24 @@
             <details>
               <summary>実務でそのまま使える？</summary>
               <p>そのまま導入するには重いです。ただ、エージェントの手順書やスキル文書を更新するときに、直近の失敗だけでなく代表課題で戻りテストする、という考え方はかなり使えます。</p>
+            </details>
+          </div>
+        </section>
+
+        <section class="section" id="next">
+          <h2>次に読むなら</h2>
+          <div class="toggle-list">
+            <details open>
+              <summary>Skill Retrieval Augmentation for Agentic AI</summary>
+              <p>作ったスキルが増えたあと、必要なスキルをどう検索して使うかを見る論文です。Ctx2Skill の次に一番自然につながります。</p>
+            </details>
+            <details>
+              <summary>AgentSPEX: An Agent Specification and Execution Language</summary>
+              <p>抽出したスキルや手続きを、エージェントが実行できる仕様にどう載せるかを見る候補です。</p>
+            </details>
+            <details>
+              <summary>Storage Is Not Memory</summary>
+              <p>wiki や Obsidian に保存するだけでは記憶にならない、という問題意識を深掘りする論文です。</p>
             </details>
           </div>
         </section>
