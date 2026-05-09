@@ -402,10 +402,10 @@
       <h1>From Context to Skills を読むための小さな地図</h1>
       <p>
         これは論文全文の代替ではなく、最初の 15 分で「何が面白いのか」を掴むための読書ビューです。
-        Ctx2Skill を、長い context を毎回読み捨てず、次回使える skill に変換する仕組みとして眺めます。
+        Ctx2Skill を、長い文脈を毎回読み捨てず、次回使えるスキルに変換する仕組みとして眺めます。
       </p>
       <div class="hero-actions">
-        <a class="button primary" href="#ochiai">落合フォーマットへ</a>
+        <a class="button primary" href="#paper">本文へ</a>
         <a class="button" href="https://arxiv.org/abs/2604.27660">arXiv を開く</a>
       </div>
     </div>
@@ -415,128 +415,116 @@
     <div class="reader-grid">
       <nav aria-label="Reading navigation">
         <strong>目次</strong>
-        <a href="#why">なぜ今読むか</a>
-        <a href="#ochiai">落合フォーマット</a>
-        <a href="#what">1. どんなもの？</a>
-        <a href="#difference">2. 先行研究との差分</a>
-        <a href="#method">3. 技術のキモ</a>
-        <a href="#validation">4. どう検証した？</a>
-        <a href="#discussion">5. 議論はある？</a>
-        <a href="#next">6. 次に読むべき論文</a>
+        <a href="#paper">どんな論文か</a>
+        <a href="#problem">課題と貢献</a>
+        <a href="#method">手法のしくみ</a>
+        <a href="#validation">検証結果</a>
+        <a href="#discussion">限界と読みどころ</a>
+        <a href="#next">次に読むなら</a>
         <a href="#qa">読後Q&A</a>
       </nav>
 
       <div>
-        <section class="section" id="why">
-          <h2>いま面白い理由</h2>
+        <section class="section" id="paper">
+          <h2>どんな論文か</h2>
           <p class="lead">
-            HTML artifact、Obsidian、Markdown、トークン効率の話は、見た目のフォーマット問題に見えます。
-            でも Ctx2Skill が扱うのは、その一段奥にある「文脈をどう再利用可能な作業知に変えるか」です。
+            <strong>From Context to Skills: Can Language Models Learn from Context Skillfully?</strong> は、
+            長い文書や複雑なルールから、言語モデルがあとで再利用できる「自然言語のスキル」を自動で作れるかを調べた論文です。
           </p>
           <div class="pill-row">
-            <span class="pill">context engineering</span>
-            <span class="pill">agent skills</span>
-            <span class="pill">memory</span>
-            <span class="pill">wiki / AGENTS.md</span>
+            <span class="pill">文脈学習</span>
+            <span class="pill">エージェントのスキル</span>
+            <span class="pill">自己改善</span>
+            <span class="pill">自然言語の手続き知</span>
           </div>
           <p>
-            長い文書を毎回プロンプトに入れるのは重い。要約だけだと、手順や判断基準が落ちる。
-            そこでこの論文は、文脈から「次のタスクでも使える自然言語 skill」を自動で取り出す。
-            ここが、ただの RAG や要約と違うところです。
-          </p>
-        </section>
-
-        <section class="section" id="ochiai">
-          <h2>公開版の落合フォーマット</h2>
-          <p class="lead">
-            保存用メモでは Abstract / Introduction / Related Work の原文と全文和訳を残しています。
-            ただしこのページは公開版なので、原文の長い転載は置かず、読書の入口になる要約だけにしています。
-          </p>
-          <div class="route">
-            <article class="step">
-              <div class="num">1</div>
-              <div>
-                <h3>まず 1〜3 を読む</h3>
-                <p>どんな問題で、既存研究と何が違い、技術の芯がどこにあるかだけ掴みます。ここまででだいたい 8 分。</p>
-              </div>
-            </article>
-            <article class="step">
-              <div class="num">2</div>
-              <div>
-                <h3>余裕があれば 4〜5 を読む</h3>
-                <p>数字の読み方と限界を見ます。絶対性能の低さまで含めて、この論文の距離感が分かります。</p>
-              </div>
-            </article>
-            <article class="step">
-              <div class="num">3</div>
-              <div>
-                <h3>次の行動は 6 と Q&A で決める</h3>
-                <p>Skill Retrieval、AgentSPEX、memory 系へ進むか、自分の skill 運用に戻すかを選びます。</p>
-              </div>
-            </article>
-          </div>
-        </section>
-
-        <section class="section" id="what">
-          <h2>1. どんなもの？</h2>
-          <p>
-            Ctx2Skill は、長く複雑な文脈から、その文脈で何度も使える自然言語 skill を自動で作る手法です。
-            ここでいう文脈は、製品ドキュメント、臨床ガイドライン、実験データ、複雑な規則体系のように、
-            モデルが事前学習だけでは扱えない情報を指します。
-          </p>
-          <p>
-            重要なのは、文脈を単に要約するのではなく、次のタスクでも使える「手順」や「判断基準」として取り出すこと。
-            つまり、長い context を毎回読み捨てるのではなく、再利用可能な作業知に変換しようとしています。
+            ここでいう「文脈」は、製品ドキュメント、臨床ガイドライン、実験データ、複雑な規則体系のように、
+            モデルが事前学習だけでは知らない情報です。この論文は、その文脈を毎回読み直すのではなく、
+            「こう判断する」「この手順で進める」という再利用可能な作業知に変換することを狙っています。
           </p>
           <div class="note-box">
-            HTML artifact の話に引き寄せるなら、これは「情報をどう見せるか」より奥にある、
-            「見た情報を次回の実行能力にどう変えるか」の論文です。
+            名前だけ出てくる Ctx2Skill は、この論文が提案する手法名です。
+            「Context to Skills」、つまり「文脈からスキルへ」という意味で読めば大丈夫です。
           </div>
         </section>
 
-        <section class="section" id="difference">
-          <h2>2. 先行研究と比べてどこがすごい？</h2>
+        <section class="section" id="problem">
+          <h2>課題と貢献</h2>
           <p>
-            一番の差分は、外部フィードバックがない状況で skill を作ろうとしているところです。
-            既存の skill 構築は、テスト結果、正解、タスク完了報酬のような外部信号に頼れることが多い。
-            でも文脈学習では、「この文脈から作った skill が十分か」を教えてくれる正解がありません。
+            この論文が見ている課題は、長くて専門的な文脈を読んだモデルが、そこから本当に使える知識を学べるのか、という点です。
+            ただ検索して該当箇所を引く方法や、短く要約する方法だけでは、複雑な手順や判断基準が落ちることがあります。
           </p>
           <p>
-            Ctx2Skill はこの問題を、自己対戦の形に変えます。
-            Challenger が文脈理解を試す課題と採点基準を作り、Reasoner が skill を使って解き、
-            Judge が合否を返す。失敗は Reasoner の skill 更新へ、簡単に解けた課題は Challenger の強化へ回ります。
+            さらに難しいのは、正解データや人間の注釈がないことです。コードならテスト、数学なら正解があります。
+            でも「このドキュメントから作ったスキルが十分か」は、自動で採点しにくい。
+            そこで著者らは、文脈理解を試す問題をモデル自身に作らせ、その失敗からスキルを育てる枠組みを提案します。
           </p>
-        </section>
-
-        <section class="section" id="method">
-          <h2>3. 技術や手法のキモは？</h2>
           <div class="route">
             <article class="step">
               <div class="num">1</div>
               <div>
-                <h3>Challenger が問いを作る</h3>
-                <p>文脈を読めているかを試す課題と採点基準を作ります。解く側だけでなく、問いを作る側にも skill があるのが面白い点です。</p>
+                <h3>課題: 長い文脈を使える形にできない</h3>
+                <p>文脈を入れるだけでは、規則や手順を毎回うまく取り出せるとは限りません。要約すると、逆に大事な判断基準が落ちることもあります。</p>
               </div>
             </article>
             <article class="step">
               <div class="num">2</div>
               <div>
-                <h3>Reasoner が解く</h3>
-                <p>文脈と現在の Reasoner skill を使って回答します。失敗したら、欠けていた文脈知識を診断して skill を更新します。</p>
+                <h3>課題: スキルの正しさを外から採点しにくい</h3>
+                <p>文脈だけがある状況では、作ったスキルが忠実か、十分か、再利用できるかを教えてくれる外部信号がありません。</p>
               </div>
             </article>
             <article class="step">
               <div class="num">3</div>
               <div>
-                <h3>Judge が合否を返す</h3>
-                <p>採点基準ごとに pass / fail を返します。答えを教える先生ではなく、失敗を検出する圧力として働きます。</p>
+                <h3>貢献: 問題を作る役と解く役を共進化させる</h3>
+                <p>問題を作る役、解く役、採点する役を分け、失敗から自然言語のスキルを更新します。モデルの重みは変えません。</p>
               </div>
             </article>
             <article class="step">
               <div class="num">4</div>
               <div>
-                <h3>Cross-Time Replay で選び直す</h3>
-                <p>最後の skill をそのまま採用せず、過去の skill 候補を代表課題で評価し直します。最新が最良とは限らない、というのが大事です。</p>
+                <h3>貢献: 途中のスキルを評価し直す</h3>
+                <p>最後に作ったスキルが最良とは限らないため、途中で得られた候補を代表課題で選び直す仕組みを入れています。</p>
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section class="section" id="method">
+          <h2>手法のしくみ</h2>
+          <p>
+            この手法は、3つの役割を使います。Challenger は「文脈理解を試す問題を作る役」、
+            Reasoner は「現在のスキルを使って問題を解く役」、Judge は「採点基準に沿って合否を返す役」です。
+            英語名は論文中の役割名なので、そのまま残しています。
+          </p>
+          <div class="route">
+            <article class="step">
+              <div class="num">1</div>
+              <div>
+                <h3>問題を作る</h3>
+                <p>Challenger が文脈を読み、理解を試す課題と採点基準を作ります。簡単に解かれた課題は、次にもっと鋭い問題を作るための材料になります。</p>
+              </div>
+            </article>
+            <article class="step">
+              <div class="num">2</div>
+              <div>
+                <h3>問題を解く</h3>
+                <p>Reasoner が、文脈と現在のスキルを使って回答します。失敗した場合は、どの知識や手順が足りなかったかを診断します。</p>
+              </div>
+            </article>
+            <article class="step">
+              <div class="num">3</div>
+              <div>
+                <h3>採点して更新する</h3>
+                <p>Judge が採点基準ごとに合否を返します。失敗は解く側のスキル更新に、簡単すぎた課題は問題を作る側のスキル更新に使われます。</p>
+              </div>
+            </article>
+            <article class="step">
+              <div class="num">4</div>
+              <div>
+                <h3>途中の候補から選び直す</h3>
+                <p>Cross-Time Replay は、反復の途中でできたスキル候補を代表課題で評価し直す仕組みです。日本語で言えば「時間をまたいだ再評価」に近く、特殊な課題に寄りすぎたスキルを避けます。</p>
               </div>
             </article>
           </div>
@@ -549,7 +537,7 @@
             </div>
             <div class="node">
               <b>Reasoner</b>
-              文脈と現在の skill を使って回答する。失敗したら、足りなかった文脈知識を skill に反映する。
+              文脈と現在のスキルを使って回答する。失敗したら、足りなかった文脈知識をスキルに反映する。
             </div>
             <div class="node">
               <b>Judge</b>
@@ -557,20 +545,24 @@
             </div>
           </div>
           <div class="flow-note">
-            ポイント: 更新されるのはモデル重みではなく、自然言語の skill set。だから閉じたモデルにも差し込めるし、wiki や AGENTS.md の運用にも近い。
+            ポイント: 更新されるのはモデル本体ではなく、自然言語で書かれたスキル集です。
+            そのため、モデル内部を学習し直さずに、推論時の指示として差し込めます。
           </div>
         </section>
 
         <section class="section" id="validation">
-          <h2>4. どうやって有効だと検証した？</h2>
-          <p>数字は派手ではありません。でも、文脈学習が難しいタスクで一貫して改善している点を見るのがよさそうです。</p>
+          <h2>検証結果</h2>
+          <p>
+            評価には CL-bench という文脈学習ベンチマークを使っています。
+            これは、複雑な文脈を読んで、領域知識、規則、手続き、実験的な発見を扱えるかを見るための評価セットです。
+          </p>
           <div class="score-grid">
             <div class="metric">
-              <span>GPT-4.1</span>
+              <span>GPT-4.1 という言語モデル</span>
               <strong>11.1% → 16.5%</strong>
             </div>
             <div class="metric">
-              <span>GPT-5.1</span>
+              <span>GPT-5.1 という言語モデル</span>
               <strong>21.2% → 25.8%</strong>
             </div>
             <div class="metric">
@@ -580,31 +572,32 @@
           </div>
           <p>
             絶対性能はまだ低いので、「これで文脈学習は解決」とは読まないほうがいいです。
-            ただ、skill を外部化して推論時に差し込む方向が、複数モデルで効いているのはかなりおいしい示唆です。
+            ただ、自然言語のスキルを作って推論時に差し込む方向が、複数のモデルで一貫して効いている点が重要です。
           </p>
         </section>
 
         <section class="section warning" id="discussion">
-          <h2>5. 議論はある？</h2>
-          <p><strong>コスト:</strong> 各文脈ごとに課題生成、回答、採点、skill 更新を回すので、一回しか使わない文脈には重いです。</p>
+          <h2>限界と読みどころ</h2>
+          <p><strong>コスト:</strong> 各文脈ごとに課題生成、回答、採点、スキル更新を回すので、一回しか使わない文脈には重いです。</p>
           <p><strong>Judge 依存:</strong> 採点器が文脈理解の深い失敗を拾えるかは別問題です。pass / fail が正しければ強いけど、そこが揺れると危ない。</p>
-          <p><strong>過剰適応:</strong> Cross-Time Replay があるとはいえ、自己対戦は特殊な課題へ寄りやすい。ここは実運用でも同じ匂いがします。</p>
+          <p><strong>過剰適応:</strong> 自己対戦は特殊な課題へ寄りやすい。だからこそ、途中のスキル候補を選び直す仕組みが入っています。</p>
+          <p><strong>読みどころ:</strong> この論文は、すぐ使える完成品というより、長い文脈を「保存」や「要約」で終わらせず、再利用できる作業能力へ変換する発想を見ると面白いです。</p>
         </section>
 
         <section class="section" id="next">
-          <h2>6. 次に読むべき論文は？</h2>
+          <h2>次に読むなら</h2>
           <div class="toggle-list">
             <details open>
               <summary>Skill Retrieval Augmentation for Agentic AI</summary>
-              <p>作った skill が増えたあと、必要なものをどう検索して使うかを見る次の候補です。Ctx2Skill の後に一番つながります。</p>
+              <p>作ったスキルが増えたあと、必要なスキルをどう検索して使うかを見る論文です。Ctx2Skill の次に一番自然につながります。</p>
             </details>
             <details>
-              <summary>AgentSPEX</summary>
-              <p>抽出した skill や手続きを、実行可能な agent workflow の仕様にどう載せるかを見る候補です。</p>
+              <summary>AgentSPEX: An Agent Specification and Execution Language</summary>
+              <p>抽出したスキルや手続きを、エージェントが実行できる仕様にどう載せるかを見る候補です。</p>
             </details>
             <details>
               <summary>Storage Is Not Memory</summary>
-              <p>wiki や Obsidian に保存するだけでは記憶にならない、という問題意識を深掘りする候補です。</p>
+              <p>wiki や Obsidian に保存するだけでは記憶にならない、という問題意識を深掘りする論文です。</p>
             </details>
           </div>
         </section>
@@ -613,20 +606,20 @@
           <h2>読後Q&A</h2>
           <div class="toggle-list">
             <details open>
-              <summary>これは要するに RAG なの？</summary>
-              <p>近いけど違います。RAG は外部文書から根拠を取り出して回答に使うことが中心です。Ctx2Skill は、文脈から規則や手続きを取り出し、次のタスクでも使える skill として保存する方向です。</p>
+              <summary>これは要するに検索拡張生成なの？</summary>
+              <p>近いけど違います。検索拡張生成、いわゆる RAG は「検索で外部文書を取り出し、回答の根拠に使う」方法です。Ctx2Skill は、文脈から規則や手続きを取り出し、次のタスクでも使えるスキルとして保存する方向です。</p>
             </details>
             <details>
-              <summary>どうして Challenger にも skill があるの？</summary>
-              <p>Challenger はランダムに問題を出す役ではなく、文脈理解の弱点を突く課題と採点基準を作る役だからです。簡単に解かれた課題は、次にもっと鋭い問いを作るための材料になります。</p>
+              <summary>どうして問題を作る役にもスキルがあるの？</summary>
+              <p>Challenger はランダムに問題を出す役ではなく、文脈理解の弱点を突く課題と採点基準を作る役だからです。問いの作り方も改善対象なので、問題を作る側にもスキルがあります。</p>
             </details>
             <details>
               <summary>Cross-Time Replay はなぜ必要？</summary>
-              <p>自己対戦は進めるほど良くなるとは限らないからです。後半の skill は特殊な課題に寄りすぎることがあるので、過去の候補を代表課題で評価し直して選びます。</p>
+              <p>自己対戦は進めるほど良くなるとは限らないからです。後半のスキルは特殊な課題に寄りすぎることがあるので、過去の候補を代表課題で評価し直して選びます。</p>
             </details>
             <details>
               <summary>実務でそのまま使える？</summary>
-              <p>そのまま導入するには重いです。ただ、skill や AGENTS.md を更新するときに、直近の失敗だけでなく代表課題で戻りテストする、という考え方はかなり使えます。</p>
+              <p>そのまま導入するには重いです。ただ、エージェントの手順書やスキル文書を更新するときに、直近の失敗だけでなく代表課題で戻りテストする、という考え方はかなり使えます。</p>
             </details>
           </div>
         </section>
