@@ -413,10 +413,9 @@
     <div class="hero-inner">
       <p class="kicker">Reading Queue / 2026-04-20 to 2026-05-11</p>
       <h1>Unread Reading Inventory</h1>
-      <p class="lead">AI エージェント、ハーネス、スキル、メモリ、context engineering 周辺で溜まった読書メモを、読了済み・読んでよかったもの・未読候補・今日読むなら、に分けた公開用索引です。</p>
+      <p class="lead">AI エージェント、ハーネス、スキル、メモリ、context engineering 周辺で溜まった読書メモを、未読候補、読了済み、読んでよかったものに分けた公開用索引です。</p>
       <div class="hero-actions">
-        <a class="button primary" href="#read-next">今日読むなら</a>
-        <a class="button" href="#unread">未読候補</a>
+        <a class="button primary" href="#unread">未読候補</a>
         <a class="button" href="index.html">Article Pages</a>
       </div>
     </div>
@@ -427,10 +426,9 @@
       <nav class="toc" aria-label="Table of contents">
         <strong>目次</strong>
         <a href="#overview">Overview</a>
+        <a href="#unread">未読候補</a>
         <a href="#already-read">読んだ / メモ化済み</a>
         <a href="#best">読んでよかった</a>
-        <a href="#unread">未読候補</a>
-        <a href="#read-next">今日読むなら</a>
         <a href="#source">Source Notes</a>
       </nav>
 
@@ -451,64 +449,6 @@
               <strong>4本</strong>
               <span>まず読むなら、に絞った本命候補。</span>
             </div>
-          </div>
-        </section>
-
-        <section id="already-read">
-          <h2>読んだ / メモ化済み</h2>
-          <div class="read-list">
-            <div class="read-item">
-              <strong>Harness / Agent Runtime</strong>
-              <span>OpenAI Harness Engineering、国内 harness 記事群、Agentic Harness Engineering、HARBOR、AgentSPEX、Swarm Management of Agent Harnesses。</span>
-            </div>
-            <div class="read-item">
-              <strong>Skills / Prompt / MCP</strong>
-              <span>Agent Skills for Engineers、MCP production 記事、Empirical Prompt Tuning、System Prompt vs Agent Skill、Claude Skills 公式記事、Skill Retrieval Augmentation、SoK Agentic Skills、From Context to Skills。</span>
-            </div>
-            <div class="read-item">
-              <strong>Memory / Context / Knowledge</strong>
-              <span>Memory Transfer Learning、Stateless Decision Memory、StructMem、Memanto、OCR-Memory、Your Harness Your Memory、Context Engineering Survey、Memory and Skill Rot。</span>
-            </div>
-            <div class="read-item">
-              <strong>Writing / Identity / Platform</strong>
-              <span>AI writing smell、文章レビュー仕組み調査、OpenClaw vs Hermes、Microsoft Foundry Hosted Agents、AWS AI BPR、ChatGPT as a Cognitive Crutch。</span>
-            </div>
-          </div>
-        </section>
-
-        <section id="best">
-          <h2>読んでよかった</h2>
-          <div class="card-grid">
-            <article class="card">
-              <h3>Harness Engineering cluster</h3>
-              <p>モデル能力ではなく、外側の作業環境・規律・改善ループとして agent 開発を見る土台になった。</p>
-              <div class="tag-row"><span class="tag">Harness</span><span class="tag">CodeZine</span></div>
-            </article>
-            <article class="card">
-              <h3>System Prompt vs Agent Skill</h3>
-              <p>常時制約と状況依存能力を分ける判断軸が、AGENTS.md と skill 設計の両方に効いている。</p>
-              <div class="tag-row"><span class="tag">Skills</span><span class="tag">Prompt</span></div>
-            </article>
-            <article class="card">
-              <h3>Empirical Prompt Tuning</h3>
-              <p>指示を雰囲気で直すのではなく、実行者の自己申告と指示側メトリクスで反復評価する型が残る。</p>
-              <div class="tag-row"><span class="tag">Evaluation</span><span class="tag">Skills</span></div>
-            </article>
-            <article class="card">
-              <h3>Skill papers cluster</h3>
-              <p>Agent Skills を機能紹介で終わらせず、検索・獲得・評価・安全性まで含む研究テーマとして見られるようになった。</p>
-              <div class="tag-row"><span class="tag">SRA</span><span class="tag">SoK</span><span class="tag">Ctx2Skill</span></div>
-            </article>
-            <article class="card">
-              <h3>Memory papers cluster</h3>
-              <p>memory を保存量ではなく、構造化・型・元ログ回収・検索責務で分解して見られるようになった。</p>
-              <div class="tag-row"><span class="tag">StructMem</span><span class="tag">Memanto</span><span class="tag">OCR-Memory</span></div>
-            </article>
-            <article class="card">
-              <h3>Context Engineering Survey</h3>
-              <p>prompt、RAG、memory、tools、multi-agent を context payload 設計として束ねられる。</p>
-              <div class="tag-row"><span class="tag">Context</span><span class="tag">Survey</span></div>
-            </article>
           </div>
         </section>
 
@@ -575,24 +515,60 @@
           </div>
         </section>
 
-        <section id="read-next">
-          <h2>今日読むなら</h2>
-          <div class="queue">
-            <article class="queue-item">
-              <h3>Tool Attention Is All You Need</h3>
-              <p>MCP / tool / skill が増えるほど context が重くなる問題に直接効く。今の agent 運用のボトルネックに近い。</p>
+        <section id="already-read">
+          <h2>読んだ / メモ化済み</h2>
+          <div class="read-list">
+            <div class="read-item">
+              <strong>Harness / Agent Runtime</strong>
+              <span>OpenAI Harness Engineering、国内 harness 記事群、Agentic Harness Engineering、HARBOR、AgentSPEX、Swarm Management of Agent Harnesses。</span>
+            </div>
+            <div class="read-item">
+              <strong>Skills / Prompt / MCP</strong>
+              <span>Agent Skills for Engineers、MCP production 記事、Empirical Prompt Tuning、System Prompt vs Agent Skill、Claude Skills 公式記事、Skill Retrieval Augmentation、SoK Agentic Skills、From Context to Skills。</span>
+            </div>
+            <div class="read-item">
+              <strong>Memory / Context / Knowledge</strong>
+              <span>Memory Transfer Learning、Stateless Decision Memory、StructMem、Memanto、OCR-Memory、Your Harness Your Memory、Context Engineering Survey、Memory and Skill Rot。</span>
+            </div>
+            <div class="read-item">
+              <strong>Writing / Identity / Platform</strong>
+              <span>AI writing smell、文章レビュー仕組み調査、OpenClaw vs Hermes、Microsoft Foundry Hosted Agents、AWS AI BPR、ChatGPT as a Cognitive Crutch。</span>
+            </div>
+          </div>
+        </section>
+
+        <section id="best">
+          <h2>読んでよかった</h2>
+          <div class="card-grid">
+            <article class="card">
+              <h3>Harness Engineering cluster</h3>
+              <p>モデル能力ではなく、外側の作業環境・規律・改善ループとして agent 開発を見る土台になった。</p>
+              <div class="tag-row"><span class="tag">Harness</span><span class="tag">CodeZine</span></div>
             </article>
-            <article class="queue-item">
-              <h3>In-Context Prompting Obsoletes Agent Orchestration</h3>
-              <p>harness / orchestration を推している流れへの強い反論として読む価値がある。自分の主張を鍛えられる。</p>
+            <article class="card">
+              <h3>System Prompt vs Agent Skill</h3>
+              <p>常時制約と状況依存能力を分ける判断軸が、AGENTS.md と skill 設計の両方に効いている。</p>
+              <div class="tag-row"><span class="tag">Skills</span><span class="tag">Prompt</span></div>
             </article>
-            <article class="queue-item">
-              <h3>The Last Human-Written Paper</h3>
-              <p>paper-watch / paper-ochiai-summary / paper-to-X-post を、agent-native research artifact へ拡張する入口になる。</p>
+            <article class="card">
+              <h3>Empirical Prompt Tuning</h3>
+              <p>指示を雰囲気で直すのではなく、実行者の自己申告と指示側メトリクスで反復評価する型が残る。</p>
+              <div class="tag-row"><span class="tag">Evaluation</span><span class="tag">Skills</span></div>
             </article>
-            <article class="queue-item">
-              <h3>Cross-Session Threats</h3>
-              <p>long-running / memory / Discord 継続対話の安全性を考えるなら早めに読む価値がある。</p>
+            <article class="card">
+              <h3>Skill papers cluster</h3>
+              <p>Agent Skills を機能紹介で終わらせず、検索・獲得・評価・安全性まで含む研究テーマとして見られるようになった。</p>
+              <div class="tag-row"><span class="tag">SRA</span><span class="tag">SoK</span><span class="tag">Ctx2Skill</span></div>
+            </article>
+            <article class="card">
+              <h3>Memory papers cluster</h3>
+              <p>memory を保存量ではなく、構造化・型・元ログ回収・検索責務で分解して見られるようになった。</p>
+              <div class="tag-row"><span class="tag">StructMem</span><span class="tag">Memanto</span><span class="tag">OCR-Memory</span></div>
+            </article>
+            <article class="card">
+              <h3>Context Engineering Survey</h3>
+              <p>prompt、RAG、memory、tools、multi-agent を context payload 設計として束ねられる。</p>
+              <div class="tag-row"><span class="tag">Context</span><span class="tag">Survey</span></div>
             </article>
           </div>
         </section>
