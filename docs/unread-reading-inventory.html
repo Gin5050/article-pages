@@ -368,6 +368,14 @@
       font-size: .88rem;
     }
 
+    tbody tr.priority-high td { background: #fff8ed; }
+    tbody tr.priority-mid td { background: #f4fbf9; }
+    tbody tr.priority-low td { background: #f8fafc; color: #53616d; }
+
+    tbody tr.priority-high td:first-child { box-shadow: inset 4px 0 0 var(--accent-2); }
+    tbody tr.priority-mid td:first-child { box-shadow: inset 4px 0 0 var(--accent); }
+    tbody tr.priority-low td:first-child { box-shadow: inset 4px 0 0 #94a3b8; }
+
     .table-wrap {
       max-width: 100%;
       overflow-x: auto;
@@ -454,133 +462,125 @@
 
         <section id="unread">
           <h2>未読候補</h2>
-          <p class="muted">由来では分けず、今の関心に効く順で並べています。P1 は先に読む、P2 は流れで拾う、P3 は該当テーマを深掘るときに開く候補です。</p>
+          <p class="muted">由来では分けず、今の関心に効く順で並べています。背景色が強い行ほど先に読む候補です。</p>
           <div class="table-wrap">
             <table>
               <thead>
                 <tr>
-                  <th>優先度</th>
                   <th>候補</th>
                   <th>領域</th>
                   <th>読む理由</th>
                 </tr>
               </thead>
               <tbody>
-                <tr>
-                  <td>P1</td>
+                <tr class="priority-high">
                   <td>Tool Attention Is All You Need</td>
                   <td>Tools / MCP</td>
                   <td>MCP / tool schema の token tax を tool gating と lazy schema loading で抑える。skills / tools / context management に直結。</td>
                 </tr>
-                <tr>
-                  <td>P1</td>
+                <tr class="priority-high">
                   <td>In-Context Prompting Obsoletes Agent Orchestration</td>
                   <td>Harness</td>
                   <td>外部 orchestration と system prompt 内 self-orchestration の比較。harness 論への反論として重要。</td>
                 </tr>
-                <tr>
-                  <td>P1</td>
+                <tr class="priority-high">
                   <td>The Last Human-Written Paper</td>
                   <td>Research artifacts</td>
                   <td>論文を agent が再現・拡張できる machine-executable artifact にする提案。paper-watch の次段階。</td>
                 </tr>
-                <tr>
-                  <td>P1</td>
+                <tr class="priority-high">
                   <td>Cross-Session Threats in AI Agents</td>
                   <td>Security / Memory</td>
                   <td>複数セッションにまたがる攻撃は、memory / long-running agent / Discord 継続対話の安全性に効く。</td>
                 </tr>
-                <tr>
-                  <td>P1</td>
+                <tr class="priority-high">
                   <td>Model Spec Midtraining</td>
                   <td>Alignment / Instructions</td>
                   <td>ルールだけでなく rationale を教えると未知状況への alignment generalization が変わる。AGENTS.md / SKILL.md / SOUL に直結。</td>
                 </tr>
-                <tr>
-                  <td>P1</td>
+                <tr class="priority-high">
                   <td>Beyond Semantic Similarity</td>
                   <td>Corpus / Retrieval</td>
                   <td>agent が raw corpus に直接触る Direct Corpus Interaction。wiki / raw / catalog / grep 型探索を理論化できる。</td>
                 </tr>
-                <tr>
-                  <td>P1</td>
+                <tr class="priority-high">
                   <td>Storage Is Not Memory</td>
                   <td>Memory</td>
                   <td>raw 保存、catalog、retrieval、answer model の責務分離を考える足場。memory / wiki 運用へ返せる。</td>
                 </tr>
-                <tr><td>P1</td><td>Contextual Agentic Memory is a Memo, not True Memory</td><td>Memory</td><td>retrieval-only memory の限界と consolidation 欠如を切る。今の memory / wiki 運用の整理にそのまま効く。</td></tr>
-                <tr><td>P1</td><td>Rethinking Reasoning-Intensive Retrieval</td><td>Retrieval</td><td>retrieval を topical relevance ではなく evidence portfolio として評価する。調査・記事・論文読みの質に直結。</td></tr>
-                <tr><td>P1</td><td>SkillRet</td><td>Skills</td><td>大規模 skill library から必要な reusable skill を検索する benchmark。skill が増えた後の問題に刺さる。</td></tr>
-                <tr><td>P1</td><td>SkillOS</td><td>Skills</td><td>frozen executor と skill curator を分け、経験から SkillRepo を育てる RL recipe。</td></tr>
-                <tr><td>P1</td><td>SkillScope</td><td>Skills / Security</td><td>Agent Skills の least privilege enforcement。skill 実行権限と安全性の整理に必要。</td></tr>
-                <tr><td>P1</td><td>PAPERMIND</td><td>Paper agent</td><td>論文を要約するだけでなく、図表・証拠・主張批判まで agentic に理解できるかを見る。</td></tr>
-                <tr><td>P1</td><td>AgentSearchBench</td><td>Agent search</td><td>agent / skill / tool が増えた後の「どれを呼ぶべきか」問題に直結する。</td></tr>
-                <tr><td>P1</td><td>ObjectGraph</td><td>Agent-native artifacts</td><td>Markdown 集合ではなく、agent が traversal する typed graph として知識を持つ発想。</td></tr>
-                <tr><td>P1</td><td>STALE</td><td>Memory / Evaluation</td><td>古い memory / state を現在の真実として扱わない能力を見る。</td></tr>
-                <tr><td>P1</td><td>Cited but Not Verified</td><td>Evaluation</td><td>引用が「開ける」「関連している」「主張と一致する」を分けて評価する。</td></tr>
-                <tr><td>P2</td><td>LongSeeker</td><td>Search agents</td><td>Skip / Compress / Rollback / Snippet / Delete で長期 search agent の文脈を動的に扱う。</td></tr>
-                <tr><td>P2</td><td>OpenSeeker-v2</td><td>Search agents</td><td>deep search agent を高情報量・高難度 trajectories で強くする。</td></tr>
-                <tr><td>P2</td><td>Superintelligent Retrieval Agent</td><td>Retrieval</td><td>corpus-discriminative な検索語を予測して 1 回の強い retrieval に圧縮する。</td></tr>
-                <tr><td>P2</td><td>NuggetIndex</td><td>Retrieval</td><td>evidence link、temporal validity、lifecycle state を持つ atomic retrieval。</td></tr>
-                <tr><td>P2</td><td>EviMem</td><td>Memory / Retrieval</td><td>証拠不足を診断して temporal / multi-hop evidence を反復検索する。</td></tr>
-                <tr><td>P2</td><td>Learning Evidence Highlighting</td><td>Evidence</td><td>要約ではなく evidence highlight で長文理解を助ける。</td></tr>
-                <tr><td>P2</td><td>Hierarchical Abstract Tree / Tree-RAG</td><td>Retrieval</td><td>cross-document multi-hop QA 向けの multi-granular retrieval。</td></tr>
-                <tr><td>P2</td><td>AgenticRAG</td><td>Enterprise RAG</td><td>enterprise knowledge base に search / find / open / summarize tools を重ねる実用品。</td></tr>
-                <tr><td>P2</td><td>Web2BigTable</td><td>Harness / Search</td><td>web-to-table search を bi-level multi-agent architecture で扱う。</td></tr>
-                <tr><td>P2</td><td>RunAgent</td><td>Runtime</td><td>自然言語 plan を制御構文・制約・rubrics で実行する platform。</td></tr>
-                <tr><td>P2</td><td>ClawGym</td><td>Personal agents</td><td>Claw-style personal agents の lifecycle framework と benchmark。</td></tr>
-                <tr><td>P2</td><td>Synthetic Computers at Scale</td><td>Evaluation</td><td>user-specific な synthetic computer で長期 productivity work を評価・訓練する。</td></tr>
-                <tr><td>P2</td><td>Claw-Eval-Live</td><td>Evaluation</td><td>evolving real-world workflows 向け live benchmark。</td></tr>
-                <tr><td>P2</td><td>Crab</td><td>Runtime</td><td>agent sandbox の checkpoint / restore runtime。</td></tr>
-                <tr><td>P2</td><td>Uno-Orchestra</td><td>Multi-agent</td><td>multi-agent systems の selective delegation policy。</td></tr>
-                <tr><td>P2</td><td>Recursive Agent Optimization</td><td>Multi-agent</td><td>recursive delegation と通信を訓練する inference-time scaling。</td></tr>
-                <tr><td>P2</td><td>Efficient Serving for Dynamic Agent Workflows</td><td>Serving</td><td>agent invocation 予測による KV-cache management。</td></tr>
-                <tr><td>P2</td><td>モデルがアプリを飲み込む時代に、残るのはハーネスである</td><td>Harness</td><td>Prompt / Skill / Knowledge Base / Harness の切り分け。</td></tr>
-                <tr><td>P2</td><td>Skill1</td><td>Skills</td><td>skill selection、utilization、distillation を task outcome signal で共進化させる。</td></tr>
-                <tr><td>P2</td><td>From Skill Text to Skill Structure</td><td>Skills</td><td>自然言語 skill を Scheduling / Structural / Logical の三層表現へ正規化する。</td></tr>
-                <tr><td>P2</td><td>Skill Neologisms</td><td>Skills</td><td>soft token / vocabulary に近い形で skill を追加する continual learning。</td></tr>
-                <tr><td>P2</td><td>How Hermes Agent Solves Skill Drift and Context Rot</td><td>Skills</td><td>agent-created skills の stale / archive / patch / merge lifecycle。</td></tr>
-                <tr><td>P2</td><td>Anatomy of Agent SKILLS</td><td>Skills</td><td>folder、frontmatter、progressive disclosure など skill 基礎の説明素材。</td></tr>
-                <tr><td>P2</td><td>ARIS</td><td>Research agent</td><td>research harness、Markdown-defined skills、persistent wiki、claim ledger、evidence audit。</td></tr>
-                <tr><td>P2</td><td>Auto Research with Specialist Agents</td><td>Research agent</td><td>hypothesis、code diff、external evaluation、failure label を持つ research loop。</td></tr>
-                <tr><td>P2</td><td>Automated alignment is harder than you think</td><td>Research agent</td><td>fuzzy tasks で自動 alignment research が誤りを見逃す危険。</td></tr>
-                <tr><td>P2</td><td>BUILD-AND-FIND</td><td>Coding agents</td><td>agent-managed codebase を、後続 agent が設計意図を回収しやすいかで評価する。</td></tr>
-                <tr><td>P2</td><td>Workspace-Bench</td><td>Coding agents</td><td>大規模ファイル依存を持つ workspace tasks を測る。</td></tr>
-                <tr><td>P2</td><td>SWE-chat</td><td>Coding agents</td><td>実ユーザーの coding agent 利用ログ。</td></tr>
-                <tr><td>P2</td><td>SWE-WebDevBench</td><td>Coding agents</td><td>AI app builder / coding agent platform を production readiness まで含めて評価する。</td></tr>
-                <tr><td>P2</td><td>To What Extent Does Agent-generated Code Require Maintenance?</td><td>Coding agents</td><td>AI-generated files と human-authored code の保守頻度比較。</td></tr>
-                <tr><td>P2</td><td>MCP Pitfall Lab</td><td>Security</td><td>MCP server security を protocol-aware に検証する。</td></tr>
-                <tr><td>P2</td><td>CI-Work</td><td>Security / Governance</td><td>enterprise LLM agents の contextual integrity と leakage / utility tradeoff。</td></tr>
-                <tr><td>P2</td><td>Chasing the Public Score</td><td>Evaluation</td><td>public score pressure による evaluation exploitation。</td></tr>
-                <tr><td>P2</td><td>CrossCommitVuln-Bench</td><td>Security / Coding agents</td><td>複数 commit で初めて exploit 可能になる vulnerability benchmark。</td></tr>
-                <tr><td>P2</td><td>MOSAIC-Bench</td><td>Security / Coding agents</td><td>innocuous tickets の連鎖で vulnerability が生まれる構成的安全性評価。</td></tr>
-                <tr><td>P2</td><td>Agent-Native Research Artifacts</td><td>Research artifacts</td><td>論文を machine-executable research package に置き換える提案。</td></tr>
-                <tr><td>P2</td><td>Execution Lineage</td><td>Artifacts</td><td>AI-native work を conversational state ではなく artifact-producing DAG として扱う。</td></tr>
-                <tr><td>P2</td><td>Operationalizing Ethics for AI Agents</td><td>Governance</td><td>repository context files に価値や倫理をどう自然言語ルールとして埋め込むか。</td></tr>
-                <tr><td>P2</td><td>Mise en Place for Agentic Coding</td><td>Context engineering</td><td>着手前の準備工程として context engineering を扱う。</td></tr>
-                <tr><td>P2</td><td>NeocorRAG</td><td>Retrieval</td><td>Recall Conversion Rate と evidence chains で retrieval を評価する。</td></tr>
-                <tr><td>P2</td><td>Seeing the Whole Elephant</td><td>Multi-agent evaluation</td><td>multi-agent 失敗の原因を、完全 trace から特定する benchmark。</td></tr>
-                <tr><td>P3</td><td>BioMedArena</td><td>Research agent</td><td>biomedical deep research agents の toolkit / evaluation layer 分離。</td></tr>
-                <tr><td>P3</td><td>From Research Question to Scientific Workflow</td><td>Research workflow</td><td>研究質問を reproducible workflow DAG に変換する agentic architecture。</td></tr>
-                <tr><td>P3</td><td>D3-Gym</td><td>Research workflow</td><td>data-driven discovery の executable environments。</td></tr>
-                <tr><td>P3</td><td>Intern-Atlas</td><td>Research workflow</td><td>citation ではなく方法論の進化 graph を作る研究基盤。</td></tr>
-                <tr><td>P3</td><td>AutoResearchBench</td><td>Research evaluation</td><td>complex scientific literature discovery の benchmark。</td></tr>
-                <tr><td>P3</td><td>An Empirical Study of Proactive Coding Assistants</td><td>Coding agents</td><td>proactive coding assistants と simulated IDE traces の差を見る。</td></tr>
-                <tr><td>P3</td><td>What Makes a Good Terminal-Agent Benchmark Task</td><td>Coding agents</td><td>terminal-agent benchmark task の設計 guideline。</td></tr>
-                <tr><td>P3</td><td>Constraint Decay</td><td>Code generation</td><td>backend code generation で構造制約や非機能要件が崩れる問題。</td></tr>
-                <tr><td>P3</td><td>MANTRA</td><td>Tool compliance</td><td>natural-language manual と tool schema から trace-level compliance benchmark を合成する。</td></tr>
-                <tr><td>P3</td><td>DTap</td><td>Red teaming</td><td>Google Workspace / PayPal / Slack 風環境で agent 攻撃面を評価する red-teaming platform。</td></tr>
-                <tr><td>P3</td><td>Stable-GFlowNet / FlashRT / SnapGuard</td><td>Safety evaluation</td><td>red-teaming、prompt injection、screenshot-based web agents の安全性評価。</td></tr>
-                <tr><td>P3</td><td>Collaborative Agent Reasoning Engineering</td><td>Agent design</td><td>SME / developer / helper agent で scientific agent を設計する方法論。</td></tr>
-                <tr><td>P3</td><td>SimEval-IR</td><td>Search evaluation</td><td>user simulator と search sessions の評価 toolkit。</td></tr>
-                <tr><td>P3</td><td>Agentic World Modeling</td><td>World models</td><td>agent world models の能力レベルと法則領域を整理する大型サーベイ。</td></tr>
-                <tr><td>P3</td><td>Spatial Metaphors for LLM Memory</td><td>Memory</td><td>memory palace 型 memory system を批判的に検証する。</td></tr>
-                <tr><td>P3</td><td>The Conversations Beneath the Code</td><td>Coding agents</td><td>long-horizon SWE agents に必要な triadic data。</td></tr>
-                <tr><td>P3</td><td>What Happens Inside Agent Memory?</td><td>Memory</td><td>agent memory の write / manage / read に対応する内部 feature circuits。</td></tr>
-                <tr><td>P3</td><td>The Granularity Axis</td><td>Representation</td><td>social role の粒度を hidden state 上の軸として扱う研究。</td></tr>
-                <tr><td>P3</td><td>OpenSearch-VL</td><td>Multimodal search</td><td>multimodal deep search agent の open recipe。</td></tr>
-                <tr><td>P3</td><td>AcademiClaw / PhysicianBench / HiL-Bench</td><td>Benchmarks</td><td>academic / EHR / human-in-loop の長期 task benchmark。</td></tr>
-                <tr><td>P3</td><td>FutureWorld / DV-World / EnterpriseDocBench / Onchain operating-layer controls</td><td>Benchmarks / Controls</td><td>agent 評価領域を広げる実用品候補。</td></tr>
+                <tr class="priority-high"><td>Contextual Agentic Memory is a Memo, not True Memory</td><td>Memory</td><td>retrieval-only memory の限界と consolidation 欠如を切る。今の memory / wiki 運用の整理にそのまま効く。</td></tr>
+                <tr class="priority-high"><td>Rethinking Reasoning-Intensive Retrieval</td><td>Retrieval</td><td>retrieval を topical relevance ではなく evidence portfolio として評価する。調査・記事・論文読みの質に直結。</td></tr>
+                <tr class="priority-high"><td>SkillRet</td><td>Skills</td><td>大規模 skill library から必要な reusable skill を検索する benchmark。skill が増えた後の問題に刺さる。</td></tr>
+                <tr class="priority-high"><td>SkillOS</td><td>Skills</td><td>frozen executor と skill curator を分け、経験から SkillRepo を育てる RL recipe。</td></tr>
+                <tr class="priority-high"><td>SkillScope</td><td>Skills / Security</td><td>Agent Skills の least privilege enforcement。skill 実行権限と安全性の整理に必要。</td></tr>
+                <tr class="priority-high"><td>PAPERMIND</td><td>Paper agent</td><td>論文を要約するだけでなく、図表・証拠・主張批判まで agentic に理解できるかを見る。</td></tr>
+                <tr class="priority-high"><td>AgentSearchBench</td><td>Agent search</td><td>agent / skill / tool が増えた後の「どれを呼ぶべきか」問題に直結する。</td></tr>
+                <tr class="priority-high"><td>ObjectGraph</td><td>Agent-native artifacts</td><td>Markdown 集合ではなく、agent が traversal する typed graph として知識を持つ発想。</td></tr>
+                <tr class="priority-high"><td>STALE</td><td>Memory / Evaluation</td><td>古い memory / state を現在の真実として扱わない能力を見る。</td></tr>
+                <tr class="priority-high"><td>Cited but Not Verified</td><td>Evaluation</td><td>引用が「開ける」「関連している」「主張と一致する」を分けて評価する。</td></tr>
+                <tr class="priority-mid"><td>LongSeeker</td><td>Search agents</td><td>Skip / Compress / Rollback / Snippet / Delete で長期 search agent の文脈を動的に扱う。</td></tr>
+                <tr class="priority-mid"><td>OpenSeeker-v2</td><td>Search agents</td><td>deep search agent を高情報量・高難度 trajectories で強くする。</td></tr>
+                <tr class="priority-mid"><td>Superintelligent Retrieval Agent</td><td>Retrieval</td><td>corpus-discriminative な検索語を予測して 1 回の強い retrieval に圧縮する。</td></tr>
+                <tr class="priority-mid"><td>NuggetIndex</td><td>Retrieval</td><td>evidence link、temporal validity、lifecycle state を持つ atomic retrieval。</td></tr>
+                <tr class="priority-mid"><td>EviMem</td><td>Memory / Retrieval</td><td>証拠不足を診断して temporal / multi-hop evidence を反復検索する。</td></tr>
+                <tr class="priority-mid"><td>Learning Evidence Highlighting</td><td>Evidence</td><td>要約ではなく evidence highlight で長文理解を助ける。</td></tr>
+                <tr class="priority-mid"><td>Hierarchical Abstract Tree / Tree-RAG</td><td>Retrieval</td><td>cross-document multi-hop QA 向けの multi-granular retrieval。</td></tr>
+                <tr class="priority-mid"><td>AgenticRAG</td><td>Enterprise RAG</td><td>enterprise knowledge base に search / find / open / summarize tools を重ねる実用品。</td></tr>
+                <tr class="priority-mid"><td>Web2BigTable</td><td>Harness / Search</td><td>web-to-table search を bi-level multi-agent architecture で扱う。</td></tr>
+                <tr class="priority-mid"><td>RunAgent</td><td>Runtime</td><td>自然言語 plan を制御構文・制約・rubrics で実行する platform。</td></tr>
+                <tr class="priority-mid"><td>ClawGym</td><td>Personal agents</td><td>Claw-style personal agents の lifecycle framework と benchmark。</td></tr>
+                <tr class="priority-mid"><td>Synthetic Computers at Scale</td><td>Evaluation</td><td>user-specific な synthetic computer で長期 productivity work を評価・訓練する。</td></tr>
+                <tr class="priority-mid"><td>Claw-Eval-Live</td><td>Evaluation</td><td>evolving real-world workflows 向け live benchmark。</td></tr>
+                <tr class="priority-mid"><td>Crab</td><td>Runtime</td><td>agent sandbox の checkpoint / restore runtime。</td></tr>
+                <tr class="priority-mid"><td>Uno-Orchestra</td><td>Multi-agent</td><td>multi-agent systems の selective delegation policy。</td></tr>
+                <tr class="priority-mid"><td>Recursive Agent Optimization</td><td>Multi-agent</td><td>recursive delegation と通信を訓練する inference-time scaling。</td></tr>
+                <tr class="priority-mid"><td>Efficient Serving for Dynamic Agent Workflows</td><td>Serving</td><td>agent invocation 予測による KV-cache management。</td></tr>
+                <tr class="priority-mid"><td>モデルがアプリを飲み込む時代に、残るのはハーネスである</td><td>Harness</td><td>Prompt / Skill / Knowledge Base / Harness の切り分け。</td></tr>
+                <tr class="priority-mid"><td>Skill1</td><td>Skills</td><td>skill selection、utilization、distillation を task outcome signal で共進化させる。</td></tr>
+                <tr class="priority-mid"><td>From Skill Text to Skill Structure</td><td>Skills</td><td>自然言語 skill を Scheduling / Structural / Logical の三層表現へ正規化する。</td></tr>
+                <tr class="priority-mid"><td>Skill Neologisms</td><td>Skills</td><td>soft token / vocabulary に近い形で skill を追加する continual learning。</td></tr>
+                <tr class="priority-mid"><td>How Hermes Agent Solves Skill Drift and Context Rot</td><td>Skills</td><td>agent-created skills の stale / archive / patch / merge lifecycle。</td></tr>
+                <tr class="priority-mid"><td>Anatomy of Agent SKILLS</td><td>Skills</td><td>folder、frontmatter、progressive disclosure など skill 基礎の説明素材。</td></tr>
+                <tr class="priority-mid"><td>ARIS</td><td>Research agent</td><td>research harness、Markdown-defined skills、persistent wiki、claim ledger、evidence audit。</td></tr>
+                <tr class="priority-mid"><td>Auto Research with Specialist Agents</td><td>Research agent</td><td>hypothesis、code diff、external evaluation、failure label を持つ research loop。</td></tr>
+                <tr class="priority-mid"><td>Automated alignment is harder than you think</td><td>Research agent</td><td>fuzzy tasks で自動 alignment research が誤りを見逃す危険。</td></tr>
+                <tr class="priority-mid"><td>BUILD-AND-FIND</td><td>Coding agents</td><td>agent-managed codebase を、後続 agent が設計意図を回収しやすいかで評価する。</td></tr>
+                <tr class="priority-mid"><td>Workspace-Bench</td><td>Coding agents</td><td>大規模ファイル依存を持つ workspace tasks を測る。</td></tr>
+                <tr class="priority-mid"><td>SWE-chat</td><td>Coding agents</td><td>実ユーザーの coding agent 利用ログ。</td></tr>
+                <tr class="priority-mid"><td>SWE-WebDevBench</td><td>Coding agents</td><td>AI app builder / coding agent platform を production readiness まで含めて評価する。</td></tr>
+                <tr class="priority-mid"><td>To What Extent Does Agent-generated Code Require Maintenance?</td><td>Coding agents</td><td>AI-generated files と human-authored code の保守頻度比較。</td></tr>
+                <tr class="priority-mid"><td>MCP Pitfall Lab</td><td>Security</td><td>MCP server security を protocol-aware に検証する。</td></tr>
+                <tr class="priority-mid"><td>CI-Work</td><td>Security / Governance</td><td>enterprise LLM agents の contextual integrity と leakage / utility tradeoff。</td></tr>
+                <tr class="priority-mid"><td>Chasing the Public Score</td><td>Evaluation</td><td>public score pressure による evaluation exploitation。</td></tr>
+                <tr class="priority-mid"><td>CrossCommitVuln-Bench</td><td>Security / Coding agents</td><td>複数 commit で初めて exploit 可能になる vulnerability benchmark。</td></tr>
+                <tr class="priority-mid"><td>MOSAIC-Bench</td><td>Security / Coding agents</td><td>innocuous tickets の連鎖で vulnerability が生まれる構成的安全性評価。</td></tr>
+                <tr class="priority-mid"><td>Agent-Native Research Artifacts</td><td>Research artifacts</td><td>論文を machine-executable research package に置き換える提案。</td></tr>
+                <tr class="priority-mid"><td>Execution Lineage</td><td>Artifacts</td><td>AI-native work を conversational state ではなく artifact-producing DAG として扱う。</td></tr>
+                <tr class="priority-mid"><td>Operationalizing Ethics for AI Agents</td><td>Governance</td><td>repository context files に価値や倫理をどう自然言語ルールとして埋め込むか。</td></tr>
+                <tr class="priority-mid"><td>Mise en Place for Agentic Coding</td><td>Context engineering</td><td>着手前の準備工程として context engineering を扱う。</td></tr>
+                <tr class="priority-mid"><td>NeocorRAG</td><td>Retrieval</td><td>Recall Conversion Rate と evidence chains で retrieval を評価する。</td></tr>
+                <tr class="priority-mid"><td>Seeing the Whole Elephant</td><td>Multi-agent evaluation</td><td>multi-agent 失敗の原因を、完全 trace から特定する benchmark。</td></tr>
+                <tr class="priority-low"><td>BioMedArena</td><td>Research agent</td><td>biomedical deep research agents の toolkit / evaluation layer 分離。</td></tr>
+                <tr class="priority-low"><td>From Research Question to Scientific Workflow</td><td>Research workflow</td><td>研究質問を reproducible workflow DAG に変換する agentic architecture。</td></tr>
+                <tr class="priority-low"><td>D3-Gym</td><td>Research workflow</td><td>data-driven discovery の executable environments。</td></tr>
+                <tr class="priority-low"><td>Intern-Atlas</td><td>Research workflow</td><td>citation ではなく方法論の進化 graph を作る研究基盤。</td></tr>
+                <tr class="priority-low"><td>AutoResearchBench</td><td>Research evaluation</td><td>complex scientific literature discovery の benchmark。</td></tr>
+                <tr class="priority-low"><td>An Empirical Study of Proactive Coding Assistants</td><td>Coding agents</td><td>proactive coding assistants と simulated IDE traces の差を見る。</td></tr>
+                <tr class="priority-low"><td>What Makes a Good Terminal-Agent Benchmark Task</td><td>Coding agents</td><td>terminal-agent benchmark task の設計 guideline。</td></tr>
+                <tr class="priority-low"><td>Constraint Decay</td><td>Code generation</td><td>backend code generation で構造制約や非機能要件が崩れる問題。</td></tr>
+                <tr class="priority-low"><td>MANTRA</td><td>Tool compliance</td><td>natural-language manual と tool schema から trace-level compliance benchmark を合成する。</td></tr>
+                <tr class="priority-low"><td>DTap</td><td>Red teaming</td><td>Google Workspace / PayPal / Slack 風環境で agent 攻撃面を評価する red-teaming platform。</td></tr>
+                <tr class="priority-low"><td>Stable-GFlowNet / FlashRT / SnapGuard</td><td>Safety evaluation</td><td>red-teaming、prompt injection、screenshot-based web agents の安全性評価。</td></tr>
+                <tr class="priority-low"><td>Collaborative Agent Reasoning Engineering</td><td>Agent design</td><td>SME / developer / helper agent で scientific agent を設計する方法論。</td></tr>
+                <tr class="priority-low"><td>SimEval-IR</td><td>Search evaluation</td><td>user simulator と search sessions の評価 toolkit。</td></tr>
+                <tr class="priority-low"><td>Agentic World Modeling</td><td>World models</td><td>agent world models の能力レベルと法則領域を整理する大型サーベイ。</td></tr>
+                <tr class="priority-low"><td>Spatial Metaphors for LLM Memory</td><td>Memory</td><td>memory palace 型 memory system を批判的に検証する。</td></tr>
+                <tr class="priority-low"><td>The Conversations Beneath the Code</td><td>Coding agents</td><td>long-horizon SWE agents に必要な triadic data。</td></tr>
+                <tr class="priority-low"><td>What Happens Inside Agent Memory?</td><td>Memory</td><td>agent memory の write / manage / read に対応する内部 feature circuits。</td></tr>
+                <tr class="priority-low"><td>The Granularity Axis</td><td>Representation</td><td>social role の粒度を hidden state 上の軸として扱う研究。</td></tr>
+                <tr class="priority-low"><td>OpenSearch-VL</td><td>Multimodal search</td><td>multimodal deep search agent の open recipe。</td></tr>
+                <tr class="priority-low"><td>AcademiClaw / PhysicianBench / HiL-Bench</td><td>Benchmarks</td><td>academic / EHR / human-in-loop の長期 task benchmark。</td></tr>
+                <tr class="priority-low"><td>FutureWorld / DV-World / EnterpriseDocBench / Onchain operating-layer controls</td><td>Benchmarks / Controls</td><td>agent 評価領域を広げる実用品候補。</td></tr>
               </tbody>
             </table>
           </div>
