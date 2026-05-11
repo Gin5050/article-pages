@@ -322,6 +322,25 @@
         agent が grep、file read、shell command、軽量 script のような操作で資料集合を直接たどる場面を、
         retrieval の拡張として扱う。
       </p>
+      <p>
+        従来の retrieval では、検索対象はしばしば passage や document chunk として扱われる。ユーザーの質問を query に変換し、
+        意味的に近い chunk を取り出し、それをモデルの context に入れる。この流れは多くの質問応答では有効だが、
+        調査タスクでは「最初の query が十分に良い」「必要な証拠が上位に出る」「取れた chunk だけで判断できる」という前提が崩れやすい。
+      </p>
+      <p>
+        agentic search では、検索は一回の retrieval call では終わらない。最初に見つけた情報から別の語を試し、ファイル構造を見て、
+        関連箇所を開き、足りない証拠を探し直す。つまり、検索は ranking ではなく、観察と行動を繰り返すプロセスになる。
+        この論文の Direct Corpus Interaction は、そのプロセスを retrieval の外側の実装都合ではなく、中心的な能力として扱う。
+      </p>
+      <p>
+        重要なのは、corpus を「embedding index の裏側にある文字列集合」としてではなく、agent が操作できる環境として見ること。
+        corpus にディレクトリ、ファイル、見出し、引用、表、ログ、コード、メタデータがあるなら、それらの構造を使って探索できる。
+        そのため、retrieval の評価も「近い文書を当てたか」だけでは足りず、「調査に必要な証拠へ到達できたか」に寄っていく。
+      </p>
+      <p>
+        この見方は、RAG を否定するというより、RAG だけでは表しにくかった agent の探索行動を前に出すもの。検索器、tool use、
+        corpus design、evidence tracking、評価タスクをひと続きに見直すための論文として読むと入りやすい。
+      </p>
       <div class="grid">
         <div class="panel">
           <strong>対象</strong>
@@ -448,6 +467,42 @@
         <div class="panel">
           <strong>Q. 何が難しい？</strong>
           <p>A. 探索の自由度が増えるほど、コスト、再現性、評価、誤探索の制御が難しくなる。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. semantic similarity は不要になる？</strong>
+          <p>A. 不要ではない。最初の候補を出す、探索の入口を作る、関連箇所を絞る用途では有効。ただし、それだけで調査全体を完結させるには弱い場面がある。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. なぜ top-k retrieval だけでは足りない？</strong>
+          <p>A. 複雑な調査では、必要な証拠が一つの chunk にまとまっていないことが多い。複数箇所を見比べたり、途中で query を変えたりする必要がある。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. corpus を直接触るとは何をすること？</strong>
+          <p>A. ファイル一覧を見る、検索語で grep する、該当箇所を開く、周辺文脈を読む、必要なら軽い script で集計する、といった操作を指す。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. この論文の評価で見たい点は？</strong>
+          <p>A. 直接操作できることで、最終回答の正しさだけでなく、必要な証拠へ到達できているか、探索過程が妥当かがどう扱われているか。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. agent に自由に探索させると危なくない？</strong>
+          <p>A. 危ない。無駄な探索、誤った証拠への固執、出典の取り違え、コスト増が起きる。だから操作の設計、ログ、評価、停止条件が重要になる。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. corpus 側には何が求められる？</strong>
+          <p>A. 構造が見えること、リンクや見出しが壊れていないこと、元資料と整理済みメモを辿れること、同じ情報が重複して迷子にならないこと。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. これは deep research agent とどうつながる？</strong>
+          <p>A. deep research agent は、検索、読解、比較、引用、再検索を繰り返す。Direct Corpus Interaction は、その探索部分をより明示的に設計する考え方になる。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. 実装では何をログに残すべき？</strong>
+          <p>A. どの query を試したか、どのファイルや箇所を開いたか、どの証拠を採用・棄却したか、最終回答のどこに使ったかを残したい。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. 読後に一番残る見方は？</strong>
+          <p>A. retrieval は「近い文書を取る機能」ではなく、agent が資料環境を歩いて証拠を作るプロセスとして設計できる、という見方。</p>
         </div>
       </div>
     </section>
