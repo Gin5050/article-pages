@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Direct Corpus Interaction | Reading Guide</title>
+  <title>Direct Corpus Interaction | Paper Summary</title>
   <style>
     :root {
       color-scheme: light;
@@ -282,9 +282,9 @@
 
   <div class="hero">
     <div class="hero-inner">
-      <p class="kicker">Reading Guide</p>
+      <p class="kicker">Paper Summary</p>
       <h1>Beyond Semantic Similarity</h1>
-      <p>RAG を「近い文書を取る」だけで終わらせず、エージェントが corpus を直接歩いて証拠を探す、という発想で読むための入口。</p>
+      <p>agentic search を、意味的に近い文書を取るだけでなく、エージェントが corpus と直接やり取りしながら証拠を探す問題として捉え直す論文。</p>
       <div class="paper-meta">
         <span class="meta-chip">arXiv:2605.05242</span>
         <span class="meta-chip">Agentic Search</span>
@@ -296,54 +296,81 @@
 
   <main>
     <p class="notice">
-      このページは本文精読前の読書ガイドです。公開済みの arXiv URL と daily paper-watch の候補整理をもとに、
-      最初に見る観点と読む順番をまとめています。細かい主張や数値は、必ず元論文で確認してください。
+      このページは公開用の論文内容まとめです。本文の転載ではなく、問題設定、手法、検証観点、読みどころを短く整理しています。
+      細かい主張や数値は、必ず元論文で確認してください。
     </p>
 
     <nav class="toc" aria-label="Table of contents">
-      <a href="#why-now">なぜ今読むか</a>
-      <a href="#core-idea">中心アイデア</a>
-      <a href="#five-minutes">5分で入る</a>
-      <a href="#what-to-check">本文で確認したいところ</a>
-      <a href="#after-reading">読後に残す問い</a>
+      <a href="#what">どんな論文か</a>
+      <a href="#contribution">課題と貢献</a>
+      <a href="#method">手法のしくみ</a>
+      <a href="#evaluation">検証結果</a>
+      <a href="#limits">限界と読みどころ</a>
+      <a href="#qa">読後Q&A</a>
+      <a href="#next">次に読むなら</a>
     </nav>
 
-    <section id="why-now">
-      <h2>なぜ今読むか</h2>
+    <section id="what">
+      <h2>どんな論文か</h2>
       <p>
-        今の workspace では、wiki、raw、catalog、AGENTS.md、skill、作業履歴を、検索インデックスだけではなく
-        <strong>rg、ファイル読み、差分確認、軽いスクリプト</strong>で直接たどっている。これはかなり実務的だけれど、
-        まだ「RAG」と呼ぶには雑で、「手元探索」と呼ぶには研究語彙が足りない。
+        <strong>Beyond Semantic Similarity: Rethinking Retrieval for Agentic Search via Direct Corpus Interaction</strong> は、
+        agentic search における retrieval を、単なる semantic similarity のランキング問題としてではなく、
+        エージェントが corpus と直接やり取りする探索問題として見直す論文。
       </p>
       <p>
-        この論文は、その状態に名前を与えてくれる候補になる。つまり、semantic similarity で近い文書を上から拾うのではなく、
-        エージェントが corpus と対話しながら必要な証拠を取りに行く、という見方。
+        中心にあるのは、固定の top-k retrieval だけでは複雑な調査に必要な証拠を集めきれないのではないか、という問い。
+        agent が grep、file read、shell command、軽量 script のような操作で資料集合を直接たどる場面を、
+        retrieval の拡張として扱う。
       </p>
       <div class="grid">
         <div class="panel">
-          <strong>今の実感</strong>
-          <p>wiki は保存場所ではなく、エージェントが歩く作業空間になっている。</p>
+          <strong>対象</strong>
+          <p>agentic search、retrieval、evidence gathering、tool use。</p>
         </div>
         <div class="panel">
-          <strong>論文側の問い</strong>
-          <p>検索は top-k retrieval だけで足りるのか。直接 corpus を操作するほうがよい場面は何か。</p>
+          <strong>問題設定</strong>
+          <p>意味的に近い文書を取るだけでは、調査に必要な証拠集合を作れない場面がある。</p>
         </div>
         <div class="panel">
-          <strong>読後の効き</strong>
-          <p>paper-watch、daily-reading-nudge、記事の根拠探索を設計語彙で説明しやすくなる。</p>
+          <strong>提案の方向</strong>
+          <p>agent に corpus を直接操作する行動を与え、途中結果から探索を進める。</p>
         </div>
       </div>
     </section>
 
-    <section id="core-idea">
-      <h2>中心アイデア</h2>
+    <section id="contribution">
+      <h2>課題と貢献</h2>
+      <div class="grid">
+        <div class="panel">
+          <strong>課題: semantic similarity だけでは調査が浅くなる</strong>
+          <p>query に近い文書を取るだけだと、複数の証拠を組み合わせる調査や、途中で探索方針を変える作業に弱い。</p>
+        </div>
+        <div class="panel">
+          <strong>課題: agentic search は一回の検索で終わらない</strong>
+          <p>agent は調べながら仮説を変え、次に読む場所や探す語を変える。その過程自体を retrieval として扱う必要がある。</p>
+        </div>
+        <div class="panel">
+          <strong>貢献: Direct Corpus Interaction という見方</strong>
+          <p>corpus を直接操作する行動を retrieval の中核に置き、agentic search の設計対象として扱う。</p>
+        </div>
+      </div>
+      <div class="callout">
+        <p>
+          貢献のポイントは、検索器のスコアを少し上げることではなく、<strong>search agent が資料集合をどう触れるべきか</strong>を
+          問題設定として前に出しているところにある。
+        </p>
+      </div>
+    </section>
+
+    <section id="method">
+      <h2>手法のしくみ</h2>
       <p>
-        読むときの仮説はシンプルでいい。従来の retrieval は「質問に意味的に近い passage を取る」方向に寄りやすい。
-        でも agentic search では、必要なのは近い passage だけではなく、調査中に追加で探す、読む、比較する、絞る、確認するという行動の連鎖になる。
+        この整理では、論文の方法を「query を投げる retrieval」から「corpus に対する行動列」へ広げるものとして読む。
+        agent は最初の検索結果だけを読むのではなく、得られた手がかりから次の操作を選ぶ。
       </p>
       <div class="compare">
         <div class="panel">
-          <strong>Semantic Retrieval 寄り</strong>
+          <strong>従来型 retrieval</strong>
           <ul>
             <li>query を作る</li>
             <li>embedding や lexical search で上位文書を取る</li>
@@ -351,7 +378,7 @@
           </ul>
         </div>
         <div class="panel">
-          <strong>Direct Corpus Interaction 寄り</strong>
+          <strong>Direct Corpus Interaction</strong>
           <ul>
             <li>corpus の構造を見ながら探索する</li>
             <li>grep、file read、shell、軽量 script のような操作で証拠を探す</li>
@@ -359,35 +386,7 @@
           </ul>
         </div>
       </div>
-      <div class="callout">
-        <p>
-          ここで刺さるのは、「検索器を強くする」だけではなく、<strong>エージェントに corpus を扱う手足を渡す</strong>という発想。
-          自分たちの wiki 運用でいうと、catalog を整えること、raw を残すこと、リンクを壊さないことは、全部この手足を効かせるための下準備になる。
-        </p>
-      </div>
-    </section>
-
-    <section id="five-minutes">
-      <h2>5分で入る</h2>
-      <div class="reading-path">
-        <div class="step">
-          <h3>まず abstract と introduction で問題設定だけ拾う</h3>
-          <p>「semantic similarity の限界」が何として定義されているかを見る。ここで納得できれば先へ進む価値がある。</p>
-        </div>
-        <div class="step">
-          <h3>Direct Corpus Interaction の定義を見る</h3>
-          <p>grep、file read、shell command、script のような操作が、実験上どういう action として扱われているかを確認する。</p>
-        </div>
-        <div class="step">
-          <h3>評価タスクを見る</h3>
-          <p>単に「答えが合うか」ではなく、agentic search のどんな場面で差が出る設計なのかを見る。</p>
-        </div>
-      </div>
-    </section>
-
-    <section id="what-to-check">
-      <h2>本文で確認したいところ</h2>
-      <p>本文を開いたら、次のタグを探すつもりで読むと入りやすい。</p>
+      <h3>見るべきキーワード</h3>
       <p>
         <span class="tag">direct corpus interaction</span>
         <span class="tag">semantic similarity</span>
@@ -396,31 +395,77 @@
         <span class="tag">evidence</span>
         <span class="tag">evaluation</span>
       </p>
+    </section>
+
+    <section id="evaluation">
+      <h2>検証結果</h2>
+      <p>
+        本文では、agentic search tasks に対して、semantic similarity retrieval と direct corpus interaction 的な探索が
+        どのように比較されているかを確認したい。特に重要なのは、単一 passage の関連度ではなく、
+        調査に必要な証拠をどれだけ集められるかという評価軸。
+      </p>
+      <div class="grid">
+        <div class="panel">
+          <strong>確認点 1</strong>
+          <p>評価タスクは、単発検索ではなく複数ステップの調査を要求しているか。</p>
+        </div>
+        <div class="panel">
+          <strong>確認点 2</strong>
+          <p>agent が使える corpus 操作は何で、どこまで自由度があるか。</p>
+        </div>
+        <div class="panel">
+          <strong>確認点 3</strong>
+          <p>性能差は retrieval スコアではなく、最終回答や証拠集合の質として見られているか。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="limits">
+      <h2>限界と読みどころ</h2>
+      <p>
+        direct corpus interaction は強いが、自由度を増やすほど、無駄な探索、誤った手がかりへの固執、再現性の低下も起きやすい。
+        そのため、本文では「どんな corpus 操作を許すか」「探索過程をどう評価するか」「tool use のコストをどう扱うか」を見るのが大事。
+      </p>
       <ul>
         <li>semantic retrieval が失敗しやすいケースは、実務の wiki 探索にも似ているか。</li>
         <li>直接操作できる corpus は、どう整理されている必要があるか。</li>
         <li>agent が corpus を歩くとき、どこで無駄読みや hallucination が増えるか。</li>
-        <li>catalog、raw、pages の分離は、この論文の考え方だと何に相当するか。</li>
+        <li>探索行動のログや証拠の引用は、再現可能な形で残るか。</li>
       </ul>
     </section>
 
-    <section id="after-reading">
-      <h2>読後に残す問い</h2>
-      <p>
-        読み終えたら、論文の内容をそのまま要約するより、まず運用へ戻すのがよさそう。
-      </p>
+    <section id="qa">
+      <h2>読後Q&A</h2>
       <div class="grid">
         <div class="panel">
-          <strong>wiki 設計</strong>
-          <p>エージェントが歩きやすい corpus にするには、index / catalog / raw をどう変えるべきか。</p>
+          <strong>Q. RAG と何が違う？</strong>
+          <p>A. RAG が外部文書を検索して回答に使う枠組みだとすると、この論文は agent が corpus を操作しながら探索する行動面を強く見る。</p>
         </div>
         <div class="panel">
-          <strong>スキル設計</strong>
-          <p>daily-reading-nudge は候補を「検索」しているのか、「corpus interaction」しているのか。</p>
+          <strong>Q. ただの tool use では？</strong>
+          <p>A. tool use ではある。ただし焦点は、tool を呼ぶこと自体ではなく、corpus から証拠を集める search protocol にある。</p>
         </div>
         <div class="panel">
-          <strong>記事化</strong>
-          <p>RAG ではなく agentic corpus interaction として、今の個人 AI 運用を説明できるか。</p>
+          <strong>Q. 何が難しい？</strong>
+          <p>A. 探索の自由度が増えるほど、コスト、再現性、評価、誤探索の制御が難しくなる。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="next">
+      <h2>次に読むなら</h2>
+      <div class="grid">
+        <div class="panel">
+          <strong>LongSeeker</strong>
+          <p>長期探索中に context をどう圧縮・巻き戻し・整理するかを見る候補。</p>
+        </div>
+        <div class="panel">
+          <strong>Rethinking Reasoning-Intensive Retrieval</strong>
+          <p>agentic search に必要な evidence portfolio を retrieval 側から考える候補。</p>
+        </div>
+        <div class="panel">
+          <strong>AgenticRAG</strong>
+          <p>enterprise search の上に agent harness を重ねる実用品寄りの候補。</p>
         </div>
       </div>
     </section>
