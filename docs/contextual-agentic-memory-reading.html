@@ -1,0 +1,436 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Contextual Agentic Memory | Paper Summary</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f4ee;
+      --paper: #fffdf8;
+      --ink: #1f2933;
+      --muted: #5f6b76;
+      --line: #ddd5c6;
+      --accent: #0f766e;
+      --accent-2: #8a5a12;
+      --accent-3: #334155;
+      --soft: #e7f2ef;
+      --soft-2: #f5ead5;
+      --shadow: 0 16px 46px rgba(31, 41, 51, .10);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.75;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration-thickness: .08em;
+      text-underline-offset: .18em;
+    }
+
+    .site-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 14px clamp(18px, 4vw, 44px);
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 253, 248, .92);
+    }
+
+    .brand {
+      color: var(--ink);
+      font-weight: 850;
+      text-decoration: none;
+    }
+
+    .top-nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 12px;
+      font-size: .94rem;
+    }
+
+    .hero {
+      min-height: 70vh;
+      display: grid;
+      align-items: end;
+      padding: clamp(28px, 6vw, 84px);
+      border-bottom: 1px solid var(--line);
+      background:
+        linear-gradient(180deg, rgba(15, 118, 110, .12), rgba(246, 244, 238, 1)),
+        linear-gradient(120deg, rgba(138, 90, 18, .18), rgba(51, 65, 85, .10)),
+        var(--bg);
+    }
+
+    .hero-inner { max-width: 980px; }
+
+    .kicker {
+      margin: 0 0 12px;
+      color: var(--accent);
+      font-weight: 850;
+      font-size: .86rem;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 960px;
+      margin: 0;
+      font-size: clamp(2.2rem, 6vw, 5.2rem);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .hero p {
+      max-width: 760px;
+      margin: 22px 0 0;
+      color: #31404c;
+      font-size: clamp(1.05rem, 2vw, 1.3rem);
+    }
+
+    .paper-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 22px;
+    }
+
+    .meta-chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 5px 10px;
+      border: 1px solid rgba(15, 118, 110, .24);
+      border-radius: 999px;
+      background: rgba(255, 253, 248, .76);
+      color: #23423e;
+      font-size: .9rem;
+      font-weight: 700;
+    }
+
+    main {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 42px clamp(18px, 4vw, 42px) 78px;
+    }
+
+    .toc {
+      display: grid;
+      gap: 8px;
+      margin: 24px 0 38px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .toc a { font-weight: 760; }
+
+    section {
+      padding: 34px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    h2 {
+      margin: 0 0 16px;
+      color: var(--accent-3);
+      font-size: clamp(1.55rem, 3vw, 2.45rem);
+      line-height: 1.16;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 24px 0 10px;
+      font-size: 1.15rem;
+      line-height: 1.35;
+      letter-spacing: 0;
+    }
+
+    p { margin: 0 0 14px; }
+
+    ul {
+      margin: 10px 0 0;
+      padding-left: 1.15rem;
+    }
+
+    li { margin: 8px 0; }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .panel {
+      min-width: 0;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .panel strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--accent);
+      font-size: 1.02rem;
+    }
+
+    .callout {
+      margin-top: 18px;
+      padding: 18px;
+      border-left: 5px solid var(--accent);
+      border-radius: 8px;
+      background: var(--soft);
+    }
+
+    footer {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 clamp(18px, 4vw, 42px) 40px;
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    @media (max-width: 760px) {
+      .site-header { align-items: flex-start; flex-direction: column; }
+      .hero { min-height: 62vh; }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./">Article Pages</a>
+    <nav class="top-nav" aria-label="Site navigation">
+      <a href="./">Home</a>
+      <a href="./#articles">Articles</a>
+      <a href="./unread-reading-inventory.html">未読一覧</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <div class="hero-inner">
+      <p class="kicker">Paper Summary</p>
+      <h1>Contextual Agentic Memory</h1>
+      <p>vector store、RAG、scratchpad、context-window management を「記憶」ではなく「メモ / lookup」として捉え直し、経験を専門性へ変える consolidation の欠落を批判する position paper。</p>
+      <div class="paper-meta">
+        <span class="meta-chip">arXiv:2604.27707</span>
+        <span class="meta-chip">Agentic Memory</span>
+        <span class="meta-chip">Consolidation</span>
+        <span class="meta-chip">Position Paper</span>
+        <span class="meta-chip">作成日: 2026-05-11 UTC</span>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <nav class="toc" aria-label="Table of contents">
+      <a href="#what">どんな論文か</a>
+      <a href="#claims">課題と貢献</a>
+      <a href="#argument">議論のしくみ</a>
+      <a href="#evidence">理論的主張と根拠</a>
+      <a href="#limits">限界と読みどころ</a>
+      <a href="#qa">読後Q&A</a>
+      <a href="#next">次に読むなら</a>
+    </nav>
+
+    <section id="what">
+      <h2>どんな論文か</h2>
+      <p>
+        <strong>Contextual Agentic Memory is a Memo, Not True Memory</strong> は、現在の agentic memory へのかなり挑発的な position paper。
+        主張ははっきりしていて、vector store、RAG、scratchpad、context-window management は「記憶」ではなく「lookup」であり、それを memory と呼ぶと agent が本当に学習しているように見えてしまう、というもの。
+      </p>
+      <p>
+        論文の比喩では、外部 memory は日記やメモに近い。過去に何があったかを保存し、似た状況で引き出すことはできる。しかし、経験から抽象的なルールを身につけて、初めて見る状況にも自然に適用することとは違う。
+      </p>
+      <p>
+        この区別を、論文は「exemplar-based cognition」と「rule-based cognition」の差として扱う。前者は似た事例を探す。後者は事例から抽出されたルールを適用する。現在の agentic memory は前者に寄っており、後者へ移る consolidation が足りない、という見方だ。
+      </p>
+      <p>
+        その背景として、Complementary Learning Systems の話が出てくる。生物の記憶は、素早く個別事例を保存する hippocampus 的な系と、ゆっくり抽象化して重みに刻む neocortex 的な系が併存する。この論文は、現在の AI agent は前半だけを実装していて、後半にあたる weight-based consolidation が抜けていると見る。
+      </p>
+      <p>
+        だからこの論文は、memory system の新しい実装を出す論文というより、agent memory の言葉遣いと評価軸を変えようとする論文。記憶を「どれだけ過去を取り出せるか」ではなく、「過去の経験から専門性が増えたか」で測るべきだと主張する。
+      </p>
+    </section>
+
+    <section id="claims">
+      <h2>課題と貢献</h2>
+      <div class="grid">
+        <div class="panel">
+          <strong>Definitional claim</strong>
+          <p>現在の agentic memory は lookup table に近い。過去の entry を検索して context に入れるだけで、モデルの内部表現は変わらない。</p>
+        </div>
+        <div class="panel">
+          <strong>Structural claim</strong>
+          <p>retrieval-based memory は、compositionally novel なタスクで weight-based memory より低い ceiling を持つ、という Generalisation Gap を定式化する。</p>
+        </div>
+        <div class="panel">
+          <strong>Dynamic claim</strong>
+          <p>外部 memory だけを増やす agent は、経験を積んでも専門家にならず、整理されたノートを持つ novice のまま残る。</p>
+        </div>
+      </div>
+      <div class="callout">
+        <p>
+          読みどころは、memory を「保存・検索」ではなく「経験が表現を変えるか」で切るところ。
+          これは wiki や raw を増やしているだけで、おい丸自身の判断が変わっているのか、という問いにもつながる。
+        </p>
+      </div>
+    </section>
+
+    <section id="argument">
+      <h2>議論のしくみ</h2>
+      <h3>lookup table と function の違い</h3>
+      <p>
+        論文はまず、RAG や MemGPT 的な memory を「過去に書いたものを、現在の query に応じて取り出す仕組み」と定義する。
+        これは lookup であって、過去経験によって model weights が変わるわけではない。日記を読めば思い出せる人と、経験から原則を身につけた人は違う、という対比が中心にある。
+      </p>
+      <h3>Generalisation Gap</h3>
+      <p>
+        論文は、stored episodes の組み合わせが必要な compositionally novel input を考える。
+        retrieval は似た episode を返せても、必要な composition rule がどこにも保存されていなければ、それを agent memory 自体が身につけたことにはならない。
+        weight-based memory は、学習によって抽象ルールを内部表現として持てるため、ここで差が出るという主張になっている。
+      </p>
+      <h3>Frozen Novice</h3>
+      <p>
+        外部 memory が増えるほど、agent は過去ログをたくさん持つ。しかしモデルの内部能力が変わらないなら、毎回同じ novice が巨大なノートを引いているだけになる。
+        論文はこれを frozen novice problem と呼び、memory の改善を recall accuracy だけで測ることに反対する。
+      </p>
+      <h3>提案される方向</h3>
+      <p>
+        解決策は、外部 memory を捨てることではない。外部 memory は fast episodic lookup として残しつつ、良い経験を抽出して fine-tuning、LoRA、knowledge editing、test-time training などで weights に反映する consolidation channel を持つべきだ、という co-existence proposal になっている。
+      </p>
+    </section>
+
+    <section id="evidence">
+      <h2>理論的主張と根拠</h2>
+      <p>
+        この論文は position paper なので、大規模な新ベンチマーク結果を提示するというより、理論的整理と既存研究からの補強が中心になる。
+        主な根拠は、Information Bottleneck による Generalisation Gap、Performance Ceiling Bound、認知科学の expert / novice 研究、Complementary Learning Systems、fine-tuning と RAG の既存比較研究だ。
+      </p>
+      <div class="grid">
+        <div class="panel">
+          <strong>Generalisation Gap</strong>
+          <p>retrieval は stored cases に似たものへ強いが、保存されていない概念の組み合わせには弱い。composition rule が weights に入っていない限り、経験が専門性にならない。</p>
+        </div>
+        <div class="panel">
+          <strong>Performance Ceiling</strong>
+          <p>top-K retrieval と context window には容量制約がある。必要な相互依存事実が K を超えると、retrieval-only memory では統合しきれないタスクが存在する。</p>
+        </div>
+        <div class="panel">
+          <strong>CLS analogy</strong>
+          <p>生物は fast episodic storage と slow consolidation を併用する。現在の agent memory は fast storage だけを厚くしており、sleep に相当する weight update がない。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="limits">
+      <h2>限界と読みどころ</h2>
+      <p>
+        読む時の注意点は、この論文がかなり強く言い切る position paper だということ。retrieval-based memory を「memory ではない」と切ることで論点は鋭くなるが、実務上は lookup と consolidation の中間にある設計も多い。
+      </p>
+      <ul>
+        <li>hierarchical RAG や summarization は、どこまで token-space abstraction として機能するのか。</li>
+        <li>procedural memory、skills、code artifacts は、単なる text memo より rule-like ではないのか。</li>
+        <li>weight update を伴う consolidation は、安全性、rollback、評価、コストをどう管理するのか。</li>
+        <li>agent identity や alignment を weights に刻むことは、外部 memory より本当に安全なのか。</li>
+      </ul>
+      <p>
+        ただし、外部 memory を増やすほど賢くなる、という素朴な期待へのカウンターとしては強い。
+        memory を「保存」ではなく「経験から何が変わったか」で見る補助線として読むのがよい。
+      </p>
+    </section>
+
+    <section id="qa">
+      <h2>読後Q&A</h2>
+      <div class="grid">
+        <div class="panel">
+          <strong>Q. この論文の一番大きい主張は？</strong>
+          <p>A. 現在の agentic memory は memory ではなく memo / lookup であり、経験から専門性を獲得するには consolidation が必要だ、という主張。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. memo と memory の違いは？</strong>
+          <p>A. memo は過去の記録を取り出すもの。true memory は経験から抽象ルールを身につけ、初めて見る状況にも適用できるもの。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. RAG や vector store は役に立たない？</strong>
+          <p>A. 役に立つ。ただし役割は recent context、reference retrieval、episodic lookup。一般化や専門性獲得まで期待すると過剰になる。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. Generalisation Gap とは？</strong>
+          <p>A. stored episodes には含まれていない概念の組み合わせが必要な時、retrieval-only memory は限界を持つという主張。単に context を長くしても解決しないとされる。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. Frozen Novice とは？</strong>
+          <p>A. ノートは増えているが、本人の判断力は変わっていない agent のこと。巨大な filing cabinet を持つ novice という比喩が近い。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. じゃあ外部 memory は捨てるべき？</strong>
+          <p>A. 捨てない。論文の提案は co-existence。外部 memory は fast episodic lookup として使い、重要な経験を別経路で weights に consolidation する。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. consolidation は具体的に何？</strong>
+          <p>A. 良い reasoning trace や失敗経験を抽出し、fine-tuning、LoRA、knowledge editing、test-time training などで model weights へ反映すること。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. sleep-time compute と何が違う？</strong>
+          <p>A. 外部メモを整理・要約するだけなら token-space consolidation。論文が求めるのは、経験が model weights を変える weight-based consolidation。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. skill や code artifact は memo なの？</strong>
+          <p>A. text memo より rule-like ではある。論文も procedural artifact retrieval はギャップを狭めると認める。ただし新しい組み合わせを作る力は、最終的には base model の能力に依存しやすい。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. 評価はどう変えるべき？</strong>
+          <p>A. recall だけでなく、過去に単独で見た概念を未知の組み合わせで使えるかを見る CompGen-Agent のような評価を求めている。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. 実務にどう効く？</strong>
+          <p>A. wiki や memory を増やすだけで満足せず、それが判断基準、skill、テスト、モデル更新のどれに変わったかを見る視点が得られる。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. 読後に残る一言は？</strong>
+          <p>A. agent は「よく整理されたメモ帳」を持つだけでは専門家にならない。経験がどこかで能力に変わる設計が必要。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="next">
+      <h2>次に読むなら</h2>
+      <div class="grid">
+        <div class="panel">
+          <strong>Storage Is Not Memory</strong>
+          <p>保存、検索、想起、記憶をどう分けるかを、より retrieval architecture 側から読む候補。</p>
+        </div>
+        <div class="panel">
+          <strong>OCR-Memory</strong>
+          <p>agent trajectory を画像として保存し、元ログを決定的に取り出す memory 実装寄りの候補。</p>
+        </div>
+        <div class="panel">
+          <strong>Memory And Skill Rot</strong>
+          <p>memory / skill を保存した後、古さ・重複・危険をどう管理するかを見る実務側の補助線。</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Source: <a href="https://arxiv.org/abs/2604.27707">Contextual Agentic Memory is a Memo, Not True Memory</a>.
+    This page is a public reading artifact and does not include private workspace paths, logs, or internal metadata.
+  </footer>
+</body>
+</html>
