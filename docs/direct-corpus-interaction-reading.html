@@ -482,6 +482,26 @@
           <p>A. ファイル一覧を見る、検索語で grep する、該当箇所を開く、周辺文脈を読む、必要なら軽い script で集計する、といった操作を指す。</p>
         </div>
         <div class="panel">
+          <strong>Q. ここでいう interface は何？</strong>
+          <p>A. agent が corpus にアクセスする窓口のこと。従来は query を投げて top-k chunk を受け取る retrieval API が窓口になりがちだったが、この論文は file read や grep のように corpus 自体を操作できる窓口へ広げる。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. agentic search は既に corpus を歩くものでは？</strong>
+          <p>A. 広い意味ではそう言える。ただしこの論文が批判している既存の agentic search は、agent が query を改善して retriever に投げる形が中心。agent が corpus のファイル構造や本文を直接たどる動きは、Direct Corpus Interaction 側の主張として扱われている。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. 普段の wiki / repo 探索とはどちらに近い？</strong>
+          <p>A. grep して、catalog を見て、raw や pages を開き、途中で探し方を変える探索は、この論文の分類では Direct Corpus Interaction に近い。だから実務感覚としては「それ普段やっているやつでは？」と感じやすい。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. 問題設定の提起が主な貢献？</strong>
+          <p>A. 主な貢献の一つ。新しい巨大モデルを出すというより、agentic search のボトルネックを model reasoning だけでなく corpus access interface にも置き直した点が大きい。そのうえで、直接操作できる setup が有効な場面を実験で示している。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. 結論は何？</strong>
+          <p>A. agentic search では、retriever に query を投げて top-k chunk を受け取るだけでは狭すぎる場面がある。agent に corpus を直接操作する手段を渡すと、複数ステップの調査や証拠探索で強くなる可能性がある。</p>
+        </div>
+        <div class="panel">
           <strong>Q. この論文の評価で見たい点は？</strong>
           <p>A. 直接操作できることで、最終回答の正しさだけでなく、必要な証拠へ到達できているか、探索過程が妥当かがどう扱われているか。</p>
         </div>
