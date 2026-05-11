@@ -26,7 +26,7 @@
       justify-content: space-between;
       align-items: center;
       gap: 16px;
-      padding: 14px 22px;
+      padding: 14px clamp(18px, 4vw, 44px);
       border-bottom: 1px solid var(--line);
       background: rgba(255, 253, 248, .9);
     }
@@ -38,6 +38,7 @@
     .top-nav {
       display: flex;
       flex-wrap: wrap;
+      justify-content: flex-end;
       gap: 12px;
       font-size: .94rem;
     }
@@ -63,6 +64,12 @@
     }
     .cards {
       display: grid;
+      gap: 14px;
+      margin-top: 28px;
+    }
+    .areas {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 14px;
       margin-top: 28px;
     }
@@ -94,6 +101,10 @@
       font-weight: 850;
       text-transform: uppercase;
     }
+    .area-card {
+      min-height: 150px;
+      border-color: rgba(15, 118, 110, .28);
+    }
   </style>
 </head>
 <body>
@@ -101,11 +112,25 @@
     <a class="brand" href="./">Article Pages</a>
     <nav class="top-nav" aria-label="Site navigation">
       <a href="./">Home</a>
+      <a href="./#articles">Articles</a>
+      <a href="./unread-reading-inventory.html">未読一覧</a>
     </nav>
   </header>
   <main>
     <h1>Article Pages</h1>
-    <p>公開用の読書 artifact と記事補助ページを置く場所です。本文転載ではなく、公開しやすい要約・読書導線・補助ビューを置きます。</p>
+    <p>公開用の読書 artifact と記事補助ページを置く場所です。記事として読めるメモと、次に読むものを探す未読一覧を分けて置きます。</p>
+
+    <div class="section-title">Main Areas</div>
+    <div class="areas" aria-label="Main areas">
+      <a class="card area-card" href="./#articles">
+        <strong>Articles</strong>
+        <span>論文メモ、読書ガイド、公開用に整えた記事ページの一覧。</span>
+      </a>
+      <a class="card area-card" href="./unread-reading-inventory.html">
+        <strong>未読一覧</strong>
+        <span>積んでいる記事・論文・X由来メモを、読む順番で並べたキュー。</span>
+      </a>
+    </div>
 
     <div class="section-title" id="articles">Articles</div>
     <div class="cards">
@@ -116,10 +141,6 @@
       <a class="card" href="./direct-corpus-interaction-reading.html">
         <strong>Direct Corpus Interaction Paper Summary</strong>
         <span>Beyond Semantic Similarity の問題設定、手法、検証観点、読みどころを整理した公開版 HTML。</span>
-      </a>
-      <a class="card" href="./unread-reading-inventory.html">
-        <strong>Unread Reading Inventory</strong>
-        <span>2026-04-20〜2026-05-11 の読書・論文ウォッチ・X由来メモを、読了済み、読んでよかったもの、未読候補、今日読むなら、に整理した公開用索引。</span>
       </a>
     </div>
   </main>
