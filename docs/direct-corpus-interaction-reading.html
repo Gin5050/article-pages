@@ -502,6 +502,26 @@
           <p>A. agentic search では、retriever に query を投げて top-k chunk を受け取るだけでは狭すぎる場面がある。agent に corpus を直接操作する手段を渡すと、複数ステップの調査や証拠探索で強くなる可能性がある。</p>
         </div>
         <div class="panel">
+          <strong>Q. 結果として、どういう時に強い？</strong>
+          <p>A. 複数ステップで証拠を探す時に強い。multi-hop QA、reasoning-intensive retrieval、BrowseComp 系のように、最初の semantic top-k だけでは必要な証拠が揃わないタスクで差が出ている。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. multi-hop QA では何が効いている？</strong>
+          <p>A. 一つの chunk に答えがまとまっていない時、agent が手がかりを見つけ、別の場所へ移り、証拠をつなぐ動きが効く。論文側の表では DCI-Agent-Lite が平均で既存 retrieval agent を大きく上回り、DCI-Agent-CC はさらに伸びている。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. IR ranking ではどこが強い？</strong>
+          <p>A. BRIGHT のような reasoning-heavy な検索で強い。単語や意味の近さだけでなく、問題の条件を解きほぐして文書を探す必要があるため、corpus を直接たどれることが効いている。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. 逆に弱い、または過剰な場面は？</strong>
+          <p>A. 答えが素直に semantic retrieval で取れる fact lookup、関連 chunk が明確に近い場所にある検索、コストをかけたくない短い質問では、普通の retriever の方が速くて十分なことがある。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. 実務感覚ではどう読めばいい？</strong>
+          <p>A. `rg` して、ファイルを開いて、catalog を見て、raw に戻り、別キーワードで探すような探索が必要な時に DCI は強い。近い chunk を一つ取れば終わるなら、従来 retrieval でよい。</p>
+        </div>
+        <div class="panel">
           <strong>Q. この論文の評価で見たい点は？</strong>
           <p>A. 直接操作できることで、最終回答の正しさだけでなく、必要な証拠へ到達できているか、探索過程が妥当かがどう扱われているか。</p>
         </div>
