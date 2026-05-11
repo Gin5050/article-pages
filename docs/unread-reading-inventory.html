@@ -33,6 +33,7 @@
         var(--bg);
       color: var(--ink);
       line-height: 1.72;
+      overflow-x: hidden;
     }
 
     a {
@@ -41,8 +42,38 @@
       text-underline-offset: .18em;
     }
 
+    .site-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 14px clamp(18px, 4vw, 44px);
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, .92);
+    }
+
+    .brand {
+      color: var(--ink);
+      font-weight: 850;
+      text-decoration: none;
+    }
+
+    .top-nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 12px;
+      font-size: .94rem;
+    }
+
+    .top-nav a {
+      color: var(--accent);
+      text-decoration-thickness: .08em;
+      text-underline-offset: .18em;
+    }
+
     .hero {
-      min-height: 72vh;
+      min-height: 70vh;
       display: grid;
       align-items: end;
       padding: clamp(28px, 6vw, 76px);
@@ -109,28 +140,27 @@
     }
 
     .wrap {
-      width: min(1180px, calc(100% - 32px));
+      max-width: 1080px;
       margin: 0 auto;
-      padding: 30px 0 84px;
-      display: grid;
-      gap: 22px;
+      padding: 42px clamp(18px, 4vw, 42px) 78px;
     }
 
     .layout {
-      display: grid;
-      gap: 20px;
+      display: block;
     }
 
     @media (min-width: 980px) {
       .layout {
-        grid-template-columns: 270px minmax(0, 1fr);
-        align-items: start;
+        display: block;
       }
     }
 
-    nav {
-      position: sticky;
-      top: 14px;
+    .toc {
+      display: grid;
+      gap: 8px;
+      position: static;
+      top: auto;
+      margin: 0 0 38px;
       background: rgba(255, 255, 255, .88);
       backdrop-filter: blur(14px);
       border: 1px solid var(--line);
@@ -139,13 +169,13 @@
       box-shadow: var(--shadow);
     }
 
-    nav strong {
+    .toc strong {
       display: block;
       margin-bottom: 10px;
       font-size: .92rem;
     }
 
-    nav a {
+    .toc a {
       display: block;
       padding: 8px 9px;
       border-radius: 6px;
@@ -154,10 +184,10 @@
       font-size: .94rem;
     }
 
-    nav a:hover { background: var(--soft); }
+    .toc a:hover { background: var(--soft); }
 
     @media (max-width: 979px) {
-      nav {
+      .toc {
         position: static;
         top: auto;
       }
@@ -232,6 +262,7 @@
     }
 
     .card {
+      min-width: 0;
       border: 1px solid var(--line);
       border-radius: 8px;
       padding: 15px;
@@ -288,6 +319,7 @@
 
     .queue-item {
       position: relative;
+      min-width: 0;
       border: 1px solid var(--line);
       border-radius: 8px;
       padding: 15px 15px 15px 52px;
@@ -337,9 +369,11 @@
     }
 
     .table-wrap {
+      max-width: 100%;
       overflow-x: auto;
       border: 1px solid var(--line);
       border-radius: 8px;
+      -webkit-overflow-scrolling: touch;
     }
 
     .table-wrap table th,
@@ -352,9 +386,29 @@
       font-size: .92rem;
       padding: 8px 0 0;
     }
+
+    @media (max-width: 760px) {
+      .site-header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .hero {
+        min-height: 62vh;
+      }
+    }
   </style>
 </head>
 <body>
+  <header class="site-header">
+    <a class="brand" href="./">Article Pages</a>
+    <nav class="top-nav" aria-label="Site navigation">
+      <a href="./">Home</a>
+      <a href="./ctx2skill-reading.html">Ctx2Skill</a>
+      <a href="./direct-corpus-interaction-reading.html">Direct Corpus</a>
+    </nav>
+  </header>
+
   <header class="hero">
     <div class="hero-inner">
       <p class="kicker">Reading Queue / 2026-04-20 to 2026-05-11</p>
@@ -370,7 +424,7 @@
 
   <main class="wrap">
     <div class="layout">
-      <nav aria-label="Table of contents">
+      <nav class="toc" aria-label="Table of contents">
         <strong>目次</strong>
         <a href="#overview">Overview</a>
         <a href="#already-read">読んだ / メモ化済み</a>
