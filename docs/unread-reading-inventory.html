@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Unread Reading Inventory</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f5f7f8;
+      --paper: #ffffff;
+      --ink: #1f2933;
+      --muted: #647483;
+      --line: #d8e0e5;
+      --accent: #0f766e;
+      --accent-2: #9a3412;
+      --accent-3: #4338ca;
+      --soft: #e7f3f1;
+      --soft-2: #fff1e8;
+      --soft-3: #eef0ff;
+      --shadow: 0 18px 50px rgba(31, 41, 51, .08);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        linear-gradient(180deg, #ffffff 0%, var(--bg) 42%),
+        var(--bg);
+      color: var(--ink);
+      line-height: 1.72;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration-thickness: .08em;
+      text-underline-offset: .18em;
+    }
+
+    .hero {
+      min-height: 72vh;
+      display: grid;
+      align-items: end;
+      padding: clamp(28px, 6vw, 76px);
+      border-bottom: 1px solid var(--line);
+      background:
+        linear-gradient(120deg, rgba(15, 118, 110, .16), transparent 44%),
+        linear-gradient(35deg, rgba(67, 56, 202, .10), transparent 52%),
+        #fbfcfc;
+    }
+
+    .hero-inner {
+      width: min(1120px, 100%);
+    }
+
+    .kicker {
+      margin: 0 0 12px;
+      color: var(--accent);
+      font-weight: 850;
+      letter-spacing: 0;
+      font-size: .9rem;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 980px;
+      font-size: clamp(2.35rem, 6vw, 5.5rem);
+      line-height: .98;
+      letter-spacing: 0;
+    }
+
+    .lead {
+      max-width: 760px;
+      margin: 22px 0 0;
+      color: #334452;
+      font-size: clamp(1.04rem, 2vw, 1.26rem);
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 28px;
+    }
+
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 10px 14px;
+      border: 1px solid var(--line);
+      background: var(--paper);
+      color: var(--ink);
+      border-radius: 7px;
+      font-weight: 760;
+      text-decoration: none;
+      box-shadow: 0 5px 14px rgba(31, 41, 51, .06);
+    }
+
+    .button.primary {
+      background: var(--accent);
+      color: white;
+      border-color: var(--accent);
+    }
+
+    .wrap {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 30px 0 84px;
+      display: grid;
+      gap: 22px;
+    }
+
+    .layout {
+      display: grid;
+      gap: 20px;
+    }
+
+    @media (min-width: 980px) {
+      .layout {
+        grid-template-columns: 270px minmax(0, 1fr);
+        align-items: start;
+      }
+    }
+
+    nav {
+      position: sticky;
+      top: 14px;
+      background: rgba(255, 255, 255, .88);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      box-shadow: var(--shadow);
+    }
+
+    nav strong {
+      display: block;
+      margin-bottom: 10px;
+      font-size: .92rem;
+    }
+
+    nav a {
+      display: block;
+      padding: 8px 9px;
+      border-radius: 6px;
+      color: var(--ink);
+      text-decoration: none;
+      font-size: .94rem;
+    }
+
+    nav a:hover { background: var(--soft); }
+
+    section {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: clamp(18px, 4vw, 34px);
+      box-shadow: var(--shadow);
+      margin-bottom: 18px;
+    }
+
+    h2 {
+      margin: 0 0 14px;
+      font-size: clamp(1.45rem, 2.6vw, 2.1rem);
+      line-height: 1.15;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 28px 0 10px;
+      font-size: 1.1rem;
+      letter-spacing: 0;
+    }
+
+    p { margin: 0 0 14px; }
+
+    .muted { color: var(--muted); }
+
+    .matrix {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .metric {
+      min-height: 122px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 14px;
+      background:
+        linear-gradient(145deg, rgba(15, 118, 110, .10), rgba(255, 255, 255, .45)),
+        var(--paper);
+    }
+
+    .metric:nth-child(2n) {
+      background:
+        linear-gradient(145deg, rgba(154, 52, 18, .10), rgba(255, 255, 255, .45)),
+        var(--paper);
+    }
+
+    .metric:nth-child(3n) {
+      background:
+        linear-gradient(145deg, rgba(67, 56, 202, .10), rgba(255, 255, 255, .45)),
+        var(--paper);
+    }
+
+    .metric strong {
+      display: block;
+      font-size: 1.85rem;
+      line-height: 1;
+      margin-bottom: 8px;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 12px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 15px;
+      background: #fbfcfc;
+    }
+
+    .card h3 {
+      margin-top: 0;
+      font-size: 1.02rem;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      margin-top: 12px;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 3px 8px;
+      font-size: .82rem;
+      color: #435463;
+      background: white;
+    }
+
+    .read-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .read-item {
+      display: grid;
+      gap: 6px;
+      border-left: 4px solid var(--accent);
+      padding: 12px 14px;
+      background: #fbfcfc;
+      border-radius: 0 8px 8px 0;
+    }
+
+    .read-item:nth-child(3n + 2) { border-left-color: var(--accent-2); }
+    .read-item:nth-child(3n) { border-left-color: var(--accent-3); }
+
+    .read-item strong { font-size: 1.02rem; }
+
+    .queue {
+      display: grid;
+      gap: 12px;
+      counter-reset: queue;
+    }
+
+    .queue-item {
+      position: relative;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 15px 15px 15px 52px;
+      background: white;
+      min-height: 90px;
+    }
+
+    .queue-item::before {
+      counter-increment: queue;
+      content: counter(queue);
+      position: absolute;
+      left: 14px;
+      top: 17px;
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      display: grid;
+      place-items: center;
+      background: var(--soft);
+      color: var(--accent);
+      font-weight: 850;
+      font-size: .86rem;
+    }
+
+    .queue-item h3 {
+      margin: 0 0 5px;
+      font-size: 1.04rem;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .95rem;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--line);
+      padding: 10px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      color: #42515e;
+      background: #f8fafb;
+      font-size: .88rem;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    .table-wrap table th,
+    .table-wrap table td {
+      min-width: 170px;
+    }
+
+    footer {
+      color: var(--muted);
+      font-size: .92rem;
+      padding: 8px 0 0;
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="kicker">Reading Queue / 2026-04-20 to 2026-05-11</p>
+      <h1>Unread Reading Inventory</h1>
+      <p class="lead">AI エージェント、ハーネス、スキル、メモリ、context engineering 周辺で溜まった読書メモを、読了済み・読んでよかったもの・未読候補・今日読むなら、に分けた公開用索引です。</p>
+      <div class="hero-actions">
+        <a class="button primary" href="#read-next">今日読むなら</a>
+        <a class="button" href="#unread">未読候補</a>
+        <a class="button" href="index.html">Article Pages</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="layout">
+      <nav aria-label="Table of contents">
+        <strong>目次</strong>
+        <a href="#overview">Overview</a>
+        <a href="#already-read">読んだ / メモ化済み</a>
+        <a href="#best">読んでよかった</a>
+        <a href="#unread">未読候補</a>
+        <a href="#read-next">今日読むなら</a>
+        <a href="#source">Source Notes</a>
+      </nav>
+
+      <div>
+        <section id="overview">
+          <h2>Overview</h2>
+          <p>このページは、内部 wiki の週次・2週間インベントリから公開しやすい形に圧縮したものです。論文本文や X article 本文の転載ではなく、何を読み、何を後で読むべきかを探すための索引として置いています。</p>
+          <div class="matrix" aria-label="Summary metrics">
+            <div class="metric">
+              <strong>22日</strong>
+              <span>2026-04-20 から 2026-05-11 までの読書・候補整理。</span>
+            </div>
+            <div class="metric">
+              <strong>5領域</strong>
+              <span>Harness、Skills、Memory、Context、Agent-native artifacts。</span>
+            </div>
+            <div class="metric">
+              <strong>4本</strong>
+              <span>まず読むなら、に絞った本命候補。</span>
+            </div>
+          </div>
+        </section>
+
+        <section id="already-read">
+          <h2>読んだ / メモ化済み</h2>
+          <div class="read-list">
+            <div class="read-item">
+              <strong>Harness / Agent Runtime</strong>
+              <span>OpenAI Harness Engineering、国内 harness 記事群、Agentic Harness Engineering、HARBOR、AgentSPEX、Swarm Management of Agent Harnesses。</span>
+            </div>
+            <div class="read-item">
+              <strong>Skills / Prompt / MCP</strong>
+              <span>Agent Skills for Engineers、MCP production 記事、Empirical Prompt Tuning、System Prompt vs Agent Skill、Claude Skills 公式記事、Skill Retrieval Augmentation、SoK Agentic Skills、From Context to Skills。</span>
+            </div>
+            <div class="read-item">
+              <strong>Memory / Context / Knowledge</strong>
+              <span>Memory Transfer Learning、Stateless Decision Memory、StructMem、Memanto、OCR-Memory、Your Harness Your Memory、Context Engineering Survey、Memory and Skill Rot。</span>
+            </div>
+            <div class="read-item">
+              <strong>Writing / Identity / Platform</strong>
+              <span>AI writing smell、文章レビュー仕組み調査、OpenClaw vs Hermes、Microsoft Foundry Hosted Agents、AWS AI BPR、ChatGPT as a Cognitive Crutch。</span>
+            </div>
+          </div>
+        </section>
+
+        <section id="best">
+          <h2>読んでよかった</h2>
+          <div class="card-grid">
+            <article class="card">
+              <h3>Harness Engineering cluster</h3>
+              <p>モデル能力ではなく、外側の作業環境・規律・改善ループとして agent 開発を見る土台になった。</p>
+              <div class="tag-row"><span class="tag">Harness</span><span class="tag">CodeZine</span></div>
+            </article>
+            <article class="card">
+              <h3>System Prompt vs Agent Skill</h3>
+              <p>常時制約と状況依存能力を分ける判断軸が、AGENTS.md と skill 設計の両方に効いている。</p>
+              <div class="tag-row"><span class="tag">Skills</span><span class="tag">Prompt</span></div>
+            </article>
+            <article class="card">
+              <h3>Empirical Prompt Tuning</h3>
+              <p>指示を雰囲気で直すのではなく、実行者の自己申告と指示側メトリクスで反復評価する型が残る。</p>
+              <div class="tag-row"><span class="tag">Evaluation</span><span class="tag">Skills</span></div>
+            </article>
+            <article class="card">
+              <h3>Skill papers cluster</h3>
+              <p>Agent Skills を機能紹介で終わらせず、検索・獲得・評価・安全性まで含む研究テーマとして見られるようになった。</p>
+              <div class="tag-row"><span class="tag">SRA</span><span class="tag">SoK</span><span class="tag">Ctx2Skill</span></div>
+            </article>
+            <article class="card">
+              <h3>Memory papers cluster</h3>
+              <p>memory を保存量ではなく、構造化・型・元ログ回収・検索責務で分解して見られるようになった。</p>
+              <div class="tag-row"><span class="tag">StructMem</span><span class="tag">Memanto</span><span class="tag">OCR-Memory</span></div>
+            </article>
+            <article class="card">
+              <h3>Context Engineering Survey</h3>
+              <p>prompt、RAG、memory、tools、multi-agent を context payload 設計として束ねられる。</p>
+              <div class="tag-row"><span class="tag">Context</span><span class="tag">Survey</span></div>
+            </article>
+          </div>
+        </section>
+
+        <section id="unread">
+          <h2>未読候補</h2>
+          <h3>最優先</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>候補</th>
+                  <th>初出</th>
+                  <th>読む理由</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Tool Attention Is All You Need</td>
+                  <td>2026-04-24</td>
+                  <td>MCP / tool schema の token tax を tool gating と lazy schema loading で抑える。skills / tools / context management に直結。</td>
+                </tr>
+                <tr>
+                  <td>In-Context Prompting Obsoletes Agent Orchestration</td>
+                  <td>2026-05-03</td>
+                  <td>外部 orchestration と system prompt 内 self-orchestration の比較。harness 論への反論として重要。</td>
+                </tr>
+                <tr>
+                  <td>The Last Human-Written Paper</td>
+                  <td>2026-05-02</td>
+                  <td>論文を agent が再現・拡張できる machine-executable artifact にする提案。paper-watch の次段階。</td>
+                </tr>
+                <tr>
+                  <td>Cross-Session Threats in AI Agents</td>
+                  <td>2026-04-25</td>
+                  <td>複数セッションにまたがる攻撃は、memory / long-running agent / Discord 継続対話の安全性に効く。</td>
+                </tr>
+                <tr>
+                  <td>Model Spec Midtraining</td>
+                  <td>2026-05-10</td>
+                  <td>ルールだけでなく rationale を教えると未知状況への alignment generalization が変わる。AGENTS.md / SKILL.md / SOUL に直結。</td>
+                </tr>
+                <tr>
+                  <td>Beyond Semantic Similarity</td>
+                  <td>2026-05-09</td>
+                  <td>agent が raw corpus に直接触る Direct Corpus Interaction。wiki / raw / catalog / grep 型探索を理論化できる。</td>
+                </tr>
+                <tr>
+                  <td>Storage Is Not Memory</td>
+                  <td>2026-05-07</td>
+                  <td>raw 保存、catalog、retrieval、answer model の責務分離を考える足場。memory / wiki 運用へ返せる。</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <h3>次点</h3>
+          <div class="card-grid">
+            <article class="card"><h3>PAPERMIND</h3><p>論文を要約するだけでなく、図表・証拠・主張批判まで agentic に理解できるかを見る。</p></article>
+            <article class="card"><h3>AgentSearchBench</h3><p>agent / skill / tool が増えた後の「どれを呼ぶべきか」問題に直結する。</p></article>
+            <article class="card"><h3>Seeing the Whole Elephant</h3><p>multi-agent 失敗の原因を、完全 trace から特定する benchmark。</p></article>
+            <article class="card"><h3>ObjectGraph</h3><p>Markdown 集合ではなく、agent が traversal する typed graph として知識を持つ発想。</p></article>
+            <article class="card"><h3>STALE</h3><p>古い memory / state を現在の真実として扱わない能力を見る。</p></article>
+            <article class="card"><h3>Cited but Not Verified</h3><p>引用が「開ける」「関連している」「主張と一致する」を分けて評価する。</p></article>
+          </div>
+        </section>
+
+        <section id="read-next">
+          <h2>今日読むなら</h2>
+          <div class="queue">
+            <article class="queue-item">
+              <h3>Tool Attention Is All You Need</h3>
+              <p>MCP / tool / skill が増えるほど context が重くなる問題に直接効く。今の agent 運用のボトルネックに近い。</p>
+            </article>
+            <article class="queue-item">
+              <h3>In-Context Prompting Obsoletes Agent Orchestration</h3>
+              <p>harness / orchestration を推している流れへの強い反論として読む価値がある。自分の主張を鍛えられる。</p>
+            </article>
+            <article class="queue-item">
+              <h3>The Last Human-Written Paper</h3>
+              <p>paper-watch / paper-ochiai-summary / paper-to-X-post を、agent-native research artifact へ拡張する入口になる。</p>
+            </article>
+            <article class="queue-item">
+              <h3>Cross-Session Threats</h3>
+              <p>long-running / memory / Discord 継続対話の安全性を考えるなら早めに読む価値がある。</p>
+            </article>
+          </div>
+        </section>
+
+        <section id="source">
+          <h2>Source Notes</h2>
+          <p>元にした内部メモは、`20260511_weekly-reading-inventory.md` と `20260511_biweekly-reading-inventory-20260420-20260503.md`。公開ページでは、内部パスや未公開 raw の詳細ではなく、読む順番と再利用価値が見える形に整えています。</p>
+          <footer>Last updated: 2026-05-11</footer>
+        </section>
+      </div>
+    </div>
+  </main>
+</body>
+</html>
