@@ -3,21 +3,21 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>2026-05-12 Paper Watch</title>
+  <title>2026-05-12 Paper Watch | Article Pages</title>
   <style>
     :root {
       color-scheme: light;
-      --bg: #f5f7f8;
-      --paper: #ffffff;
+      --bg: #f6f4ee;
+      --paper: #fffdf8;
       --ink: #1f2933;
-      --muted: #647483;
-      --line: #d8e0e5;
+      --muted: #5f6b76;
+      --line: #ddd5c6;
       --accent: #0f766e;
-      --accent-2: #9a3412;
-      --accent-3: #4338ca;
-      --soft: #e7f3f1;
-      --soft-2: #fff1e8;
-      --shadow: 0 18px 50px rgba(31, 41, 51, .08);
+      --accent-2: #8a5a12;
+      --accent-3: #334155;
+      --soft: #e7f2ef;
+      --soft-2: #f5ead5;
+      --shadow: 0 16px 46px rgba(31, 41, 51, .10);
     }
 
     * { box-sizing: border-box; }
@@ -25,10 +25,9 @@
     body {
       margin: 0;
       font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: linear-gradient(180deg, #fff 0%, var(--bg) 42%), var(--bg);
+      background: var(--bg);
       color: var(--ink);
       line-height: 1.75;
-      overflow-x: hidden;
     }
 
     a {
@@ -44,7 +43,7 @@
       gap: 16px;
       padding: 14px clamp(18px, 4vw, 44px);
       border-bottom: 1px solid var(--line);
-      background: rgba(255, 255, 255, .92);
+      background: rgba(255, 253, 248, .92);
     }
 
     .brand {
@@ -62,40 +61,61 @@
     }
 
     .hero {
-      min-height: 58vh;
+      min-height: 70vh;
       display: grid;
       align-items: end;
-      padding: clamp(28px, 6vw, 76px);
+      padding: clamp(28px, 6vw, 84px);
       border-bottom: 1px solid var(--line);
       background:
-        linear-gradient(120deg, rgba(15, 118, 110, .16), transparent 44%),
-        linear-gradient(35deg, rgba(67, 56, 202, .10), transparent 52%),
-        #fbfcfc;
+        linear-gradient(180deg, rgba(15, 118, 110, .12), rgba(246, 244, 238, 1)),
+        linear-gradient(120deg, rgba(138, 90, 18, .18), rgba(51, 65, 85, .10)),
+        var(--bg);
     }
 
-    .hero-inner { width: min(1080px, 100%); }
+    .hero-inner { max-width: 980px; }
 
     .kicker {
       margin: 0 0 12px;
       color: var(--accent);
       font-weight: 850;
+      font-size: .86rem;
       letter-spacing: 0;
-      font-size: .9rem;
+      text-transform: uppercase;
     }
 
     h1 {
-      margin: 0;
       max-width: 960px;
-      font-size: clamp(2.2rem, 7vw, 5.2rem);
+      margin: 0;
+      font-size: clamp(2.2rem, 6vw, 5.2rem);
       line-height: 1;
       letter-spacing: 0;
     }
 
-    .lead {
-      max-width: 780px;
+    .hero p {
+      max-width: 760px;
       margin: 22px 0 0;
-      color: #334452;
-      font-size: clamp(1.04rem, 2vw, 1.26rem);
+      color: #31404c;
+      font-size: clamp(1.05rem, 2vw, 1.3rem);
+    }
+
+    .paper-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 22px;
+    }
+
+    .meta-chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 5px 10px;
+      border: 1px solid rgba(15, 118, 110, .24);
+      border-radius: 999px;
+      background: rgba(255, 253, 248, .76);
+      color: #23423e;
+      font-size: .9rem;
+      font-weight: 700;
     }
 
     main {
@@ -105,38 +125,34 @@
     }
 
     .toc {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin: 0 0 34px;
-      padding: 14px;
+      display: grid;
+      gap: 8px;
+      margin: 24px 0 38px;
+      padding: 18px;
       border: 1px solid var(--line);
       border-radius: 8px;
       background: var(--paper);
       box-shadow: var(--shadow);
     }
 
-    .toc a {
-      font-weight: 760;
-      text-decoration: none;
-    }
+    .toc a { font-weight: 760; }
 
     section {
-      padding: 30px 0;
+      padding: 34px 0;
       border-top: 1px solid var(--line);
     }
 
     h2 {
       margin: 0 0 16px;
-      color: #273746;
-      font-size: clamp(1.55rem, 3vw, 2.35rem);
+      color: var(--accent-3);
+      font-size: clamp(1.55rem, 3vw, 2.45rem);
       line-height: 1.16;
       letter-spacing: 0;
     }
 
     h3 {
       margin: 24px 0 10px;
-      font-size: 1.16rem;
+      font-size: 1.15rem;
       line-height: 1.35;
       letter-spacing: 0;
     }
@@ -145,27 +161,19 @@
 
     ul, ol {
       margin: 10px 0 0;
-      padding-left: 1.2rem;
+      padding-left: 1.15rem;
     }
 
     li { margin: 8px 0; }
 
-    .callout {
-      padding: clamp(18px, 4vw, 26px);
-      border: 1px solid rgba(154, 52, 18, .28);
-      border-radius: 8px;
-      background: var(--soft-2);
-      box-shadow: var(--shadow);
-    }
-
-    .candidate-grid {
+    .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      grid-template-columns: repeat(3, minmax(0, 1fr));
       gap: 14px;
       margin-top: 18px;
     }
 
-    .candidate {
+    .panel {
       min-width: 0;
       padding: 18px;
       border: 1px solid var(--line);
@@ -174,57 +182,34 @@
       box-shadow: var(--shadow);
     }
 
-    .candidate strong {
+    .panel strong {
       display: block;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       color: var(--accent);
-      font-size: 1.04rem;
-      line-height: 1.35;
+      font-size: 1.02rem;
     }
 
-    .label {
-      display: inline-flex;
-      margin-bottom: 10px;
-      padding: 4px 8px;
-      border-radius: 999px;
-      background: var(--soft);
-      color: #15534d;
-      font-size: .82rem;
-      font-weight: 800;
-    }
-
-    .table-wrap {
-      width: 100%;
-      overflow-x: auto;
-      border: 1px solid var(--line);
+    .callout {
+      margin-top: 18px;
+      padding: 18px;
+      border-left: 5px solid var(--accent);
       border-radius: 8px;
-      background: var(--paper);
-      box-shadow: var(--shadow);
+      background: var(--soft);
     }
 
-    table {
-      width: 100%;
-      min-width: 720px;
-      border-collapse: collapse;
-      font-size: .95rem;
+    footer {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 clamp(18px, 4vw, 42px) 40px;
+      color: var(--muted);
+      font-size: .92rem;
     }
 
-    th, td {
-      padding: 13px 14px;
-      border-bottom: 1px solid var(--line);
-      text-align: left;
-      vertical-align: top;
+    @media (max-width: 760px) {
+      .site-header { align-items: flex-start; flex-direction: column; }
+      .hero { min-height: 62vh; }
+      .grid { grid-template-columns: 1fr; }
     }
-
-    th {
-      color: #40505f;
-      background: #f8fafb;
-      font-size: .86rem;
-    }
-
-    tr:last-child td { border-bottom: 0; }
-
-    .muted { color: var(--muted); }
   </style>
 </head>
 <body>
@@ -237,125 +222,126 @@
     </nav>
   </header>
 
-  <header class="hero">
+  <div class="hero">
     <div class="hero-inner">
-      <p class="kicker">Paper Watch / 2026-05-12</p>
-      <h1>今日の本命は Shepherd</h1>
-      <p class="lead">単体の memory 論文よりも、エージェントをどう実行・分岐・観測・評価するかに寄った日。runtime substrate、decision-centric memory、skill lifecycle、agentic search を次の読書候補として整理する。</p>
+      <p class="kicker">Paper Watch</p>
+      <h1>2026-05-12 Paper Watch</h1>
+      <p>今日の本命は Shepherd。agent memory、skill、evaluation を個別部品としてではなく、実行トレース、fork/replay、runtime intervention を持つ基盤として読み直す候補を中心に整理する。</p>
+      <div class="paper-meta">
+        <span class="meta-chip">本命: Shepherd</span>
+        <span class="meta-chip">Runtime / Harness</span>
+        <span class="meta-chip">Agent Memory</span>
+        <span class="meta-chip">Skill Lifecycle</span>
+        <span class="meta-chip">作成日: 2026-05-12 UTC</span>
+      </div>
     </div>
-  </header>
+  </div>
 
   <main>
-    <nav class="toc" aria-label="Page sections">
+    <nav class="toc" aria-label="Table of contents">
       <a href="#summary">全体サマリー</a>
       <a href="#main">今日の本命</a>
       <a href="#sparks">種火</a>
       <a href="#practical">実用品</a>
-      <a href="#actions">次アクション</a>
+      <a href="#next">次アクション</a>
     </nav>
 
     <section id="summary">
       <h2>全体サマリー</h2>
-      <p>今日は、エージェントの能力そのものよりも、実行基盤、記憶の評価軸、スキルのライフサイクル、検索インターフェースの設計に強い候補が集まった。</p>
-      <div class="candidate-grid">
-        <div class="candidate">
-          <span class="label">Runtime</span>
-          <strong>meta-agent / execution trace</strong>
-          <p class="muted">実行トレース、fork/replay、supervisor、Tree-RL のように、試行錯誤を再利用可能な基盤として扱う流れ。</p>
+      <p>
+        今日は、単体の memory 論文よりも「エージェントをどう実行・分岐・観測・評価するか」に寄った日だった。
+        強い軸は、meta-agent / runtime substrate、decision-centric memory、skill lifecycle、agentic search。
+      </p>
+      <div class="grid">
+        <div class="panel">
+          <strong>Runtime substrate</strong>
+          <p>実行トレース、fork/replay、supervisor、Tree-RL のように、エージェントの試行錯誤を実行基盤として扱う流れ。</p>
         </div>
-        <div class="candidate">
-          <span class="label">Memory</span>
-          <strong>decision-centric memory</strong>
-          <p class="muted">過去を忠実に保存するのではなく、将来の意思決定に必要な区別を残せるかで memory を見る。</p>
+        <div class="panel">
+          <strong>Decision-centric memory</strong>
+          <p>過去を忠実に保存するのではなく、意思決定に効く区別だけ残す、という評価軸への寄せ方。</p>
         </div>
-        <div class="candidate">
-          <span class="label">Skills</span>
-          <strong>skill lifecycle</strong>
-          <p class="muted">skill bank を増やすだけでなく、retain / retire / expand する運用問題が前に出ている。</p>
-        </div>
-        <div class="candidate">
-          <span class="label">Search</span>
-          <strong>agentic retrieval</strong>
-          <p class="muted">frontier LLM の agentic loop なら BM25 でも deep research に十分か、という実装寄りの問い。</p>
+        <div class="panel">
+          <strong>Skills and search</strong>
+          <p>skill bank を lifecycle として運用する話と、BM25 / lexical retrieval を agentic loop に入れる話が目立った。</p>
         </div>
       </div>
     </section>
 
     <section id="main">
       <h2>今日の本命</h2>
+      <h3>Shepherd: A Runtime Substrate Empowering Meta-Agents with a Formalized Execution Trace</h3>
+      <p>
+        <a href="https://arxiv.org/abs/2605.10913">arXiv</a> / <a href="https://huggingface.co/papers/2605.10913">Hugging Face Papers</a>
+      </p>
+      <p>
+        これは、agent memory / skill / eval を個別部品として見るより一段下の「実行基盤」の論文として読める。
+        typed event による実行トレース、過去状態の fork / replay、supervisor による runtime intervention、counterfactual meta-optimization、Tree-RL rollouts という並びが、harness engineering の関心にかなり近い。
+      </p>
       <div class="callout">
-        <h3>Shepherd: A Runtime Substrate Empowering Meta-Agents with a Formalized Execution Trace</h3>
-        <p><a href="https://arxiv.org/abs/2605.10913">arXiv</a> / <a href="https://huggingface.co/papers/2605.10913">Hugging Face Papers</a></p>
-        <p>これは agent memory / skill / eval を個別部品として見るより一段下の「実行基盤」の論文として読める。typed event による実行トレース、過去状態の fork / replay、supervisor による runtime intervention、counterfactual meta-optimization、Tree-RL rollouts という並びが、harness engineering の関心にかなり近い。</p>
-        <p>Direct Corpus Interaction が「検索インターフェースを太くする」話だとすると、Shepherd は「実行インターフェースを太くする」話に見える。失敗した実行を眺めるだけでなく、巻き戻して別分岐を走らせる、介入する、学習データにする、という発想がある。</p>
+        <p>
+          Direct Corpus Interaction が「検索インターフェースを太くする」話だとすると、Shepherd は「実行インターフェースを太くする」話に見える。
+          失敗した実行を眺めるだけでなく、巻き戻して別分岐を走らせる、介入する、学習データにする、という発想がある。
+        </p>
       </div>
+      <p>
+        読む入口は、Abstract、system overview、3つの application。特に runtime intervention、counterfactual meta-optimization、Tree-RL training の結果だけ先に拾うと、論文の旨味に入りやすい。
+      </p>
     </section>
 
     <section id="sparks">
       <h2>種火</h2>
-      <div class="table-wrap">
-        <table>
-          <thead>
-            <tr>
-              <th>候補</th>
-              <th>軸</th>
-              <th>読む理由</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td><a href="https://arxiv.org/abs/2605.10870">Remember the Decision, Not the Description</a></td>
-              <td>Memory</td>
-              <td>memory を過去の説明ではなく、意思決定に必要な区別を保てるかで見る。Storage Is Not Memory 系の続きとして強い。</td>
-            </tr>
-            <tr>
-              <td><a href="https://arxiv.org/abs/2605.10813">NanoResearch</a></td>
-              <td>Research automation</td>
-              <td>skill bank、memory、policy learning を個人の研究自動化に寄せる。wiki と読書履歴を持つ運用に近い。</td>
-            </tr>
-            <tr>
-              <td><a href="https://arxiv.org/abs/2605.10923">Dynamic Skill Lifecycle Management</a></td>
-              <td>Skills</td>
-              <td>skill をただ蓄積するのではなく、retain / retire / expand の lifecycle として扱う。</td>
-            </tr>
-            <tr>
-              <td><a href="https://arxiv.org/abs/2605.10848">Rethinking Agentic Search with Pi-Serini</a></td>
-              <td>Agentic search</td>
-              <td>Direct Corpus Interaction の補助線。BM25 / DCI / agentic retriever の比較に使える。</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="grid">
+        <div class="panel">
+          <strong><a href="https://arxiv.org/abs/2605.10870">Remember the Decision, Not the Description</a></strong>
+          <p>memory を「過去の説明をどれだけ復元できるか」ではなく、「将来の意思決定に必要な区別をどれだけ保てるか」で見る。Storage Is Not Memory 系の続きとして強い。</p>
+        </div>
+        <div class="panel">
+          <strong><a href="https://arxiv.org/abs/2605.10813">NanoResearch</a></strong>
+          <p>研究自動化を「誰にとっての自動化か」から入り、skill bank、memory、policy learning を個人の研究履歴に寄せる。</p>
+        </div>
+        <div class="panel">
+          <strong><a href="https://arxiv.org/abs/2605.10923">Dynamic Skill Lifecycle Management</a></strong>
+          <p>skill をただ蓄積するのではなく、retain / retire / expand の lifecycle として扱う。skill rot の話に近い。</p>
+        </div>
+        <div class="panel">
+          <strong><a href="https://arxiv.org/abs/2605.10848">Rethinking Agentic Search with Pi-Serini</a></strong>
+          <p>frontier LLM の agentic loop なら BM25 でも deep research に足りるのか、という実装寄りの問い。DCI の補助線になる。</p>
+        </div>
       </div>
     </section>
 
     <section id="practical">
       <h2>必要なら実用品</h2>
-      <div class="candidate-grid">
-        <div class="candidate">
+      <div class="grid">
+        <div class="panel">
           <strong><a href="https://arxiv.org/abs/2605.10787">ComplexMCP</a></strong>
           <p>MCP ベースの stateful sandbox で、ツール数が増え、API が相互依存し、環境ノイズもある時に agent を測る benchmark。</p>
         </div>
-        <div class="candidate">
+        <div class="panel">
           <strong><a href="https://arxiv.org/abs/2605.10500">SkillEvolver</a></strong>
           <p>skill を静的 artifact ではなく、利用失敗から prose / code を更新する対象として扱う。</p>
         </div>
-        <div class="candidate">
+        <div class="panel">
           <strong><a href="https://arxiv.org/abs/2605.10039">Instruction Adherence in Coding Agent Configuration Files</a></strong>
-          <p>AGENTS.md / CLAUDE.md / Cursor Rules 的な設定ファイルの構造が、coding agent の指示遵守に効くのかを見る。</p>
+          <p>AGENTS.md / CLAUDE.md / Cursor Rules 的な設定ファイル構造が、coding agent の指示遵守に効くのかを見る。</p>
         </div>
       </div>
     </section>
 
-    <section id="actions">
+    <section id="next">
       <h2>次アクション</h2>
       <ol>
         <li>今日は Shepherd を読む。Abstract、system overview、application results の順でよい。</li>
-        <li>読書メモでは「trace を memory と呼ぶべきか」「fork/replay は skill 改善や評価にどう効くか」を Q&A にする。</li>
-        <li>余力があれば Remember the Decision を次に回す。</li>
+        <li>メモでは「trace を memory と呼ぶべきか」「fork/replay は skill 改善や評価にどう効くか」を Q&A にする。</li>
+        <li>余力があれば Remember the Decision を次に回す。memory の評価軸がかなりきれいに進む。</li>
         <li>Pi-Serini は Direct Corpus Interaction の補助線として、BM25 / DCI / agentic retriever の比較表を作る時に読む。</li>
       </ol>
-      <p class="muted">探索元: arXiv recent cs.AI / cs.CL / cs.IR / cs.SE / cs.HC / cs.LG、Hugging Face Papers 2026-05-12 / 2026-05-11。</p>
     </section>
   </main>
+
+  <footer>
+    Sources: arXiv recent cs.AI / cs.CL / cs.IR / cs.SE / cs.HC / cs.LG, Hugging Face Papers 2026-05-12 / 2026-05-11.
+  </footer>
 </body>
 </html>
