@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>2026-05-12 Paper Watch | Article Pages</title>
+  <title>Shepherd | Paper Summary</title>
   <style>
     :root {
       color-scheme: light;
@@ -124,6 +124,15 @@
       padding: 42px clamp(18px, 4vw, 42px) 78px;
     }
 
+    .notice {
+      padding: 16px 18px;
+      border: 1px solid rgba(138, 90, 18, .32);
+      border-radius: 8px;
+      background: var(--soft-2);
+      color: #554018;
+      font-weight: 650;
+    }
+
     .toc {
       display: grid;
       gap: 8px;
@@ -197,6 +206,39 @@
       background: var(--soft);
     }
 
+    .reading-path {
+      counter-reset: step;
+      display: grid;
+      gap: 12px;
+      margin-top: 18px;
+    }
+
+    .step {
+      position: relative;
+      padding: 18px 18px 18px 58px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .step::before {
+      counter-increment: step;
+      content: counter(step);
+      position: absolute;
+      left: 18px;
+      top: 18px;
+      width: 26px;
+      height: 26px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: var(--accent);
+      color: white;
+      font-size: .86rem;
+      font-weight: 850;
+    }
+
     footer {
       max-width: 1080px;
       margin: 0 auto;
@@ -224,14 +266,14 @@
 
   <div class="hero">
     <div class="hero-inner">
-      <p class="kicker">Paper Watch</p>
-      <h1>2026-05-12 Paper Watch</h1>
-      <p>今日の本命は Shepherd。agent memory、skill、evaluation を個別部品としてではなく、実行トレース、fork/replay、runtime intervention を持つ基盤として読み直す候補を中心に整理する。</p>
+      <p class="kicker">Paper Summary</p>
+      <h1>Shepherd</h1>
+      <p>エージェントの実行を、あとから分岐・巻き戻し・観測・再実行できる substrate として扱う論文。memory や skill を「保存物」として見る前に、そもそも agent の実行履歴をどう artifact 化するかを考えるための一本。</p>
       <div class="paper-meta">
-        <span class="meta-chip">本命: Shepherd</span>
-        <span class="meta-chip">Runtime / Harness</span>
-        <span class="meta-chip">Agent Memory</span>
-        <span class="meta-chip">Skill Lifecycle</span>
+        <span class="meta-chip">arXiv:2605.10913</span>
+        <span class="meta-chip">Runtime Substrate</span>
+        <span class="meta-chip">Meta-Agents</span>
+        <span class="meta-chip">Execution Trace</span>
         <span class="meta-chip">作成日: 2026-05-12 UTC</span>
       </div>
     </div>
@@ -239,109 +281,217 @@
 
   <main>
     <nav class="toc" aria-label="Table of contents">
-      <a href="#summary">全体サマリー</a>
-      <a href="#main">今日の本命</a>
-      <a href="#sparks">種火</a>
-      <a href="#practical">実用品</a>
-      <a href="#next">次アクション</a>
+      <a href="#what">どんな論文か</a>
+      <a href="#contribution">課題と貢献</a>
+      <a href="#model">しくみ</a>
+      <a href="#results">検証結果</a>
+      <a href="#why">なぜ今読むか</a>
+      <a href="#limits">限界と読みどころ</a>
+      <a href="#qa">読後Q&A</a>
+      <a href="#next">次に読むなら</a>
     </nav>
 
-    <section id="summary">
-      <h2>全体サマリー</h2>
+    <section id="what">
+      <h2>どんな論文か</h2>
       <p>
-        今日は、単体の memory 論文よりも「エージェントをどう実行・分岐・観測・評価するか」に寄った日だった。
-        強い軸は、meta-agent / runtime substrate、decision-centric memory、skill lifecycle、agentic search。
+        <strong>Shepherd: A Runtime Substrate Empowering Meta-Agents with a Formalized Execution Trace</strong> は、エージェントをただ実行するのではなく、その実行をあとから操作できる対象として扱うための runtime substrate を提案する論文。
       </p>
-      <div class="grid">
-        <div class="panel">
-          <strong>Runtime substrate</strong>
-          <p>実行トレース、fork/replay、supervisor、Tree-RL のように、エージェントの試行錯誤を実行基盤として扱う流れ。</p>
-        </div>
-        <div class="panel">
-          <strong>Decision-centric memory</strong>
-          <p>過去を忠実に保存するのではなく、意思決定に効く区別だけ残す、という評価軸への寄せ方。</p>
-        </div>
-        <div class="panel">
-          <strong>Skills and search</strong>
-          <p>skill bank を lifecycle として運用する話と、BM25 / lexical retrieval を agentic loop に入れる話が目立った。</p>
-        </div>
+      <p>
+        普通の agent 実行では、モデルが考え、ツールを呼び、ファイルや環境を変更し、ログが残る。失敗したら、そのログを人間や別 agent が眺めて「次はこうしよう」と考える。しかし Shepherd は一歩進めて、実行途中の状態を fork し、別の分岐を走らせ、必要なら元に戻し、過去の地点から replay することを runtime の基本操作にする。
+      </p>
+      <p>
+        重要なのは、これは単なるログ管理ではないこと。論文は、agent の行動を typed event として Git-like な execution trace に記録し、agent process と filesystem を一緒に fork / replay できるようにする。つまり、会話履歴だけでなく、環境の状態まで含めて「その時点の agent」を再利用可能にする。
+      </p>
+      <div class="notice">
+        ざっくり言うと、Shepherd は「agent の実行を Git の branch のように扱えるようにする」論文。meta-agent はその branch を見て、介入し、分岐させ、良い経路を選べる。
       </div>
     </section>
 
-    <section id="main">
-      <h2>今日の本命</h2>
-      <h3>Shepherd: A Runtime Substrate Empowering Meta-Agents with a Formalized Execution Trace</h3>
-      <p>
-        <a href="https://arxiv.org/abs/2605.10913">arXiv</a> / <a href="https://huggingface.co/papers/2605.10913">Hugging Face Papers</a>
-      </p>
-      <p>
-        これは、agent memory / skill / eval を個別部品として見るより一段下の「実行基盤」の論文として読める。
-        typed event による実行トレース、過去状態の fork / replay、supervisor による runtime intervention、counterfactual meta-optimization、Tree-RL rollouts という並びが、harness engineering の関心にかなり近い。
-      </p>
+    <section id="contribution">
+      <h2>課題と貢献</h2>
+      <div class="grid">
+        <div class="panel">
+          <strong>問題設定</strong>
+          <p>meta-agent が worker agent を改善・監督・学習に使おうとしても、現在の実行基盤では過去状態への正確な復帰や分岐が難しい。</p>
+        </div>
+        <div class="panel">
+          <strong>中心アイデア</strong>
+          <p>agent の task、effect、scope、execution trace を第一級の対象にし、実行履歴を typed event の永続構造として扱う。</p>
+        </div>
+        <div class="panel">
+          <strong>貢献</strong>
+          <p>実行基盤、Lean で mechanize された中核 semantics、Python framework、そして supervision / optimization / RL training の3用途を示す。</p>
+        </div>
+      </div>
       <div class="callout">
         <p>
-          Direct Corpus Interaction が「検索インターフェースを太くする」話だとすると、Shepherd は「実行インターフェースを太くする」話に見える。
-          失敗した実行を眺めるだけでなく、巻き戻して別分岐を走らせる、介入する、学習データにする、という発想がある。
+          この論文の貢献は「新しい agent が賢い」ではなく、「agent を賢く使うための実行面をどう作るか」にある。おい丸が普段言っている harness engineering にかなり近い。
         </p>
       </div>
+    </section>
+
+    <section id="model">
+      <h2>しくみ</h2>
+      <h3>4つの基本単位</h3>
       <p>
-        読む入口は、Abstract、system overview、3つの application。特に runtime intervention、counterfactual meta-optimization、Tree-RL training の結果だけ先に拾うと、論文の旨味に入りやすい。
+        Shepherd は functional programming の発想を agentic execution に持ち込み、effectful な処理を「何をするか」と「どう世界に反映するか」に分ける。論文では、agent 実行を扱うために4つの単位を第一級にする。
+      </p>
+      <div class="grid">
+        <div class="panel">
+          <strong>Task</strong>
+          <p>agent の振る舞いそのもの。単なるプロンプトではなく、実行可能な関数として扱われる。</p>
+        </div>
+        <div class="panel">
+          <strong>Effect</strong>
+          <p>agent の行動。意図と結果を分けて記録し、可逆なもの、補償可能なもの、不可逆なものを区別する。</p>
+        </div>
+        <div class="panel">
+          <strong>Scope</strong>
+          <p>agent が走る環境。sandbox、model provider、tool surface を含み、fork / merge / discard の対象になる。</p>
+        </div>
+        <div class="panel">
+          <strong>Execution trace</strong>
+          <p>過去の状態を Git-like な commit graph として残す。過去地点へ戻り、そこから別の分岐を走らせられる。</p>
+        </div>
+      </div>
+      <h3>fork / replay が何を変えるか</h3>
+      <p>
+        失敗した agent 実行を改善したい時、普通は最初から再実行するか、ログを読んでプロンプトやコードを直す。Shepherd では、失敗直前の地点を fork して、別の一手だけを試すことができる。これは debugging、supervision、RL rollout のいずれにも効く。
+      </p>
+      <p>
+        論文で面白いのは、filesystem だけでなく agent process と message prefix も一緒に扱うこと。これにより replay 時に prompt cache を再利用しやすく、meta-agent が多数の分岐を試す時のコストを抑えられる。
       </p>
     </section>
 
-    <section id="sparks">
-      <h2>種火</h2>
+    <section id="results">
+      <h2>検証結果</h2>
+      <p>
+        論文は Shepherd を3つの使い方で評価する。どれも「実行を分岐できる」ことが直接効く設計になっている。
+      </p>
       <div class="grid">
         <div class="panel">
-          <strong><a href="https://arxiv.org/abs/2605.10870">Remember the Decision, Not the Description</a></strong>
-          <p>memory を「過去の説明をどれだけ復元できるか」ではなく、「将来の意思決定に必要な区別をどれだけ保てるか」で見る。Storage Is Not Memory 系の続きとして強い。</p>
+          <strong>Live supervision</strong>
+          <p>CooperBench の pair coding で、live supervisor による介入により pass rate が 28.8% から 54.7% へ上がる。</p>
         </div>
         <div class="panel">
-          <strong><a href="https://arxiv.org/abs/2605.10813">NanoResearch</a></strong>
-          <p>研究自動化を「誰にとっての自動化か」から入り、skill bank、memory、policy learning を個人の研究履歴に寄せる。</p>
+          <strong>Counterfactual optimization</strong>
+          <p>meta-agent が過去地点から別経路を探索し、4 benchmarks で MetaHarness や GEPA を上回る。最大 11 points 改善し、wall-clock も最大 58% 下がる。</p>
         </div>
         <div class="panel">
-          <strong><a href="https://arxiv.org/abs/2605.10923">Dynamic Skill Lifecycle Management</a></strong>
-          <p>skill をただ蓄積するのではなく、retain / retire / expand の lifecycle として扱う。skill rot の話に近い。</p>
+          <strong>Tree-RL training</strong>
+          <p>meta-agent が選んだ turn から rollout を分岐し、TerminalBench-2 で Qwen3.5-35B-A3B の性能を 34.2% から 39.4% に上げる。</p>
         </div>
-        <div class="panel">
-          <strong><a href="https://arxiv.org/abs/2605.10848">Rethinking Agentic Search with Pi-Serini</a></strong>
-          <p>frontier LLM の agentic loop なら BM25 でも deep research に足りるのか、という実装寄りの問い。DCI の補助線になる。</p>
+      </div>
+      <div class="callout">
+        <p>
+          結果の読みどころは、単に benchmark score が上がったことではない。fork/replay 可能な実行基盤があると、監督、探索、訓練が同じ substrate の上に乗る、という点が強い。
+        </p>
+      </div>
+    </section>
+
+    <section id="why">
+      <h2>なぜ今読むか</h2>
+      <p>
+        直前に読んだ Direct Corpus Interaction は、agentic search において検索インターフェースを太くする話だった。Shepherd はそれに対して、agentic execution のインターフェースを太くする話に見える。
+      </p>
+      <p>
+        memory の議論では「何を保存するか」に目が行きがちだが、Shepherd を読むと「保存されるべき経験とは、そもそもどの粒度の実行なのか」という問いが出てくる。会話ログか、ツール呼び出しか、filesystem 差分か、sandbox 状態か、分岐した別経路か。ここを設計しないまま memory を足しても、再利用できる経験にはなりにくい。
+      </p>
+      <div class="reading-path">
+        <div class="step">
+          <strong>まず Abstract と Figure 1</strong>
+          <p>Shepherd が何を substrate と呼んでいるか、worker agent と meta-agent の関係を見る。</p>
+        </div>
+        <div class="step">
+          <strong>次に Section 3</strong>
+          <p>task / effect / scope / execution trace の対応関係を押さえる。ここが論文の核。</p>
+        </div>
+        <div class="step">
+          <strong>最後に Section 5</strong>
+          <p>live supervision、CRO、Tree-RL の3用途を見る。自分の harness に転用できる発想が一番拾える。</p>
         </div>
       </div>
     </section>
 
-    <section id="practical">
-      <h2>必要なら実用品</h2>
+    <section id="limits">
+      <h2>限界と読みどころ</h2>
+      <p>
+        Shepherd は proof-of-existence 色が強い。つまり、これがそのまま全 agent platform の最終形というより、meta-agent が execution trace を操作できると何が可能になるかを示す論文として読むのがよい。
+      </p>
+      <ul>
+        <li>不可逆な effect、たとえば外部送信や支払いなどは rollback できず、監査対象として記録するしかない。</li>
+        <li>counterfactual replay は、過去の編集と副作用が弱く結合していることをある程度仮定する。</li>
+        <li>meta-agent 自体のコストや品質が結果に影響するため、substrate と supervisor intelligence の寄与を分けて読む必要がある。</li>
+        <li>agent がこの substrate を自分で使いこなすには、post-training や UI / API 設計がさらに必要になる。</li>
+      </ul>
+      <p>
+        それでも、agent を「一回走らせてログを読むもの」から「分岐可能な実行 artifact を残すもの」へ移す補助線としてかなり強い。memory、skills、evaluation をまとめる下層として読める。
+      </p>
+    </section>
+
+    <section id="qa">
+      <h2>読後Q&A</h2>
       <div class="grid">
         <div class="panel">
-          <strong><a href="https://arxiv.org/abs/2605.10787">ComplexMCP</a></strong>
-          <p>MCP ベースの stateful sandbox で、ツール数が増え、API が相互依存し、環境ノイズもある時に agent を測る benchmark。</p>
+          <strong>Q. この論文の一番大きい主張は？</strong>
+          <p>A. meta-agent が worker agent を監督・改善・訓練するには、実行履歴を分岐・巻き戻し・再生できる substrate が必要だ、という主張。</p>
         </div>
         <div class="panel">
-          <strong><a href="https://arxiv.org/abs/2605.10500">SkillEvolver</a></strong>
-          <p>skill を静的 artifact ではなく、利用失敗から prose / code を更新する対象として扱う。</p>
+          <strong>Q. memory 論文なの？</strong>
+          <p>A. 直接の memory 論文ではない。ただし「経験をどの粒度で artifact 化するか」という意味では、agent memory の前提を作る論文として読める。</p>
         </div>
         <div class="panel">
-          <strong><a href="https://arxiv.org/abs/2605.10039">Instruction Adherence in Coding Agent Configuration Files</a></strong>
-          <p>AGENTS.md / CLAUDE.md / Cursor Rules 的な設定ファイル構造が、coding agent の指示遵守に効くのかを見る。</p>
+          <strong>Q. Git-like trace とは何？</strong>
+          <p>A. agent の effect stream を commit graph のように扱うこと。過去状態を参照し、fork し、別経路を走らせられる。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. ただの checkpoint / restore と違う？</strong>
+          <p>A. filesystem だけでなく、agent process、message prefix、tool effect、scope 操作を一体で扱うところが違う。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. 結果は何が強かった？</strong>
+          <p>A. live supervision、counterfactual optimization、Tree-RL training の3つで、fork/replay できることが直接 score や wall-clock に効いている。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. 自分の運用にどう効く？</strong>
+          <p>A. Discord / wiki / public page のログを残すだけでなく、agent 実行そのものを再利用可能な artifact として残す設計に目が向く。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. skill とどうつながる？</strong>
+          <p>A. skill を改善するには、成功・失敗した実行のどの地点を変えればよかったかを見る必要がある。Shepherd はその分岐実験をしやすくする。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. harness engineering 的には？</strong>
+          <p>A. harness は「agent の外側の配線」だけでなく、実行履歴、環境状態、分岐実験、評価を支える runtime でもある、という見方が得られる。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. 読後に残る一言は？</strong>
+          <p>A. agent の経験は、ログとして保存するだけでは弱い。分岐して試せる execution trace にして初めて、改善や学習の材料になる。</p>
         </div>
       </div>
     </section>
 
     <section id="next">
-      <h2>次アクション</h2>
-      <ol>
-        <li>今日は Shepherd を読む。Abstract、system overview、application results の順でよい。</li>
-        <li>メモでは「trace を memory と呼ぶべきか」「fork/replay は skill 改善や評価にどう効くか」を Q&A にする。</li>
-        <li>余力があれば Remember the Decision を次に回す。memory の評価軸がかなりきれいに進む。</li>
-        <li>Pi-Serini は Direct Corpus Interaction の補助線として、BM25 / DCI / agentic retriever の比較表を作る時に読む。</li>
-      </ol>
+      <h2>次に読むなら</h2>
+      <div class="grid">
+        <div class="panel">
+          <strong>Remember the Decision, Not the Description</strong>
+          <p>Shepherd が execution trace の粒度を問うなら、こちらは memory が意思決定に何を残すべきかを問う。</p>
+        </div>
+        <div class="panel">
+          <strong>SkillEvolver</strong>
+          <p>実行失敗から skill を改善する話。Shepherd の trace / fork と合わせて読むと、skill 改善 loop の絵が見えやすい。</p>
+        </div>
+        <div class="panel">
+          <strong>ComplexMCP</strong>
+          <p>tool sandbox で agent がどこで失敗するかを見る benchmark。Shepherd の runtime substrate と評価面で接続しやすい。</p>
+        </div>
+      </div>
     </section>
   </main>
 
   <footer>
-    Sources: arXiv recent cs.AI / cs.CL / cs.IR / cs.SE / cs.HC / cs.LG, Hugging Face Papers 2026-05-12 / 2026-05-11.
+    Source: <a href="https://arxiv.org/abs/2605.10913">arXiv:2605.10913</a> / <a href="https://arxiv.org/html/2605.10913v1">arXiv HTML</a> / <a href="https://huggingface.co/papers/2605.10913">Hugging Face Papers</a>
   </footer>
 </body>
 </html>
