@@ -1,0 +1,379 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Memory And Skill Rot | Agent Harness Notes</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f4ee;
+      --paper: #fffdf8;
+      --ink: #1f2933;
+      --muted: #5f6b76;
+      --line: #ddd5c6;
+      --accent: #0f766e;
+      --accent-2: #8a5a12;
+      --accent-3: #334155;
+      --soft: #e7f2ef;
+      --soft-2: #f5ead5;
+      --shadow: 0 16px 46px rgba(31, 41, 51, .10);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.75;
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration-thickness: .08em;
+      text-underline-offset: .18em;
+    }
+
+    .site-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 14px clamp(18px, 4vw, 44px);
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 253, 248, .92);
+    }
+
+    .brand {
+      color: var(--ink);
+      font-weight: 850;
+      text-decoration: none;
+    }
+
+    .top-nav {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 12px;
+      font-size: .94rem;
+    }
+
+    .hero {
+      min-height: 70vh;
+      display: grid;
+      align-items: end;
+      padding: clamp(28px, 6vw, 84px);
+      border-bottom: 1px solid var(--line);
+      background:
+        linear-gradient(180deg, rgba(15, 118, 110, .12), rgba(246, 244, 238, 1)),
+        linear-gradient(120deg, rgba(138, 90, 18, .16), rgba(51, 65, 85, .12)),
+        var(--bg);
+    }
+
+    .hero-inner { max-width: 980px; }
+
+    .kicker {
+      margin: 0 0 12px;
+      color: var(--accent);
+      font-weight: 850;
+      font-size: .86rem;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      max-width: 960px;
+      margin: 0;
+      font-size: clamp(2.2rem, 6vw, 5.2rem);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+
+    .hero p {
+      max-width: 760px;
+      margin: 22px 0 0;
+      color: #31404c;
+      font-size: clamp(1.05rem, 2vw, 1.3rem);
+    }
+
+    .paper-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 22px;
+    }
+
+    .meta-chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 5px 10px;
+      border: 1px solid rgba(15, 118, 110, .24);
+      border-radius: 999px;
+      background: rgba(255, 253, 248, .76);
+      color: #23423e;
+      font-size: .9rem;
+      font-weight: 700;
+    }
+
+    main {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 42px clamp(18px, 4vw, 42px) 78px;
+    }
+
+    .toc {
+      display: grid;
+      gap: 8px;
+      margin: 24px 0 38px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .toc a { font-weight: 760; }
+
+    section {
+      padding: 34px 0;
+      border-top: 1px solid var(--line);
+    }
+
+    h2 {
+      margin: 0 0 16px;
+      color: var(--accent-3);
+      font-size: clamp(1.55rem, 3vw, 2.45rem);
+      line-height: 1.16;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 24px 0 10px;
+      font-size: 1.15rem;
+      line-height: 1.35;
+      letter-spacing: 0;
+    }
+
+    p { margin: 0 0 14px; }
+
+    ul {
+      margin: 10px 0 0;
+      padding-left: 1.15rem;
+    }
+
+    li { margin: 8px 0; }
+
+    code {
+      padding: .08em .28em;
+      border-radius: 4px;
+      background: rgba(51, 65, 85, .08);
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: .92em;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+      margin-top: 18px;
+    }
+
+    .panel {
+      min-width: 0;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+
+    .panel strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--accent);
+      font-size: 1.02rem;
+    }
+
+    .callout {
+      margin-top: 18px;
+      padding: 18px;
+      border-left: 5px solid var(--accent);
+      border-radius: 8px;
+      background: var(--soft);
+    }
+
+    footer {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 clamp(18px, 4vw, 42px) 40px;
+      color: var(--muted);
+      font-size: .92rem;
+    }
+
+    @media (max-width: 760px) {
+      .site-header { align-items: flex-start; flex-direction: column; }
+      .hero { min-height: 62vh; }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./">Article Pages</a>
+    <nav class="top-nav" aria-label="Site navigation">
+      <a href="./">Home</a>
+      <a href="./#articles">Articles</a>
+      <a href="./unread-reading-inventory.html">未読一覧</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <div class="hero-inner">
+      <p class="kicker">Agent Harness Notes</p>
+      <h1>Memory And Skill Rot In Agent Harnesses</h1>
+      <p>long-running agent で増えていく memory と skill を、保存ファイルではなく、読み込み・適用・忘却・統合・risk review を含む harness interface として捉え直すための公開メモ。</p>
+      <div class="paper-meta">
+        <span class="meta-chip">Agent Memory</span>
+        <span class="meta-chip">Agent Skills</span>
+        <span class="meta-chip">Harness Interface</span>
+        <span class="meta-chip">Lifecycle Governance</span>
+        <span class="meta-chip">作成日: 2026-05-12 UTC</span>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <nav class="toc" aria-label="Table of contents">
+      <a href="#claim">中心の主張</a>
+      <a href="#memory">Memory は harness interface</a>
+      <a href="#skills">Skill は自然言語のままだと腐る</a>
+      <a href="#rot">Rot は削除問題ではなく運用問題</a>
+      <a href="#practice">実務への引き出し</a>
+      <a href="#questions">次の設計問い</a>
+    </nav>
+
+    <section id="claim">
+      <h2>中心の主張</h2>
+      <p>
+        long-running agent の問題は、記憶や skill を保存できるかではない。保存されたものが、いつ読まれ、どう提示され、どの条件で使われ、古くなった時にどう扱われるかが本体になる。
+      </p>
+      <p>
+        memory も skill も単なるファイル群ではなく、model と harness が合体する interface として設計する必要がある。保存、検索、適用、拒否、統合、廃棄までが一つの lifecycle になる。
+      </p>
+      <div class="callout">
+        <p>
+          雑に言うと、「たくさん覚えた agent」は強いとは限らない。古い判断基準、重複した手順、危険な記憶、呼び出し条件が曖昧な skill が増えると、能力ではなく負債が増える。
+        </p>
+      </div>
+    </section>
+
+    <section id="memory">
+      <h2>Memory は harness interface</h2>
+      <p>
+        memory transfer は file copy ではない。Claude Code、Codex、Hermes のような agent が似た内容を読めても、モデルはそれぞれ異なる memory UI、引用形式、読み込みタイミング、system reminder、更新 API に慣らされている。
+      </p>
+      <p>
+        つまり memory の実体は Markdown や DB row だけではない。常時ロードされるもの、on-demand search されるもの、根拠として提示される形式、古い記憶の扱い、危険な記憶を拒否するルールまで含めて memory layer になる。
+      </p>
+      <div class="grid">
+        <div class="panel">
+          <strong>Loading</strong>
+          <p>何を最初から読むのか。何を検索時だけ読むのか。context の節約だけでなく、判断の初期条件を決める。</p>
+        </div>
+        <div class="panel">
+          <strong>Presentation</strong>
+          <p>記憶を根拠、方針、履歴、候補のどれとして見せるのか。表示形式が agent の使い方を変える。</p>
+        </div>
+        <div class="panel">
+          <strong>Rejection</strong>
+          <p>古い記憶、矛盾する記憶、prompt injection 的な記憶をどう無効化するか。保存より拒否が難しい。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="skills">
+      <h2>Skill は自然言語のままだと腐る</h2>
+      <p>
+        <code>SKILL.md</code> のような自然言語 skill は、人間にも LLM にも読みやすい。一方で、呼び出し条件、実行手順、tool や resource への副作用、必要権限、失敗時の扱いが一つの文章に混ざりやすい。
+      </p>
+      <p>
+        skill が少ないうちは問題になりにくい。しかし registry が大きくなると、discovery、risk review、重複統合、古い手順の検出が難しくなる。自然言語 skill は便利な作業単位だが、運用が始まると metadata が必要になる。
+      </p>
+      <h3>三層で見る補助線</h3>
+      <ul>
+        <li><strong>Scheduling layer:</strong> いつ呼ぶべきか、どんな入力や状況で有効か。</li>
+        <li><strong>Structural layer:</strong> どんな場面・手順・分岐で動くか。</li>
+        <li><strong>Logical layer:</strong> どんな atomic action と resource use を持つか。</li>
+      </ul>
+      <p>
+        これは自然言語 skill を捨てる話ではない。読める本文を残しつつ、機械可読な index、risk surface、lifecycle metadata を重ねる方向として使える。
+      </p>
+    </section>
+
+    <section id="rot">
+      <h2>Rot は削除問題ではなく運用問題</h2>
+      <p>
+        skill rot は「古い skill を消せばよい」という話ではない。使用回数、最終使用時刻、patch 履歴、重複、drift、pin、archive、restore を持つ lifecycle 管理が必要になる。
+      </p>
+      <p>
+        memory も同じで、保存された記憶が多いほど賢くなるわけではない。使われない記憶、今の方針と矛盾する記憶、古い外部情報、意図せず行動を縛る記述は、長期運用では負債になる。
+      </p>
+      <div class="grid">
+        <div class="panel">
+          <strong>Stale</strong>
+          <p>当時は正しかったが、今は条件が変わった知識。更新日と適用条件がないと混入しやすい。</p>
+        </div>
+        <div class="panel">
+          <strong>Duplicate</strong>
+          <p>似た memory や skill が複数あり、どれを優先するか分からない状態。routing が不安定になる。</p>
+        </div>
+        <div class="panel">
+          <strong>Unsafe</strong>
+          <p>権限、秘密情報、外部操作、古い依存に関わる手順。呼び出し前の risk label が必要になる。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="practice">
+      <h2>実務への引き出し</h2>
+      <ul>
+        <li>catalog は単なるファイル一覧ではなく、memory interface として見る。summary、status、updated、related が retrieval policy の手がかりになる。</li>
+        <li>skill は本文だけでなく、trigger、side effects、必要権限、古さ、使用頻度を metadata として持つ余地がある。</li>
+        <li>wiki lint は整合性確認だけでなく、memory rot を防ぐ curator として育てられる。</li>
+        <li>learn-from-logs のように memory を増やす仕組みは、memory を減らす・統合する仕組みと対にした方がよい。</li>
+      </ul>
+    </section>
+
+    <section id="questions">
+      <h2>次の設計問い</h2>
+      <div class="grid">
+        <div class="panel">
+          <strong>Routing</strong>
+          <p>skill の description だけで routing する方式に、どこまで risk label と lifecycle state を足すべきか。</p>
+        </div>
+        <div class="panel">
+          <strong>Status</strong>
+          <p><code>active</code>、<code>draft</code>、<code>unprocessed</code> に加えて、<code>stale</code> や <code>archived</code> を導入するべきか。</p>
+        </div>
+        <div class="panel">
+          <strong>Authorship</strong>
+          <p>agent-created skill と human-authored skill を明示的に分け、信頼度やレビュー条件を変えるべきか。</p>
+        </div>
+      </div>
+      <div class="callout">
+        <p>
+          読後に残す一言はこれ。agent の長期運用では、「覚える技術」と同じくらい「忘れる技術」と「腐りを見つける技術」が重要になる。
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Sources include public notes on agent memory engineering, skill structure, and skill lifecycle management.
+    This page is a public reading artifact and does not include private workspace paths, logs, or internal metadata.
+  </footer>
+</body>
+</html>
