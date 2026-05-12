@@ -1,0 +1,366 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Memento | Paper Summary</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f6f4ee;
+      --paper: #fffdf8;
+      --ink: #1f2933;
+      --muted: #5f6b76;
+      --line: #ddd5c6;
+      --accent: #0f766e;
+      --accent-2: #8a5a12;
+      --accent-3: #334155;
+      --soft: #e7f2ef;
+      --shadow: 0 16px 46px rgba(31, 41, 51, .10);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      line-height: 1.75;
+    }
+    a { color: var(--accent); text-decoration-thickness: .08em; text-underline-offset: .18em; }
+    .site-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      padding: 14px clamp(18px, 4vw, 44px);
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 253, 248, .92);
+    }
+    .brand { color: var(--ink); font-weight: 850; text-decoration: none; }
+    .top-nav { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 12px; font-size: .94rem; }
+    .hero {
+      min-height: 70vh;
+      display: grid;
+      align-items: end;
+      padding: clamp(28px, 6vw, 84px);
+      border-bottom: 1px solid var(--line);
+      background:
+        linear-gradient(180deg, rgba(15, 118, 110, .12), rgba(246, 244, 238, 1)),
+        linear-gradient(120deg, rgba(138, 90, 18, .18), rgba(51, 65, 85, .10)),
+        var(--bg);
+    }
+    .hero-inner { max-width: 980px; }
+    .kicker {
+      margin: 0 0 12px;
+      color: var(--accent);
+      font-weight: 850;
+      font-size: .86rem;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+    h1 {
+      max-width: 960px;
+      margin: 0;
+      font-size: clamp(2.2rem, 6vw, 5.2rem);
+      line-height: 1;
+      letter-spacing: 0;
+    }
+    .hero p {
+      max-width: 760px;
+      margin: 22px 0 0;
+      color: #31404c;
+      font-size: clamp(1.05rem, 2vw, 1.3rem);
+    }
+    .paper-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 22px; }
+    .meta-chip {
+      display: inline-flex;
+      align-items: center;
+      min-height: 30px;
+      padding: 5px 10px;
+      border: 1px solid rgba(15, 118, 110, .24);
+      border-radius: 999px;
+      background: rgba(255, 253, 248, .76);
+      color: #23423e;
+      font-size: .9rem;
+      font-weight: 700;
+    }
+    main { max-width: 1080px; margin: 0 auto; padding: 42px clamp(18px, 4vw, 42px) 78px; }
+    .toc {
+      display: grid;
+      gap: 8px;
+      margin: 24px 0 38px;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+    .toc a { font-weight: 760; }
+    section { padding: 34px 0; border-top: 1px solid var(--line); }
+    h2 {
+      margin: 0 0 16px;
+      color: var(--accent-3);
+      font-size: clamp(1.55rem, 3vw, 2.45rem);
+      line-height: 1.16;
+      letter-spacing: 0;
+    }
+    h3 { margin: 24px 0 10px; font-size: 1.15rem; line-height: 1.35; letter-spacing: 0; }
+    p { margin: 0 0 14px; }
+    ul { margin: 10px 0 0; padding-left: 1.15rem; }
+    li { margin: 8px 0; }
+    .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; margin-top: 18px; }
+    .panel {
+      min-width: 0;
+      padding: 18px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--paper);
+      box-shadow: var(--shadow);
+    }
+    .panel strong { display: block; margin-bottom: 6px; color: var(--accent); font-size: 1.02rem; }
+    .callout {
+      margin-top: 18px;
+      padding: 18px;
+      border-left: 5px solid var(--accent);
+      border-radius: 8px;
+      background: var(--soft);
+    }
+    footer {
+      max-width: 1080px;
+      margin: 0 auto;
+      padding: 0 clamp(18px, 4vw, 42px) 40px;
+      color: var(--muted);
+      font-size: .92rem;
+    }
+    @media (max-width: 760px) {
+      .site-header { align-items: flex-start; flex-direction: column; }
+      .hero { min-height: 62vh; }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./">Article Pages</a>
+    <nav class="top-nav" aria-label="Site navigation">
+      <a href="./">Home</a>
+      <a href="./#articles">Articles</a>
+      <a href="./unread-reading-inventory.html">未読一覧</a>
+    </nav>
+  </header>
+
+  <div class="hero">
+    <div class="hero-inner">
+      <p class="kicker">Paper Summary</p>
+      <h1>Memento</h1>
+      <p>LLM 本体を fine-tuning せず、過去の成功・失敗を case bank として蓄積し、似た課題に再利用することで deep research agent を継続学習させる論文。</p>
+      <div class="paper-meta">
+        <span class="meta-chip">arXiv:2508.16153</span>
+        <span class="meta-chip">Agent Memory</span>
+        <span class="meta-chip">Case-Based Reasoning</span>
+        <span class="meta-chip">M-MDP</span>
+        <span class="meta-chip">作成日: 2026-05-12 UTC</span>
+      </div>
+    </div>
+  </div>
+
+  <main>
+    <nav class="toc" aria-label="Table of contents">
+      <a href="#what">どんな論文か</a>
+      <a href="#claims">課題と貢献</a>
+      <a href="#method">手法のしくみ</a>
+      <a href="#results">検証結果</a>
+      <a href="#limits">限界と読みどころ</a>
+      <a href="#qa">読後Q&A</a>
+      <a href="#next">次に読むなら</a>
+    </nav>
+
+    <section id="what">
+      <h2>どんな論文か</h2>
+      <p>
+        <strong>Memento: Fine-tuning LLM Agents without Fine-tuning LLMs</strong> は、LLM エージェントの「学習」を、モデル重みの更新ではなく、経験の保存・選択・再利用として設計する論文。
+        狙いは、長い調査やツール利用を行う agent が、毎回ゼロから考えるのではなく、過去の似た課題で何を計画し、何が成功し、何が失敗したかを使って次の行動を良くすることにある。
+      </p>
+      <p>
+        従来の agent 改善には大きく二つの寄り道がある。ひとつは、固定された reflection や手書き workflow を増やす方向。これは狭いタスクでは効くが、環境が変わると硬い。
+        もうひとつは、LLM 自体を強化学習や教師あり学習で fine-tuning する方向。こちらは柔軟だが、計算コストが高く、継続的に運用しながら学ぶには重い。
+      </p>
+      <p>
+        Memento はその間に入る。モデル本体は固定したまま、過去の trajectory を「case」として外部記憶に保存し、現在のタスクに似た case を取り出して planner に渡す。
+        つまり、学習するのは「どの case を参照すると良いか」という選択方針であり、LLM の重みではない。
+      </p>
+      <p>
+        この論文が面白いのは、単なる RAG ではなく、古典的な case-based reasoning と強化学習をつないでいるところ。
+        過去の文書を検索するのではなく、過去の状態・計画・報酬を持つ経験を検索し、それを planning の材料にする。
+      </p>
+      <p>
+        読む前の見取り図としては、Direct Corpus Interaction が「資料庫をどう歩くか」、Shepherd が「実行履歴をどう分岐・再生するか」なら、Memento は「成功・失敗した実行経験を、次の計画にどう効かせるか」を扱う論文だと思うと入りやすい。
+      </p>
+    </section>
+
+    <section id="claims">
+      <h2>課題と貢献</h2>
+      <div class="grid">
+        <div class="panel">
+          <strong>継続学習を外部化する</strong>
+          <p>LLM の重みを更新せず、経験を case bank に保存して、類似課題の planning に使う。</p>
+        </div>
+        <div class="panel">
+          <strong>M-MDP として定式化</strong>
+          <p>通常の MDP に memory space を加え、状態、行動、報酬を持つ case を読み書きする agent として表す。</p>
+        </div>
+        <div class="panel">
+          <strong>Deep research agent で実証</strong>
+          <p>GAIA、DeepResearcher、SimpleQA、HLE で、planning、tool use、web research への効果を測る。</p>
+        </div>
+      </div>
+      <div class="callout">
+        <p>
+          主張の芯は「agent を賢くするには、毎回モデルを訓練し直す必要はない。経験をうまく覚え、うまく選ぶだけでも、かなり学習に近い振る舞いが出る」という点。
+        </p>
+      </div>
+    </section>
+
+    <section id="method">
+      <h2>手法のしくみ</h2>
+      <h3>1. 過去の経験を case として保存する</h3>
+      <p>
+        Memento は、現在のタスク、作った計画、結果の成否を case として保存する。論文中では case を状態、行動、報酬の組として扱う。
+        これにより、単なる会話ログではなく「この状況で、この計画を使ったら、うまくいった / 失敗した」という再利用可能な経験になる。
+      </p>
+      <h3>2. planner が case を読んで計画を作る</h3>
+      <p>
+        新しいタスクが来ると、planner は case memory から関連する過去ケースを読む。非パラメトリック版では意味的類似度で近い case を取る。
+        パラメトリック版では、どの case が成功に効きやすいかを Q 関数で学び、その値に基づいて case を選ぶ。
+      </p>
+      <h3>3. executor が MCP 経由でツールを使う</h3>
+      <p>
+        planner が作った subtask を executor が実行する。検索、web crawl、画像、音声、PDF、表計算、コード実行などを MCP 経由で扱う構成になっている。
+        実行中の subtask や tool call は別の memory に保存され、planner は途中結果を見ながら再計画する。
+      </p>
+      <h3>4. 成功・失敗を次の memory 更新に使う</h3>
+      <p>
+        タスクが終わると、結果を case bank に追加する。パラメトリック版では同時に Q 関数を更新し、「どの case が次の計画で役に立つか」の選択方針を改善する。
+        ここが、単に事例を増やすだけの RAG と違うところ。
+      </p>
+    </section>
+
+    <section id="results">
+      <h2>検証結果</h2>
+      <p>
+        Memento は GAIA validation で 87.88% Pass@3 を出し、論文中の時点でトップ水準として報告されている。private test でも 79.40%。
+        DeepResearcher 系の7つの open-domain QA では平均 66.6% F1、80.4% PM で、training-based な DeepResearcher を上回る。
+      </p>
+      <div class="grid">
+        <div class="panel">
+          <strong>GAIA</strong>
+          <p>長いツール利用と planning の評価。validation で高い値を出す一方、Level 3 のような長い課題はまだ難しい。</p>
+        </div>
+        <div class="panel">
+          <strong>DeepResearcher</strong>
+          <p>web research と multi-hop QA で強い。case-based memory が特に効く領域として読める。</p>
+        </div>
+        <div class="panel">
+          <strong>OOD generalization</strong>
+          <p>Musique、Bamboogle、PopQA で case-based memory が 4.7 から 9.6 ポイントの絶対改善を足している。</p>
+        </div>
+      </div>
+      <p>
+        切り分け実験では、online executor だけを足してもノイズが増える場合がある。planning を入れると大きく改善し、さらに case-based reasoning を足すと追加で伸びる。
+        つまり「外部情報がある」だけでは足りず、「計画」と「経験の選択」が必要だ、という結果になっている。
+      </p>
+    </section>
+
+    <section id="limits">
+      <h2>限界と読みどころ</h2>
+      <ul>
+        <li>case bank が増え続けると、検索コストや質の劣化が問題になる。論文も swamping problem に触れている。</li>
+        <li>報酬が正しく付く前提が強い。実運用では「成功したように見えるが危険」な case をどう扱うかが難しい。</li>
+        <li>Deep research agent としての評価が中心なので、会話 memory や個人 assistant memory へそのまま移せるとは限らない。</li>
+        <li>結果は強いが、GPT-4.1 / o3 / o4-mini と豊富な tool stack を使っているため、memory だけの効果として読むと過大評価しやすい。</li>
+      </ul>
+      <p>
+        読みどころは、memory を「取り出す知識」ではなく「次の計画を選ぶための経験」として扱う点。
+        Memory And Skill Rot の文脈では、case を増やすだけでなく、どの case を残すか、どの case を危険として退けるかまで考えたくなる。
+      </p>
+    </section>
+
+    <section id="qa">
+      <h2>読後Q&A</h2>
+      <div class="grid">
+        <div class="panel">
+          <strong>Q. Memento は何を fine-tuning しているの？</strong>
+          <p>A. LLM 本体ではなく、過去 case をどう選ぶかの記憶側の方針を更新する。だから「LLM を fine-tuning しない fine-tuning」というタイトルになっている。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. RAG と何が違う？</strong>
+          <p>A. RAG は文書を検索することが多い。Memento は、過去の状態、計画、結果を持つ経験を検索し、次の planning に使う。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. case-based reasoning って何？</strong>
+          <p>A. 似た過去事例を思い出し、その解き方を今の問題に合わせて使う考え方。Memento はこれを LLM agent の planning に載せる。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. M-MDP のポイントは？</strong>
+          <p>A. 通常の状態と行動に加えて、過去経験の memory space を明示すること。agent の行動が現在状態だけでなく memory にも依存する。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. parametric memory は LLM の重み更新？</strong>
+          <p>A. 違う。更新するのは case 選択用の Q 関数で、LLM 本体の重みではない。ここを混ぜると読み違える。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. どこで一番効いている？</strong>
+          <p>A. 長い planning、web search、tool use、multi-hop QA のように、過去の進め方が次の計画に効くタスクで強い。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. なぜ online executor だけでは不十分？</strong>
+          <p>A. 外部情報を取れるだけだと、ノイズや寄り道も増える。planner と case memory が、どの情報をどう使うかを整える。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. 失敗 case も保存する意味は？</strong>
+          <p>A. 同じ失敗を避ける材料になる。成功例だけだと、危ない道や無駄な探索を学べない。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. Memory And Skill Rot とどうつながる？</strong>
+          <p>A. case bank は増えるほど良いとは限らない。古い case、危険な case、重複 case をどう管理するかが次の問題になる。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. Shepherd と比べると？</strong>
+          <p>A. Shepherd は実行履歴を分岐・再生できる基盤。Memento は、保存された経験を次の計画でどう選ぶかに寄っている。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. 実務に持ち込むなら？</strong>
+          <p>A. 「過去の成功手順集」を作るだけでなく、どの状況でどの手順を参照すべきかまで学習・評価する設計にする。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. 読後に残る一言は？</strong>
+          <p>A. agent の経験はログではなく、次の planning を変える case として保存して初めて効いてくる。</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="next">
+      <h2>次に読むなら</h2>
+      <div class="grid">
+        <div class="panel">
+          <strong>Shepherd</strong>
+          <p>経験を case として使う前に、実行履歴を分岐・再生可能な基盤としてどう持つかを見る。</p>
+        </div>
+        <div class="panel">
+          <strong>Memory And Skill Rot</strong>
+          <p>case や skill が増えた後、古さ・重複・危険をどう管理するかへ進む。</p>
+        </div>
+        <div class="panel">
+          <strong>Remember the Decision, Not the Description</strong>
+          <p>memory を「説明の保存」ではなく「意思決定に効く区別の保存」として読む次の候補。</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Source: <a href="https://arxiv.org/abs/2508.16153">Memento: Fine-tuning LLM Agents without Fine-tuning LLMs</a>.
+    This page is a public reading artifact and does not include private workspace paths, logs, or internal metadata.
+  </footer>
+</body>
+</html>
