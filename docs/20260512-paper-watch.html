@@ -275,6 +275,7 @@
         <span class="meta-chip">Meta-Agents</span>
         <span class="meta-chip">Execution Trace</span>
         <span class="meta-chip">作成日: 2026-05-12 UTC</span>
+        <span class="meta-chip">更新日: 2026-05-13 UTC</span>
       </div>
     </div>
   </div>
@@ -282,9 +283,11 @@
   <main>
     <nav class="toc" aria-label="Table of contents">
       <a href="#what">どんな論文か</a>
+      <a href="#scope">この論文が言っている範囲</a>
       <a href="#contribution">課題と貢献</a>
       <a href="#model">しくみ</a>
       <a href="#results">検証結果</a>
+      <a href="#meta-agent">メタエージェントとは何か</a>
       <a href="#why">なぜ今読むか</a>
       <a href="#limits">限界と読みどころ</a>
       <a href="#qa">読後Q&A</a>
@@ -303,7 +306,36 @@
         重要なのは、これは単なるログ管理ではないこと。論文は、agent の行動を typed event として Git-like な execution trace に記録し、agent process と filesystem を一緒に fork / replay できるようにする。つまり、会話履歴だけでなく、環境の状態まで含めて「その時点の agent」を再利用可能にする。
       </p>
       <div class="notice">
-        ざっくり言うと、Shepherd は「agent の実行を Git の branch のように扱えるようにする」論文。meta-agent はその branch を見て、介入し、分岐させ、良い経路を選べる。
+        ざっくり言うと、Shepherd は「agent の実行を Git の branch のように扱えるようにする」論文。meta-agent はその branch を見て、介入し、分岐させ、別の経路を試せる。
+      </div>
+    </section>
+
+    <section id="scope">
+      <h2>この論文が言っている範囲</h2>
+      <p>
+        読む時に一番混乱しやすいのは、Shepherd が「過去経験検索システム」なのか「戻れる過去を作る実行基盤」なのか、という点。結論から言うと、Shepherd 本体は後者に近い。
+      </p>
+      <p>
+        Shepherd は、たくさんある過去の軌跡から今のタスクに似たものを自動検索する memory system ではない。論文の中心は、agent と environment の過去状態を正確に fork / replay できるようにし、その上で meta-agent が監督・反実仮想検証・訓練用分岐をできるようにすること。
+      </p>
+      <div class="grid">
+        <div class="panel">
+          <strong>Shepherd が作るもの</strong>
+          <p>過去時点に戻って再開できる execution trace。agent の会話だけでなく、filesystem、scope、tool effect も含む。</p>
+        </div>
+        <div class="panel">
+          <strong>Shepherd が直接は解かないもの</strong>
+          <p>大量の過去軌跡から、今のタスクに合う経験を検索・選択する問題。ここは別の memory / retrieval 層が必要になる。</p>
+        </div>
+        <div class="panel">
+          <strong>実験で示すもの</strong>
+          <p>戻れる過去があると、live supervision、counterfactual replay、Tree-RL training という3種類の meta-agent が作れること。</p>
+        </div>
+      </div>
+      <div class="callout">
+        <p>
+          したがって、この論文は「過去から何を選ぶべきか」の完全解ではなく、「選んだ過去を本当に実行可能な形で再利用するには、runtime がこうなっている必要がある」という土台の論文として読むとよい。
+        </p>
       </div>
     </section>
 
@@ -366,7 +398,7 @@
     <section id="results">
       <h2>検証結果</h2>
       <p>
-        論文は Shepherd を3つの使い方で評価する。どれも「実行を分岐できる」ことが直接効く設計になっている。
+        論文は Shepherd を3つの使い方で評価する。どれも「実行を分岐できる」ことが直接効く設計になっている。ただし、ここで評価されているのは「過去軌跡検索」ではなく、「戻れる過去を持つ runtime substrate を使うと何ができるか」。
       </p>
       <div class="grid">
         <div class="panel">
@@ -382,11 +414,56 @@
           <p>meta-agent が選んだ turn から rollout を分岐し、TerminalBench-2 で Qwen3.5-35B-A3B の性能を 34.2% から 39.4% に上げる。</p>
         </div>
       </div>
+      <h3>実験1: Live supervision</h3>
+      <p>
+        CooperBench で、2体の Claude Haiku 4.5 worker agent が並列に別々の feature を実装する。通常の並列実行では、互いの作業をうまく調整できず、片方の変更がもう片方を壊すような coordination failure が起きる。
+      </p>
+      <p>
+        Shepherd では、meta-agent が両 worker の effect stream を購読し、必要に応じて <code>inject</code> で助言を入れ、<code>handoff</code> で片方の scope をもう片方の新しい root にし、<code>discard</code> で詰まった worker を捨てる。ここでは「過去に戻る」より、実行中の状態を観測し、分岐・引き継ぎできることが効いている。
+      </p>
+      <h3>実験2: Counterfactual Replay Optimization</h3>
+      <p>
+        CRO は、agentic workflow の失敗 trace を meta-agent が読み、「この workflow edit なら失敗を直せるのでは」という候補を作る。各 edit は、直したい training examples の fix set と、悪化させたくない guard set を持つ。
+      </p>
+      <p>
+        Shepherd は parent trace のうち、その edit が影響し始める最初の event まで戻り、そこから suffix だけを replay する。全部を最初から走らせるのではなく、変更の影響を受ける下流だけを再実行するので、差分検証が速く、親 workflow との差も見やすい。候補が fix / guard の targeted gate を通れば dev set に回され、candidate pool に追加される。
+      </p>
+      <h3>実験3: Meta-Agent Guided Tree-RL</h3>
+      <p>
+        長期タスクでは、最後に成功か失敗かの reward だけが返ってくるため、途中のどの行動が効いたのか分かりにくい。Tree-GRPO では、meta-agent が root rollout の途中 turn を選び、Shepherd でその状態を fork して sibling branches を複数走らせる。
+      </p>
+      <p>
+        同じ prefix から分かれた未来の成否差を見ることで、suffix 側により細かい credit assignment を作る。ここでは「戻れる過去」は、過去経験の検索ではなく、訓練中の途中状態から複数の未来を試すために使われている。
+      </p>
       <div class="callout">
         <p>
           結果の読みどころは、単に benchmark score が上がったことではない。fork/replay 可能な実行基盤があると、監督、探索、訓練が同じ substrate の上に乗る、という点が強い。
         </p>
       </div>
+    </section>
+
+    <section id="meta-agent">
+      <h2>メタエージェントとは何か</h2>
+      <p>
+        この論文でいう meta-agent は、普通のタスクを直接解く agent ではなく、別の agent の実行を見て、指示したり、分岐させたり、改善したりする上位 agent のこと。worker agent が「コードを書く」「問題を解く」「ツールを呼ぶ」なら、meta-agent はその実行を観測・介入・評価・再実行する。
+      </p>
+      <div class="grid">
+        <div class="panel">
+          <strong>監督者</strong>
+          <p>並列 worker の作業を見て、衝突しそうなら助言を入れたり、片方の scope をもう片方へ引き継がせる。</p>
+        </div>
+        <div class="panel">
+          <strong>改善者</strong>
+          <p>過去の失敗 trace を読んで workflow edit を提案し、counterfactual replay で本当に直るか検証する。</p>
+        </div>
+        <div class="panel">
+          <strong>分岐点の選択者</strong>
+          <p>訓練中の rollout のどこから branch すれば学習信号が取れそうかを選び、複数の未来を走らせる。</p>
+        </div>
+      </div>
+      <p>
+        つまり、Shepherd における meta-agent は「賢い別モデル」というより、agent の実行履歴を操作対象にする agent。Shepherd は、その meta-agent に戻る・分ける・再開するための手足を渡している。
+      </p>
     </section>
 
     <section id="why">
@@ -435,6 +512,22 @@
         <div class="panel">
           <strong>Q. この論文の一番大きい主張は？</strong>
           <p>A. meta-agent が worker agent を監督・改善・訓練するには、実行履歴を分岐・巻き戻し・再生できる substrate が必要だ、という主張。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. 過去のある時点に戻って再開するの？</strong>
+          <p>A. そう。agent と environment の過去状態を fork し、そこから別の未来を走らせる。ただし、全ての外部副作用が巻き戻せるわけではない。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. たくさんある過去軌跡から、今のタスクに合うものを選ぶの？</strong>
+          <p>A. そこは Shepherd 本体の主張ではない。Shepherd は「戻れる過去」を作る。どの過去を検索・選択するかは、別の memory / retrieval / meta-agent 設計の問題。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. では実験では何をしたの？</strong>
+          <p>A. 3用途で試している。実行中に監督する、workflow edit の影響地点から反実仮想 replay する、訓練中に途中 turn から sibling rollout を分岐する。</p>
+        </div>
+        <div class="panel">
+          <strong>Q. meta-agent って何？</strong>
+          <p>A. worker agent の実行を見て、介入・改善・分岐・評価する上位 agent。タスクを直接解くというより、タスクを解いている agent の実行を操作する。</p>
         </div>
         <div class="panel">
           <strong>Q. memory 論文なの？</strong>
