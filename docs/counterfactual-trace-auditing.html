@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Counterfactual Trace Auditing Paper Summary</title>
+  <link rel="stylesheet" href="./assets/article-content.css">
+  <link rel="stylesheet" href="./assets/article-pages.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./index.html">Article Pages</a>
+    <nav class="top-nav" aria-label="Site navigation">
+      <a href="./index.html">Home</a>
+      <a href="./unread-reading-inventory.html">未読一覧</a>
+    </nav>
+  </header>
+
+
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="kicker">Reading artifact</p>
+      <h1>Counterfactual Trace Auditing Paper Summary</h1>
+      <p>Agent skill の評価を pass rate の差分だけで見ると、実際には大きく変わっている探索・編集・検証の振る舞いを見落とす。この論文は、skill あり/なしの paired trace を比較し、どの段階で skill が行動を変えたかを Skill Influence Pattern として監査する CTA を提案する。</p>
+      <div class="paper-meta">
+        <span class="meta-chip">作成日: 2026-05-14</span>
+        <span class="meta-chip">arXiv:2605.11946</span>
+        <span class="meta-chip">Agent Skills</span>
+        <span class="meta-chip">Trace Auditing</span>
+        <span class="meta-chip">SWE-Skills-Bench</span>
+        <span class="meta-chip">Claude Sonnet 4.5</span>
+      </div>
+      <div class="hero-actions">
+        <a class="button" href="https://arxiv.org/abs/2605.11946">元資料を開く</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="reader-grid">
+      <nav aria-label="Reading navigation">
+        <strong>目次</strong>
+        <a href="#paper">どんな論文か</a>
+        <a href="#contributions">課題と貢献</a>
+        <a href="#method">手法のしくみ</a>
+        <a href="#results">検証結果</a>
+        <a href="#limits">限界と読みどころ</a>
+        <a href="#figures">読みながら見る図表や節</a>
+        <a href="#next">次に読むなら</a>
+        <a href="#qa">読後Q&A</a>
+      </nav>
+
+      <div>
+        <section class="section" aria-label="概要">
+      <p>この論文の中心問いは、agent skill が最終的な成功率をどれだけ上げたかではなく、agent の行動をどのように変えたかをどう測るかである。多くの skill 評価は、skill を付ける前後の pass rate を比較する。しかし pass rate は、すでに解けるタスクでは ceiling effect に潰され、助ける効果と壊す効果が同時に起きた場合にも差分が見えにくい。</p>
+      <p>Counterfactual Trace Auditing、略して CTA は、同じタスク・同じベース agent について、skill ありの実行 trace と skill なしの実行 trace を対にして比較する。trace を Orientation、Implementation、Validation、Debugging、Finalization の段階に分け、段階と intent 単位で揃え、差分を divergence record として取り出す。</p>
+      <p>そのうえで CTA は、差分を Skill Influence Pattern、つまり SIP として分類する。SIP は、Procedural Scaffolding、Edge-case Prompting、Redundant Exploration、Surface Anchoring、Concept Bleed の5種類で、constructive / neutral / destructive な影響を trace 上の観測可能な形で表す。</p>
+      <p>実験は SWE-Skills-Bench の49タスクで、Claude Sonnet 4.5 を skill あり/なしで走らせた paired trace を使う。平均 pass-rate delta は +0.3 percentage points とほぼ動かない一方で、CTA は696件の behavioral divergence と522件の SIP instance を見つける。つまり、skill は結果だけ見ると効いていないように見えても、実行過程はかなり変えている。</p>
+      <p>読後に残るポイントは、skill 評価を outcome evaluation だけで終わらせず、trace-level characterization として扱うべきだということ。これは個人 assistant や Codex skills の運用でも効く。skill を増やすだけでなく、それが agent の探索・編集・検証・終了判断をどう歪めたかを見る必要がある。</p>
+        </section>
+
+    <section id="paper">
+      <h2>どんな論文か</h2>
+      <p>Counterfactual Trace Auditing of LLM Agent Skills は、LLM agent に外部 skill を付けたときの影響を、最終成功率ではなく実行 trace の変化として測るための論文である。</p>
+      <p>対象にしている skill は、Markdown などで書かれた手順、テンプレート、例、コード片のような procedural knowledge で、agent がタスク実行時に読み込むもの。論文は、この skill が agent のファイル探索、編集、テスト実行、デバッグ、終了判断にどう効くかを監査対象にする。</p>
+      <p>使っているデータは SWE-Skills-Bench の paired trace で、同じタスクを skill あり/なしで実行したもの。著者らは Claude Sonnet 4.5 で49タスクを監査し、pass rate ではほぼ見えない skill の行動影響を取り出している。</p>
+    </section>
+
+    <section id="contributions">
+      <h2>課題と貢献</h2>
+      <p>第一の貢献は、skill あり trace と skill なし trace を比較し、段階ごとの差分を取り出す CTA framework である。trace を typed events に変換し、phase segmentation、phase alignment、intent alignment、divergence extraction を行う。</p>
+      <p>第二の貢献は、Skill Influence Pattern、SIP の taxonomy である。Procedural Scaffolding と Edge-case Prompting は constructive、Redundant Exploration は neutral、Surface Anchoring と Concept Bleed は destructive な影響として扱われる。</p>
+      <p>第三の貢献は、SWE-Skills-Bench 49タスクでの observational study である。平均 pass-rate delta は +0.3 pp にすぎないが、696 divergence と522 SIP が観測され、skill が実行過程を大きく変えていることを示す。</p>
+      <p>第四の貢献は、case study によって pass rate だけでは読めない機構を示したこと。たとえば、skill が defensive shell template をほぼそのまま適用して pass rate を上げるケースや、skill の完了手順が agent の validation loop を早く閉じてしまう premature closure が見つかる。</p>
+    </section>
+
+    <section id="method">
+      <h2>手法のしくみ</h2>
+      <p>CTA の入力は paired trace bundle である。各 bundle には、タスク仕様、skill あり trace、skill なし trace、skill document、skill あり/なしの pass rate が含まれる。</p>
+      <p>M1 では raw trace を read、write、execute、search、think の typed event stream に変換する。M2 では trace を Orientation、Implementation、Validation、Debugging、Finalization の5段階へ分割する。</p>
+      <p>M3 では、skill あり trace と skill なし trace を段階単位で揃え、さらに reasoning text の TF-IDF cosine similarity を使って intent window を対応づける。対応した action window の target、content、outcome が違う場合や、一方にしかない action がある場合に divergence record を作る。</p>
+      <p>M4 では divergence record を SIP に分類する。分類器は学習済みモデルではなく、決定的な rule-based detector で、スコアが閾値を超えた SIP を付与する。1つの divergence に複数 SIP が付くことも、何も付かないこともある。</p>
+      <p>重要なのは、CTA が causal identification を主張しているわけではないこと。著者らは counterfactual を、同じタスク・同じベースモデルの skill あり/なし paired trace という操作的な意味で使っている。sampling や platform variation までは完全に統制していない。</p>
+    </section>
+
+    <section id="results">
+      <h2>検証結果</h2>
+      <p>全49タスクで、平均 pass-rate delta は +0.34 percentage points、中央値は0だった。45タスクは pass rate が変わらず、改善は3タスク、悪化は1タスクだけだった。</p>
+      <p>一方で、同じ paired trace からは696件の behavioral divergence と522件の SIP instance が見つかった。1タスク平均では divergence が14.2件、SIP が10.7件で、pass rate だけでは見えない行動変化がかなり多い。</p>
+      <p>baseline pass rate が0.9以上の ceiling task は37件あり、全SIPの約80%にあたる415件を含んでいた。しかしこの群の平均 pass-rate delta は -0.5 pp で、成功率では skill の影響をほとんど表現できない。</p>
+      <p>mid-range task は10件で、平均 pass-rate delta は +3.6 pp と改善の主な余地を持っていた。ただし token overhead は平均2.77倍で、skill が役に立つ場合でもかなり高い読み込み・探索コストを伴うことがある。</p>
+      <p>SIP の分布も baseline bucket ごとに違う。ceiling task では Surface Anchoring が最多で、mid / floor task では Edge-case Prompting が目立つ。つまり、どの skill effect が起きやすいかは、タスクの難易度や baseline の余地と結びついている。</p>
+    </section>
+
+    <section id="limits">
+      <h2>限界と読みどころ</h2>
+      <p>一番大きな制約は、モデルとベンチマークが限定されていること。実験は Claude Sonnet 4.5 と SWE-Skills-Bench に基づくため、SIP の頻度を他モデルや他ドメインへそのまま一般化するのは危ない。</p>
+      <p>各タスクの実行は skill あり/なしそれぞれ1回で、反復実行による分散推定はない。論文は全49タスクをカバーすることを優先しており、r=1 の観測研究として読む必要がある。</p>
+      <p>SIP detector は deterministic rule ensemble であり、人手ラベルの gold set で検証された分類器ではない。再現性と解釈性は高いが、taxonomy にない失敗は拾えない。実際、premature closure は既存5 SIP では検出されない重要ケースとして出てくる。</p>
+      <p>CTA は trace が残っていることを前提にする。agent harness が reasoning、tool call、file write、test execution を十分な粒度で記録していない場合、同じ監査は難しい。これは CTA の限界であると同時に、agent harness 側に必要な observability 要件でもある。</p>
+    </section>
+
+    <section id="figures">
+      <h2>読みながら見る図表や節</h2>
+      <p>Figure 1 は CTA pipeline の全体図。paired trace を typed event にし、phase segmentation、alignment、divergence extraction、SIP annotation へ流す構造を確認するのに向いている。</p>
+      <p>Table 1 は baseline bucket ごとの pass-rate delta、token overhead、divergence 数、SIP 数を並べている。特に ceiling task が415 SIP を含むのに pass rate ではほぼ動かない点を見ると、この論文の主張がつかみやすい。</p>
+      <p>Table 2 は SIP category の分布。Surface Anchoring、Edge-case Prompting、Concept Bleed などが baseline bucket ごとにどう変わるかを見る表で、skill がどのように効くかを読む入口になる。</p>
+      <p>case study section は、pass-rate gain と望ましくない機構が同時に起きる例、token cost だけ増える例、premature closure のように taxonomy 外の失敗が起きる例を具体的に見る場所。</p>
+    </section>
+
+    <section id="next">
+      <h2>次に読むなら</h2>
+      <p>この論文は、agent skill を作る話ではなく、作った skill が agent の実行過程をどう変えたかを監査する話として読むとよい。</p>
+      <p>次に読むなら、SWE-Skills-Bench、SkillTester、TRACE、SWE-PRM のような trajectory / skill evaluation 系の論文と並べると位置づけが見えやすい。</p>
+      <p>実務に引くなら、skill を追加したあとに pass/fail だけを見るのではなく、読み込み量、探索先、余計な artifact、validation loop、終了条件を比較する mini CTA を作れないか、という方向に考えるのがよい。</p>
+    </section>
+
+    <section id="qa">
+      <h2>読後Q&A</h2>
+      <article class="qa">
+        <h3>この論文の中心問いは？</h3>
+        <p>agent skill が最終成功率をどれだけ変えたかではなく、agent の trace 上の行動をどう変えたかを測るにはどうすればよいか。</p>
+      </article>
+      <article class="qa">
+        <h3>なぜ pass rate だけでは足りないの？</h3>
+        <p>baseline がすでに高いタスクでは ceiling effect で差分が出ず、さらに skill が助ける効果と壊す効果を同時に起こすと、最終結果だけでは相殺されて見えなくなるから。</p>
+      </article>
+      <article class="qa">
+        <h3>CTA は何を比較する？</h3>
+        <p>同じタスク・同じベース agent について、skill あり trace と skill なし trace を比較する。段階と intent を揃え、どこで read / write / execute / search / think が変わったかを見る。</p>
+      </article>
+      <article class="qa">
+        <h3>Skill Influence Pattern とは？</h3>
+        <p>skill が agent の行動に与えた影響を分類するラベル。Procedural Scaffolding、Edge-case Prompting、Redundant Exploration、Surface Anchoring、Concept Bleed の5種類が使われる。</p>
+      </article>
+      <article class="qa">
+        <h3>constructive な SIP はどれ？</h3>
+        <p>Procedural Scaffolding と Edge-case Prompting。前者は足りない手順を補う効果、後者は見落としがちな分岐や例外処理を促す効果として扱われる。</p>
+      </article>
+      <article class="qa">
+        <h3>destructive な SIP はどれ？</h3>
+        <p>Surface Anchoring と Concept Bleed。前者は skill の文字列やテンプレートへの過剰な固定、後者は task に不要な概念や artifact を持ち込む現象を指す。</p>
+      </article>
+      <article class="qa">
+        <h3>実験で一番大きな発見は？</h3>
+        <p>平均 pass-rate delta は +0.3 pp 程度なのに、同じ trace から696 divergence と522 SIP が見つかったこと。結果はほぼ同じでも、実行過程は大きく変わっていた。</p>
+      </article>
+      <article class="qa">
+        <h3>ceiling task で何が起きた？</h3>
+        <p>baseline pass rate が高いタスクに多くの SIP が集中した。成功率には余地がないので skill の影響は pass rate に出にくいが、Surface Anchoring や token overhead などの行動変化は残る。</p>
+      </article>
+      <article class="qa">
+        <h3>mid-range task はどう違う？</h3>
+        <p>改善の余地があるため pass-rate gain が見えやすい。ただし平均 token overhead が高く、skill が役立つ場合でも読み込みや探索のコストが大きくなることがある。</p>
+      </article>
+      <article class="qa">
+        <h3>この論文を自分の skill 運用に使うなら？</h3>
+        <p>skill 追加後に成功率だけで判断せず、trace を見て、余計な探索、不要ファイル作成、template copying、validation の省略、終了条件の変化を比較する。</p>
+      </article>
+      <article class="qa">
+        <h3>この論文の注意点は？</h3>
+        <p>SIP detector は rule-based で、人手 gold label に対して検証された分類器ではない。また実験は Claude Sonnet 4.5 と SWE-Skills-Bench の r=1 実行に限られる。</p>
+      </article>
+      <article class="qa">
+        <h3>一言でいうと？</h3>
+        <p>skill は pass rate をほとんど変えなくても、agent の行動を大きく変える。だから skill 評価には、結果だけでなく trace の監査が必要になる。</p>
+      </article>
+    </section>
+      </div>
+    </div>
+
+  </main>
+  <footer>
+    <p>Source: <a href="https://arxiv.org/abs/2605.11946">arXiv:2605.11946 / Counterfactual Trace Auditing of LLM Agent Skills</a>.</p>
+    <p>This page is a public reading artifact and does not include private workspace paths, logs, or internal metadata.</p>
+  </footer>
+
+</body>
+</html>
