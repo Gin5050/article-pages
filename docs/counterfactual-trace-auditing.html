@@ -51,6 +51,11 @@
       </nav>
 
       <div>
+        <figure class="graphic-recording">
+          <img src="./assets/graphic-recordings/counterfactual-trace-auditing.png" alt="Counterfactual Trace Auditing of LLM Agent Skills の日本語グラレコ" loading="eager" decoding="async">
+          <figcaption>論文の問題設定、CTA の流れ、主要結果、限界を1枚で把握するためのグラレコ。</figcaption>
+        </figure>
+
         <section class="section" aria-label="概要">
       <p>この論文の中心問いは、agent skill が最終的な成功率をどれだけ上げたかではなく、agent の行動をどのように変えたかをどう測るかである。多くの skill 評価は、skill を付ける前後の pass rate を比較する。しかし pass rate は、すでに解けるタスクでは ceiling effect に潰され、助ける効果と壊す効果が同時に起きた場合にも差分が見えにくい。</p>
       <p>Counterfactual Trace Auditing、略して CTA は、同じタスク・同じベース agent について、skill ありの実行 trace と skill なしの実行 trace を対にして比較する。trace を Orientation、Implementation、Validation、Debugging、Finalization の段階に分け、段階と intent 単位で揃え、差分を divergence record として取り出す。</p>
