@@ -21,14 +21,14 @@
     <div class="hero-inner">
       <p class="kicker">Reading artifact</p>
       <h1>How to Interpret Agent Behavior Paper Summary</h1>
-      <p>長時間動く agent の軌跡は、成功率だけでは「どう動いたか」「なぜ失敗したか」が見えない。この論文は、ACT*ONOMY という行動分類体系と自動分析 pipeline で、messy な trajectory を共有可能な behavior profile に変える。</p>
+      <p>長時間動くAIエージェントの記録は、成功率だけ見ても「何をしていたのか」「なぜ失敗したのか」が分からない。この論文は、ACT*ONOMY という行動分類と自動分析の仕組みで、読みにくい実行軌跡を人間が比較できる行動プロフィールに変える。</p>
       <div class="paper-meta">
         <span class="meta-chip">作成日: 2026-05-15</span>
         <span class="meta-chip">arXiv:2605.13625</span>
-        <span class="meta-chip">Agent Behavior</span>
-        <span class="meta-chip">Trajectory Analysis</span>
+        <span class="meta-chip">AIエージェント</span>
+        <span class="meta-chip">実行軌跡の分析</span>
         <span class="meta-chip">ACT*ONOMY</span>
-        <span class="meta-chip">Behavioral Interpretability</span>
+        <span class="meta-chip">行動の解釈</span>
       </div>
       <div class="hero-actions">
         <a class="button" href="https://arxiv.org/abs/2605.13625">元資料を開く</a>
@@ -53,122 +53,122 @@
       <div>
         <figure class="graphic-recording">
           <img src="./assets/graphic-recordings/how-to-interpret-agent-behavior.png" alt="How to Interpret Agent Behavior の日本語グラレコ" loading="eager" decoding="async">
-          <figcaption>ACT*ONOMY の問題設定、taxonomy、trajectory 分析 pipeline、case study、限界を1枚で把握するためのグラレコ。</figcaption>
+          <figcaption>ACT*ONOMY の問題設定、行動分類、実行軌跡の分析手順、実験結果、限界を1枚で把握するためのグラレコ。</figcaption>
         </figure>
 
         <section class="section" aria-label="概要">
-      <p>この論文の中心問いは、長時間動く AI agent の行動をどう解釈するかである。Codex、Claude Code、web agent、software engineering agent のような system は、計画、推論、検索、ツール利用、失敗、回復、提出までを長い trajectory として残す。しかし最終成功率だけでは、その agent が何をして、どこで迷い、どこで回復し、なぜ失敗したのかは見えにくい。</p>
-      <p>著者らはこの問題に対して、ACT*ONOMY という agent behavior の taxonomy を提案する。これは 10 actions、46 sub-actions、120 leaf categories からなる三階層の分類体系で、agent の observable runtime behavior を共通語彙として記述するためのもの。論文では、2024年から2026年の agent 論文35本から抽出した565件の behavior description をもとに、grounded theory approach で分類体系を作っている。</p>
-      <p>ACT*ONOMY は taxonomy だけではなく、trajectory に適用するための自動分析 pipeline も含む。raw trace を observation / thought / action の turn に分解し、behavior-indicating span を抽出し、action--subaction--leaf の label を付け、統計と session summary に集約する。最終的には、agent ごとの behavior profile や、単一 agent 内の失敗パターンを見られるようにする。</p>
-      <p>実験では、AG2、HyperAgent、SWE-Agent の public trajectory から行動 profile を比較し、それぞれの architecture や task domain に応じた違いを示す。さらに SWE-Agent の成功 trace と失敗 trace を比較し、失敗 run で「検証が必要だと認識し、検証できないことも認識し、それでも submit する」という細かな failure pattern を leaf-level label で可視化している。</p>
-      <p>読後に残るポイントは、agent observability には outcome metric だけでなく behavioral interpretability が必要だということ。ACT*ONOMY は、mechanistic interpretability の代わりではなく、trajectory の外側から agent の振る舞いを記述・比較・監査するための補完的な言語として位置づけられる。</p>
+      <p>この論文の中心問いは、長時間動くAIエージェントの行動をどう読むかである。Codex、Claude Code、Web操作エージェント、ソフトウェア修正エージェントのような仕組みは、計画し、推論し、検索し、ツールを使い、失敗し、回復し、最後に提出する。その過程は長い実行記録として残るが、最終的に成功したかどうかだけを見ても、中で何が起きていたのかは分からない。</p>
+      <p>著者らはこの問題に対して、ACT*ONOMY という行動分類を提案する。これは、AIエージェントの外から観察できる行動を、10個の大分類、46個の小分類、120個の細分類に分けるための共通語彙である。論文では、2024年から2026年のエージェント論文35本から565件の行動説明を集め、人間のレビューを通して分類体系を作っている。</p>
+      <p>ACT*ONOMY は、分類表を出すだけではない。実行記録を読み込み、観察、思考、行動のまとまりに分け、行動を示す短い箇所を抜き出し、分類ラベルを付け、最後に行動プロフィールとしてまとめる。これにより、あるエージェントがどの種類の行動に偏っているのか、どこで失敗の前兆が出ているのかを見やすくする。</p>
+      <p>実験では、AG2、HyperAgent、SWE-Agent の公開実行記録を使い、それぞれの行動プロフィールを比較している。さらに SWE-Agent の成功例と失敗例を比べ、失敗した実行では「検証が必要だと分かっている。検証できないことも分かっている。それでも提出する」という細かな失敗パターンを見つけている。</p>
+      <p>読後に残るポイントは、AIエージェントを見るには、結果の点数だけでなく、行動の読み解きが必要だということ。ACT*ONOMY はモデル内部を直接見る研究ではない。代わりに、実行記録という外から見える材料を使って、エージェントの振る舞いを説明・比較・監査するための言葉を与えてくれる。</p>
         </section>
 
     <section id="paper">
       <h2>どんな論文か</h2>
-      <p>How to Interpret Agent Behavior は、AI agent の実行軌跡を人間が読める行動語彙へ変換するための論文である。対象は、agent が runtime に取る observable actions、つまり計画、推論、検索、ツール呼び出し、評価、終了判断、反省、記憶操作などの外から見える振る舞いである。</p>
-      <p>論文の問題意識は、agent が長く複雑に動くほど、task success rate や pass@1 だけでは設計改善に必要な情報が足りなくなることにある。成功したかどうかは分かっても、効果的な計画だったのか、ループに入ったのか、検証を省略したのか、失敗から回復したのかは分からない。</p>
-      <p>そこで著者らは、ACT*ONOMY という分類体系と、自動 trajectory analysis pipeline を提案する。これは、agent の raw trace を quote-grounded な behavior labels に変換し、behavior profile として比較できるようにする試みである。</p>
+      <p>How to Interpret Agent Behavior は、AIエージェントの実行軌跡を、人間が読める行動語彙へ変換するための論文である。ここでいう行動とは、計画、推論、検索、ツール呼び出し、評価、終了判断、反省、記憶の更新など、実行中に外から観察できる振る舞いを指す。</p>
+      <p>論文の問題意識は、エージェントが長く複雑に動くほど、成功率やベンチマーク点数だけでは設計改善に必要な情報が足りなくなることにある。成功したかどうかは分かっても、良い計画だったのか、同じ場所を回っていたのか、検証を省いたのか、失敗から回復できたのかは分からない。</p>
+      <p>そこで著者らは、ACT*ONOMY という行動分類と、自動分析の仕組みを提案する。長い実行記録を、根拠となる本文箇所つきの行動ラベルに変え、行動プロフィールとして比較できるようにする試みである。</p>
     </section>
 
     <section id="contributions">
       <h2>課題と貢献</h2>
-      <p>第一の貢献は、observable agent behavior を記述する三階層 taxonomy である。ACT*ONOMY は 10 actions、46 sub-actions、120 leaf categories からなり、planning、reasoning、retrieval、grounding、executing、evaluating、deciding、reflecting、learning、memory といった行動を分けて扱う。</p>
-      <p>第二の貢献は、taxonomy の構築方法である。著者らは35本の peer-reviewed agent papers から565件の behavior description を抽出し、Cognitive Architectures for Language Agents の action-space definition を理論的な足場にしつつ、grounded theory approach で分類を作っている。</p>
-      <p>第三の貢献は、ACT*ONOMY を trajectory に適用する自動分析 pipeline である。trajectory を per-turn の observation / thought / action に分解し、behavior span を抽出し、action--subaction--leaf label を付け、統計・session segmentation・自然言語 summary に集約する。</p>
-      <p>第四の貢献は、ACT*ONOMY を living taxonomy として公開 repository で管理し、新しい agent behavior に応じて leaf category を追加できる extension protocol を用意している点である。</p>
+      <p>第一の貢献は、AIエージェントの行動を記述する三階層の分類体系である。ACT*ONOMY は、10個の大分類、46個の小分類、120個の細分類からなる。計画、推論、検索、外部環境とのやり取り、実行、評価、意思決定、反省、学習、記憶操作といった行動を分けて扱う。</p>
+      <p>第二の貢献は、分類体系の作り方を明示していること。著者らは35本の査読付きエージェント論文から565件の行動説明を集め、既存の認知アーキテクチャ研究を足場にしながら、人手レビューを通して分類を育てている。</p>
+      <p>第三の貢献は、この分類を実行記録に当てはめる自動分析の仕組みである。実行記録を観察、思考、行動の単位に分け、行動を示す箇所を抜き出し、大分類、小分類、細分類のラベルを付ける。その結果を、統計、区間ごとの要約、行動プロフィールとしてまとめる。</p>
+      <p>第四の貢献は、ACT*ONOMY を固定された完成品ではなく、今後のエージェントの変化に合わせて伸ばせる分類体系として公開している点である。新しい行動が出てきたときに分類を追加できる手順も用意している。</p>
     </section>
 
     <section id="method">
       <h2>手法のしくみ</h2>
-      <p>taxonomy 構築は大きく二段階で進む。Phase 1 では、CoALA などの既存理論から seed codebook を作り、behavior description を verb + noun の形に正規化し、LLM-powered discovery judge と6人の共著者の review によって codebook を拡張・整理する。</p>
-      <p>この過程で、664 candidate sentences のうち off-topic な99件を除き、565 behavior descriptions から V3 を作る。その後、複数 round の共著者 review を通じて V4.1、さらに120 leaf-level instances を含む V4.2 へ発展させる。</p>
-      <p>Phase 2 では taxonomy の validation を行う。held-out behavior sentences に対する2人の coder の一致は action level で Cohen&#x27;s kappa 0.87、sub-action level で 0.72。LLM-powered deductive analyst も primary coder と action level 0.74、subaction level 0.71 の一致を示す。</p>
-      <p>trajectory analysis pipeline では、raw trajectory を observation / thought / action の turn sequence にし、thought と action 内の behavior-indicating spans を抽出する。各 span に action--subaction--leaf label を付け、必要に応じて codebook にない subaction や leaf を提案する。</p>
-      <p>最後に、annotated trajectory を集計し、session に分割し、何が起きたかを behavior profile として提示する。これにより、人間が長い raw trace を全部読む前に、どの種類の行動が多く、どこに failure precursor があるかを見られるようにする。</p>
+      <p>分類体系の構築は大きく二段階で進む。まず、既存理論から初期の分類表を作り、論文中の行動説明を「何を、どうする」という形にそろえる。そのうえで、言語モデルによる候補提案と、6人の共著者による確認・修正を通して分類を広げていく。</p>
+      <p>この過程で、候補文664件のうち対象外の99件を除き、565件の行動説明から分類表を作っている。その後、複数回の人手レビューを通して、最終的に120個の細分類を含む形に整理している。</p>
+      <p>分類の妥当性も確認している。別に取っておいた行動説明文に対して2人の人間が分類したところ、大分類では高い一致、小分類でも十分な一致が得られた。さらに、自動分析役の言語モデルも、人間の分類とかなり近い結果を出している。</p>
+      <p>実行記録の分析では、まず長い記録を観察、思考、行動のまとまりに分ける。次に、思考や行動の中から、行動を示している短い箇所を抜き出す。そして、それぞれの箇所に大分類、小分類、細分類のラベルを付ける。</p>
+      <p>最後に、ラベル付きの実行記録を集計し、意味のある区間ごとにまとめ、何が起きていたかを行動プロフィールとして提示する。これにより、人間が長い記録を全部読む前に、どの行動が多いのか、どこに失敗の前兆があるのかを見られる。</p>
     </section>
 
     <section id="results">
       <h2>検証結果</h2>
-      <p>large-scale analysis では、awesome-language-agents 由来の211本の behavior-related agent papers から抽出された3,455 behavior descriptions に ACT*ONOMY を適用している。高レベル action では Grounding と Reasoning が合わせて40%以上を占める一方、leaf level では long-tail になり、細かな行動語彙はかなり多様である。</p>
-      <p>across-agent case study では、AG2、HyperAgent、SWE-Agent の public trajectories から各100 action sequence representations、合計300 traces を分析する。AG2 は Evaluating、Grounding、Deciding が相対的に高く、HyperAgent は Reflecting、Reasoning、Memory が高く、SWE-Agent は Executing が大きく高いという profile の違いが出る。</p>
-      <p>within-agent case study では、SWE-Agent の成功 trace と失敗 trace を比較する。成功 trace は locate the bug、patch the bug、verify the fix、submit の4 phase で、Reasoning と Executing が比較的均衡する。一方、失敗 trace は search、dead end、second dead end、find file、patch/recover/submit の5 phase になり、Reasoning が膨らむ。</p>
-      <p>特に重要なのは、失敗 trace の leaf-level label が「submit anyway, without verifying」という failure pattern を浮かび上がらせる点である。agent は検証が必要だと認識し、Django server を動かせないため検証できないことも認識し、それでも submit する。この細部は、trajectory 全体の成功/失敗や turn count だけでは見えにくい。</p>
-      <p>論文は、ACT*ONOMY が across-agent では architecture fingerprint を、within-agent では trajectory-level pattern や failure precursor を可視化できると主張する。</p>
+      <p>大規模分析では、エージェント関連論文211本から抽出された3,455件の行動説明に ACT*ONOMY を適用している。大分類では、外部とのやり取りと推論が大きな割合を占める。一方で、細分類まで見ると分布はかなり広がり、エージェントの行動語彙が細かく多様であることが分かる。</p>
+      <p>エージェント間の比較では、AG2、HyperAgent、SWE-Agent の公開実行記録を分析している。AG2 は評価、外部とのやり取り、意思決定が相対的に多い。HyperAgent は反省、推論、記憶操作が多い。SWE-Agent は実行が大きく多い。これは、それぞれの設計思想や解くタスクの違いを反映している。</p>
+      <p>同じエージェント内の比較では、SWE-Agent の成功例と失敗例を見ている。成功例は、バグを見つける、修正する、検証する、提出する、という流れが比較的きれいに並ぶ。一方、失敗例は、探索、行き止まり、別の行き止まり、正しいファイルの発見、修正と提出、という長い迷走を含む。</p>
+      <p>特に面白いのは、失敗例の細かなラベルから「検証せず提出」というパターンが見える点である。エージェントは、検証が必要だと認識している。検証できない理由も認識している。それでも最終的に提出してしまう。この細部は、成功/失敗や実行ターン数だけでは見えにくい。</p>
+      <p>論文は、ACT*ONOMY によって、エージェント間では設計や得意領域の違いが見え、同じエージェント内では失敗の前兆や行動の偏りが見えると主張している。</p>
     </section>
 
     <section id="limits">
       <h2>限界と読みどころ</h2>
-      <p>ACT*ONOMY は完成済みの永久 taxonomy ではなく、agent の進化に合わせて育てる starting point として提示されている。top-level actions と多くの sub-actions は比較的安定する想定だが、leaf categories は新しい agent design、tool use、modality に応じて増える。</p>
-      <p>analysis の品質は raw trace の品質に依存する。thought、tool call、observation、action が十分な粒度で記録されていなければ、behavior span の抽出や label assignment も粗くなる。</p>
-      <p>taxonomy は研究論文内の behavior descriptions を大きな根拠にしているため、実運用で現れるが論文でまだ語られていない行動は拾いにくい可能性がある。著者らは extension protocol を用意してこの問題に対応しようとしている。</p>
-      <p>ACT*ONOMY は mechanistic interpretability を置き換えるものではない。内部表現や回路を見るのではなく、trajectory 上の observable behavior を記述する behavioral interpretability であり、将来的には内部状態の分析と接続されるとよい、という位置づけである。</p>
+      <p>ACT*ONOMY は、完成済みの永久分類ではなく、出発点として提示されている。大分類と多くの小分類は比較的安定する想定だが、細分類は新しいエージェント設計、ツール利用、入出力形式に応じて増えていく。</p>
+      <p>分析の質は、実行記録の質に強く依存する。思考、ツール呼び出し、観察結果、実行した操作が十分な細かさで残っていなければ、行動の抜き出しや分類も粗くなる。</p>
+      <p>分類体系は、研究論文に書かれた行動説明を大きな根拠にしている。そのため、実運用ではよく起きるが、まだ論文で十分に語られていない行動は拾いにくい可能性がある。著者らは、分類を後から追加できる仕組みでこの問題に対応しようとしている。</p>
+      <p>ACT*ONOMY は、モデル内部の仕組みを直接解明するものではない。あくまで実行記録に現れた行動を読むための方法である。内部状態の分析とは競合するものではなく、外から見える行動の記述として補い合う関係にある。</p>
     </section>
 
     <section id="figures">
       <h2>読みながら見る図表や節</h2>
-      <p>Figure 1 は、SWE-bench trajectory の turn を ACT*ONOMY tag で読む motivating example。raw trace の中の observation / thought / action に対して、confirm、stumble、pinpoint などの sub-action label を付ける意味が分かりやすい。</p>
-      <p>method overview figure は、grounded theory pipeline の全体像を見る場所。seed codebook、behavior description、LLM discovery judge、人手 review、validation、extension という流れを確認できる。</p>
-      <p>taxonomy overview figure は、10 actions と46 subactions の全体像を見る入口。どの行動を Planning / Reasoning / Evaluating / Executing / Memory などに分けているかを把握するのに向いている。</p>
-      <p>case study figures は、agent 間比較と単一 agent 内比較を見る場所。AG2、HyperAgent、SWE-Agent の profile 差と、SWE-Agent の成功・失敗 trace の phase 差を追うと、この taxonomy が何に効くかが見える。</p>
+      <p>Figure 1 は、SWE-bench の実行記録に ACT*ONOMY のラベルを付ける例である。長い記録の中の観察、思考、行動に対して、確認、つまずき、原因特定のようなラベルを付ける意味が分かりやすい。</p>
+      <p>手法の図は、分類体系を作る流れを見る場所である。初期分類、行動説明、言語モデルによる候補提案、人手レビュー、妥当性確認、分類の拡張という流れを確認できる。</p>
+      <p>分類体系の全体図は、10個の大分類と46個の小分類を見る入口である。計画、推論、評価、実行、記憶操作などをどう分けているかを把握するのに向いている。</p>
+      <p>実験の図は、エージェント間比較と、同じエージェント内の成功例・失敗例の比較を見る場所である。AG2、HyperAgent、SWE-Agent の行動プロフィールの違いと、SWE-Agent の成功例・失敗例の流れを追うと、この分類が何に効くかが分かる。</p>
     </section>
 
     <section id="next">
       <h2>次に読むなら</h2>
-      <p>この論文は、agent の性能を上げる手法というより、agent の振る舞いを読むための語彙と観察面を作る論文として読むとよい。</p>
-      <p>Counterfactual Trace Auditing と並べると、CTA が skill あり/なしの差分を見るのに対し、ACT*ONOMY はそもそも trace をどう tag 付けして読める形にするかを扱っている、と整理できる。</p>
-      <p>実務に引くなら、Codex skills や paper-watch の実行ログを、成功/失敗ではなく、planning、retrieval、evaluating、executing、reflecting、memory の分布として眺める mini dashboard を作れないか、という方向に考えるのがよい。</p>
+      <p>この論文は、エージェントの性能を直接上げる手法というより、エージェントの振る舞いを読むための言葉と観察面を作る論文として読むとよい。</p>
+      <p>Counterfactual Trace Auditing と並べると位置づけが見えやすい。あちらは、スキルあり/なしで実行軌跡がどう変わったかを見る。こちらは、その実行軌跡をそもそもどんな行動ラベルで読めばよいかを扱っている。</p>
+      <p>実務に引くなら、Codex skills や paper-watch の実行ログを、成功/失敗だけでなく、計画、検索、評価、実行、反省、記憶操作の分布として眺める小さな点検表を作れないか、と考えるのがよい。</p>
     </section>
 
     <section id="qa">
       <h2>読後Q&A</h2>
       <article class="qa">
         <h3>この論文の中心問いは？</h3>
-        <p>長く複雑に動く AI agent の runtime behavior を、人間が共有できる語彙でどう記述し、比較し、監査するか。</p>
+        <p>長く複雑に動くAIエージェントの行動を、人間が共有できる言葉でどう記述し、比較し、監査するか。</p>
       </article>
       <article class="qa">
         <h3>なぜ成功率だけでは足りないの？</h3>
-        <p>成功率はタスクが終わったかどうかを示すが、agent がどう計画し、どこで迷い、どう検証し、どの失敗パターンに入ったかを示さないから。</p>
+        <p>成功率はタスクが終わったかどうかを示すだけで、エージェントがどう計画し、どこで迷い、どう検証し、どの失敗パターンに入ったかを示さないから。</p>
       </article>
       <article class="qa">
         <h3>ACT*ONOMY とは何？</h3>
-        <p>agent の observable behavior を分類する taxonomy。10 actions、46 sub-actions、120 leaf categories の三階層で、trajectory を行動タグとして読めるようにする。</p>
+        <p>AIエージェントの外から見える行動を分類するための共通語彙。10個の大分類、46個の小分類、120個の細分類で、長い実行記録を行動タグとして読めるようにする。</p>
       </article>
       <article class="qa">
-        <h3>taxonomy はどう作られた？</h3>
-        <p>35本の peer-reviewed agent papers から565件の behavior description を集め、CoALA などの理論を足場にしつつ、grounded theory approach と人手 review で作られた。</p>
+        <h3>分類体系はどう作られた？</h3>
+        <p>35本の査読付きエージェント論文から565件の行動説明を集め、既存理論を足場にしながら、人手レビューを通して作られた。</p>
       </article>
       <article class="qa">
-        <h3>10 actions には何が含まれる？</h3>
-        <p>Grounding、Retrieval、Reasoning、Planning、Evaluating、Deciding、Executing、Reflecting、Learning、Memory など、外部との接続、内部思考、実行、適応、記憶操作を分ける。</p>
+        <h3>10個の大分類には何が含まれる？</h3>
+        <p>外部環境とのやり取り、検索、推論、計画、評価、意思決定、実行、反省、学習、記憶操作が含まれる。</p>
       </article>
       <article class="qa">
-        <h3>自動分析 pipeline は何をする？</h3>
-        <p>raw trajectory を observation / thought / action の turn に分け、behavior span を抽出し、action--subaction--leaf label を付け、統計と session summary に集約する。</p>
+        <h3>自動分析の仕組みは何をする？</h3>
+        <p>長い実行記録を観察、思考、行動の単位に分け、行動を示す箇所を抜き出し、分類ラベルを付け、行動プロフィールとしてまとめる。</p>
       </article>
       <article class="qa">
-        <h3>case study では何が分かった？</h3>
-        <p>AG2、HyperAgent、SWE-Agent はそれぞれ異なる behavior profile を持つ。さらに SWE-Agent 内でも、成功 trace と失敗 trace は phase 構成や Reasoning / Executing の比率が違う。</p>
+        <h3>実験では何が分かった？</h3>
+        <p>AG2、HyperAgent、SWE-Agent は、それぞれ異なる行動プロフィールを持つ。同じ SWE-Agent でも、成功例と失敗例では流れや行動の偏りが違う。</p>
       </article>
       <article class="qa">
         <h3>一番面白い失敗パターンは？</h3>
-        <p>SWE-Agent の失敗 trace で見つかった「submit anyway, without verifying」。agent は検証が必要だと分かっていて、検証できないことも分かっているのに、そのまま提出する。</p>
+        <p>SWE-Agent の失敗例で見つかった「検証せず提出」。検証が必要だと分かっていて、検証できないことも分かっているのに、そのまま提出してしまう。</p>
       </article>
       <article class="qa">
-        <h3>これは mechanistic interpretability なの？</h3>
-        <p>違う。モデル内部を見るのではなく、trajectory 上の外から観察できる行動を記述する behavioral interpretability である。論文は両者を補完関係として位置づける。</p>
+        <h3>これはモデル内部を解析する研究なの？</h3>
+        <p>違う。モデル内部を見るのではなく、実行記録に現れた外から見える行動を読む研究である。内部解析とは補い合う関係にある。</p>
       </article>
       <article class="qa">
         <h3>この論文の注意点は？</h3>
-        <p>taxonomy は完成品ではなく starting point であり、leaf category は増え続ける。また、分析の精度は trace の記録粒度と品質に強く依存する。</p>
+        <p>分類体系は完成品ではなく出発点であり、細分類は増え続ける。また、分析の精度は実行記録の細かさと品質に強く依存する。</p>
       </article>
       <article class="qa">
         <h3>Codex skills 運用に使うなら？</h3>
-        <p>skill の成功/失敗だけでなく、planning が増えたか、retrieval が偏ったか、evaluating が減ったか、executing が早すぎないか、といった behavior profile の変化を見る。</p>
+        <p>スキルの成功/失敗だけでなく、計画が増えたか、検索が偏ったか、評価が減ったか、実行が早すぎないか、といった行動プロフィールの変化を見る。</p>
       </article>
       <article class="qa">
         <h3>一言でいうと？</h3>
-        <p>agent の長い軌跡を、読める行動語彙と profile に変える論文。trace auditing や skill rot の議論に、何を観察するかの土台を与える。</p>
+        <p>AIエージェントの長い実行軌跡を、読める行動語彙とプロフィールに変える論文。trace auditing や skill rot の議論に、何を観察するかの土台を与える。</p>
       </article>
     </section>
       </div>
