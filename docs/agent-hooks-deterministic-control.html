@@ -63,29 +63,17 @@
       <p>記事は Devin、Claude Code、Codex、Cursor のような複数環境を意識しており、demo では command handler を使う。shell script や Python script として policy を書けば、環境をまたいで再利用しやすい。</p>
     </section>
 
-    <section class="section visual-section" id="contributions">
+    <section class="section insights-section" id="contributions">
       <h2>課題と貢献</h2>
-      <div class="route">
-        <article class="step">
-          <div class="num">1</div>
-          <p>第一に、hook を「モデルへの追加指示」ではなく「実行フローに入る制御点」として説明している。これにより、always、never、block、record、run、verify といった要件をプロンプトから分離できる。</p>
-        </article>
-        <article class="step">
-          <div class="num">2</div>
-          <p>第二に、SessionStart から SessionEnd までの代表的な lifecycle points を、開発者が最初に使いやすい形で整理している。開始時の文脈注入、プロンプト検査、ツール実行前ブロック、実行後検証、終了前チェック、終了時ログが一連の流れになる。</p>
-        </article>
-        <article class="step">
-          <div class="num">3</div>
-          <p>第三に、demo repo を通じて、保護パス、危険コマンド、テスト実行、品質ゲート、監査ログという実務で最初に欲しくなる hook を具体化している。</p>
-        </article>
-        <article class="step">
-          <div class="num">4</div>
-          <p>第四に、hook の価値を「目に見える出力」ではなく、避けられたミス、短くなった復旧ループ、残るログとして位置づけている。これは harness engineering の考え方に近い。</p>
-        </article>
+      <div class="insight-list">
+        <article class="insight-card"><p>第一に、hook を「モデルへの追加指示」ではなく「実行フローに入る制御点」として説明している。これにより、always、never、block、record、run、verify といった要件をプロンプトから分離できる。</p></article>
+        <article class="insight-card"><p>第二に、SessionStart から SessionEnd までの代表的な lifecycle points を、開発者が最初に使いやすい形で整理している。開始時の文脈注入、プロンプト検査、ツール実行前ブロック、実行後検証、終了前チェック、終了時ログが一連の流れになる。</p></article>
+        <article class="insight-card"><p>第三に、demo repo を通じて、保護パス、危険コマンド、テスト実行、品質ゲート、監査ログという実務で最初に欲しくなる hook を具体化している。</p></article>
+        <article class="insight-card"><p>第四に、hook の価値を「目に見える出力」ではなく、避けられたミス、短くなった復旧ループ、残るログとして位置づけている。これは harness engineering の考え方に近い。</p></article>
       </div>
     </section>
 
-    <section class="section visual-section" id="method">
+    <section class="section steps-section" id="method">
       <h2>手法のしくみ</h2>
       <div class="route">
         <article class="step">
@@ -115,92 +103,54 @@
       </div>
     </section>
 
-    <section class="section visual-section" id="results">
+    <section class="section results-section" id="results">
       <h2>検証結果</h2>
-      <div class="route">
-        <article class="step">
-          <div class="num">1</div>
+      <div class="score-grid">
+        <article class="result-card">
+          <strong>検証結果</strong>
           <p>記事が示す実務上の効果は、エージェントの自由度を残しながら、守るべき制約を実行環境側へ移せること。モデルには実装や判断を任せ、保護パス、危険コマンド、テスト、完了条件は hook に任せる。</p>
         </article>
-        <article class="step">
-          <div class="num">2</div>
-          <p>良い最初の hook は、明確に言える policy に対応する。protected paths、blocked commands、required tests、audit logging、repo context、completion gates は特に始めやすい。</p>
+        <article class="result-card">
+          <strong>良い最初の hook は、明確に言える policy に対応する。</strong>
+          <p>protected paths、blocked commands、required tests、audit logging、repo context、completion gates は特に始めやすい。</p>
         </article>
-        <article class="step">
-          <div class="num">3</div>
-          <p>prompt instruction は guidance に向く。一方で、毎回必ず実行する必要があるものは hook に向く。記事中の短い rule of thumb は、always、never、block、record、run、verify と言える要件なら hook 候補、というもの。</p>
+        <article class="result-card">
+          <strong>prompt instruction は guidance に向く。</strong>
+          <p>一方で、毎回必ず実行する必要があるものは hook に向く。記事中の短い rule of thumb は、always、never、block、record、run、verify と言える要件なら hook 候補、というもの。</p>
         </article>
-        <article class="step">
-          <div class="num">4</div>
+        <article class="result-card">
+          <strong>検証結果</strong>
           <p>demo の構成は、小さな checkout calculator、tests、generated client code、protected fixture、hooks、runtime configs でできている。小さいが、実務の hook flow を一通り試せる。</p>
         </article>
       </div>
     </section>
 
-    <section class="section visual-section" id="limits">
+    <section class="section warning" id="limits">
       <h2>限界と読みどころ</h2>
-      <div class="route">
-        <article class="step">
-          <div class="num">1</div>
-          <p>hook はモデルの推論そのものを安定させるものではない。hook が安定させるのは、特定の lifecycle point で handler が走ることだけである。</p>
-        </article>
-        <article class="step">
-          <div class="num">2</div>
-          <p>導入には、event を選び、payload を見て、script を書き、失敗時の扱いを決める必要がある。プロンプトに一文足すよりは初期コストがある。</p>
-        </article>
-        <article class="step">
-          <div class="num">3</div>
-          <p>hook を増やしすぎると、作業が過度にブロックされたり、失敗原因が hook とモデルのどちらにあるのか分かりにくくなる。最初は明確な policy に絞るのがよい。</p>
-        </article>
-        <article class="step">
-          <div class="num">4</div>
-          <p>記事本文は実践ガイドであり、特定環境の hook API やイベント名の詳細は各公式ドキュメントで確認する必要がある。</p>
-        </article>
-      </div>
+      <div class="callout warning-item">hook はモデルの推論そのものを安定させるものではない。hook が安定させるのは、特定の lifecycle point で handler が走ることだけである。</div>
+      <div class="callout warning-item">導入には、event を選び、payload を見て、script を書き、失敗時の扱いを決める必要がある。プロンプトに一文足すよりは初期コストがある。</div>
+      <div class="callout warning-item">hook を増やしすぎると、作業が過度にブロックされたり、失敗原因が hook とモデルのどちらにあるのか分かりにくくなる。最初は明確な policy に絞るのがよい。</div>
+      <div class="callout warning-item">記事本文は実践ガイドであり、特定環境の hook API やイベント名の詳細は各公式ドキュメントで確認する必要がある。</div>
     </section>
 
-    <section class="section visual-section" id="figures">
+    <section class="section list-section" id="figures">
       <h2>読みながら見る図表や節</h2>
-      <div class="route">
-        <article class="step">
-          <div class="num">1</div>
-          <p>まず見るべき流れは、event → optional matcher/filter → handler → outcome。hook を大げさに捉えず、イベントに紐づいた小さな処理として読むと理解しやすい。</p>
-        </article>
-        <article class="step">
-          <div class="num">2</div>
-          <p>次に見るべきなのは、六つの lifecycle points。SessionStart、UserPromptSubmit、PreToolUse、PostToolUse、Stop、SessionEnd を、自分の作業フローのどこに対応するかで読む。</p>
-        </article>
-        <article class="step">
-          <div class="num">3</div>
-          <p>demo repo では hooks/ 配下の共通 policy logic と、.devin、.claude、.codex、.cursor の runtime config の分離を見る。環境ごとの差分を config に寄せ、policy 本体を共有する発想が使える。</p>
-        </article>
-        <article class="step">
-          <div class="num">4</div>
-          <p>コード例では、protected path block、command policy、quality gate、stop gate、session audit log を見る。最初に真似るなら、保護パスと品質ゲートが一番実用に近い。</p>
-        </article>
-      </div>
+      <ul class="reading-list">
+        <li>まず見るべき流れは、event → optional matcher/filter → handler → outcome。hook を大げさに捉えず、イベントに紐づいた小さな処理として読むと理解しやすい。</li>
+        <li>次に見るべきなのは、六つの lifecycle points。SessionStart、UserPromptSubmit、PreToolUse、PostToolUse、Stop、SessionEnd を、自分の作業フローのどこに対応するかで読む。</li>
+        <li>demo repo では hooks/ 配下の共通 policy logic と、.devin、.claude、.codex、.cursor の runtime config の分離を見る。環境ごとの差分を config に寄せ、policy 本体を共有する発想が使える。</li>
+        <li>コード例では、protected path block、command policy、quality gate、stop gate、session audit log を見る。最初に真似るなら、保護パスと品質ゲートが一番実用に近い。</li>
+      </ul>
     </section>
 
-    <section class="section visual-section" id="next">
+    <section class="section list-section" id="next">
       <h2>次に読むなら</h2>
-      <div class="route">
-        <article class="step">
-          <div class="num">1</div>
-          <p>自分の repo で最初に作るなら、PreToolUse の保護パス hook と、PostToolUse のテスト実行 hook がよい。どちらも policy が明確で、失敗時の挙動も決めやすい。</p>
-        </article>
-        <article class="step">
-          <div class="num">2</div>
-          <p>おい丸運用に引くなら、brain や wiki の非公開情報を公開 HTML に入れない、記事生成後にモバイル表示を確認する、テスト失敗時に完了しない、のような既存ルールを hook 候補として棚卸しできる。</p>
-        </article>
-        <article class="step">
-          <div class="num">3</div>
-          <p>次に読むなら、Codex hooks、Claude Code hooks、Cursor hooks、Devin lifecycle hooks の各公式ドキュメントを見て、同じ policy をどの event に写せるか比較するとよい。</p>
-        </article>
-        <article class="step">
-          <div class="num">4</div>
-          <p>さらに進めるなら、hooks を単発 script として増やすだけでなく、audit log、state、quality gate、skill 改善ループと接続する。ここまで行くと、プロンプト改善ではなく harness engineering になる。</p>
-        </article>
-      </div>
+      <ul class="reading-list">
+        <li>自分の repo で最初に作るなら、PreToolUse の保護パス hook と、PostToolUse のテスト実行 hook がよい。どちらも policy が明確で、失敗時の挙動も決めやすい。</li>
+        <li>おい丸運用に引くなら、brain や wiki の非公開情報を公開 HTML に入れない、記事生成後にモバイル表示を確認する、テスト失敗時に完了しない、のような既存ルールを hook 候補として棚卸しできる。</li>
+        <li>次に読むなら、Codex hooks、Claude Code hooks、Cursor hooks、Devin lifecycle hooks の各公式ドキュメントを見て、同じ policy をどの event に写せるか比較するとよい。</li>
+        <li>さらに進めるなら、hooks を単発 script として増やすだけでなく、audit log、state、quality gate、skill 改善ループと接続する。ここまで行くと、プロンプト改善ではなく harness engineering になる。</li>
+      </ul>
     </section>
 
     <section id="qa">

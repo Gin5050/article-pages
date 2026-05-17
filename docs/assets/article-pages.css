@@ -468,10 +468,6 @@ blockquote,
   color: #37434d !important;
 }
 
-.visual-section:nth-of-type(even) .step {
-  background: #f4fbf8 !important;
-}
-
 .qa {
   padding: 16px !important;
 }
@@ -479,6 +475,97 @@ blockquote,
 .qa h3 {
   margin-top: 0 !important;
   color: var(--ap-accent-3) !important;
+}
+
+.insight-list {
+  display: grid !important;
+  gap: 12px !important;
+  margin-top: 18px !important;
+}
+
+.insight-card {
+  padding: 16px !important;
+  border: 1px solid rgba(15, 118, 110, .22) !important;
+  border-radius: 8px !important;
+  background: #f4fbf8 !important;
+}
+
+.insight-card strong {
+  display: block !important;
+  margin-bottom: 6px !important;
+  color: var(--ap-accent) !important;
+  font-size: 1.02rem !important;
+}
+
+.insight-card p {
+  margin: 0 !important;
+}
+
+.score-grid {
+  display: grid !important;
+  gap: 12px !important;
+  margin-top: 18px !important;
+}
+
+@media (min-width: 760px) {
+  .score-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+
+.metric,
+.result-card {
+  min-width: 0 !important;
+  padding: 16px !important;
+  border: 1px solid var(--ap-line) !important;
+  border-radius: 8px !important;
+  background: #fff !important;
+}
+
+.metric span,
+.result-card strong {
+  display: block !important;
+  color: var(--ap-muted) !important;
+  font-size: .86rem !important;
+  font-weight: 780 !important;
+}
+
+.metric strong {
+  display: block !important;
+  margin: 5px 0 8px !important;
+  color: var(--ap-accent) !important;
+  font-size: clamp(1.25rem, 3vw, 1.7rem) !important;
+  line-height: 1.15 !important;
+}
+
+.metric p,
+.result-card p {
+  margin: 0 !important;
+}
+
+.result-card strong {
+  margin-bottom: 8px !important;
+  color: var(--ap-accent) !important;
+  font-size: 1.02rem !important;
+  line-height: 1.35 !important;
+}
+
+.warning-item {
+  margin-top: 12px !important;
+  padding: 16px !important;
+  border-left: 5px solid #b4233d !important;
+  background: #fff5f6 !important;
+  color: #51313a !important;
+}
+
+.reading-list {
+  margin: 12px 0 0 !important;
+  padding-left: 1.2rem !important;
+}
+
+.reading-list li {
+  margin: 9px 0 !important;
+  padding-left: 2px !important;
 }
 
 footer {

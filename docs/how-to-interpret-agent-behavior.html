@@ -72,29 +72,26 @@
       <p>そこで著者らは、ACT*ONOMY という行動分類と、自動分析の仕組みを提案する。長い実行記録を、根拠となる本文箇所つきの行動ラベルに変え、行動プロフィールとして比較できるようにする試みである。</p>
     </section>
 
-    <section class="section visual-section" id="contributions">
+    <section class="section insights-section" id="contributions">
       <h2>課題と貢献</h2>
-      <div class="route">
-        <article class="step">
-          <div class="num">1</div>
-          <p>第一の貢献は、AIエージェントの行動を記述する三階層の分類体系である。ACT*ONOMY は、10個の大分類、46個の小分類、120個の細分類からなる。計画、推論、検索、外部環境とのやり取り、実行、評価、意思決定、反省、学習、記憶操作といった行動を分けて扱う。</p>
+      <div class="insight-list">
+        <article class="insight-card">
+          <strong>第一の貢献は、AIエージェントの行動を記述する三階層の分類体系である。</strong>
+          <p>ACT*ONOMY は、10個の大分類、46個の小分類、120個の細分類からなる。計画、推論、検索、外部環境とのやり取り、実行、評価、意思決定、反省、学習、記憶操作といった行動を分けて扱う。</p>
         </article>
-        <article class="step">
-          <div class="num">2</div>
-          <p>第二の貢献は、分類体系の作り方を明示していること。著者らは35本の査読付きエージェント論文から565件の行動説明を集め、既存の認知アーキテクチャ研究を足場にしながら、人手レビューを通して分類を育てている。</p>
+        <article class="insight-card">
+          <strong>第二の貢献は、分類体系の作り方を明示していること。</strong>
+          <p>著者らは35本の査読付きエージェント論文から565件の行動説明を集め、既存の認知アーキテクチャ研究を足場にしながら、人手レビューを通して分類を育てている。</p>
         </article>
-        <article class="step">
-          <div class="num">3</div>
-          <p>第三の貢献は、この分類を実行記録に当てはめる自動分析の仕組みである。実行記録を観察、思考、行動の単位に分け、行動を示す箇所を抜き出し、大分類、小分類、細分類のラベルを付ける。その結果を、統計、区間ごとの要約、行動プロフィールとしてまとめる。</p>
+        <article class="insight-card">
+          <strong>第三の貢献は、この分類を実行記録に当てはめる自動分析の仕組みである。</strong>
+          <p>実行記録を観察、思考、行動の単位に分け、行動を示す箇所を抜き出し、大分類、小分類、細分類のラベルを付ける。その結果を、統計、区間ごとの要約、行動プロフィールとしてまとめる。</p>
         </article>
-        <article class="step">
-          <div class="num">4</div>
-          <p>第四の貢献は、ACT*ONOMY を固定された完成品ではなく、今後のエージェントの変化に合わせて伸ばせる分類体系として公開している点である。新しい行動が出てきたときに分類を追加できる手順も用意している。</p>
-        </article>
+        <article class="insight-card"><p>第四の貢献は、ACT*ONOMY を固定された完成品ではなく、今後のエージェントの変化に合わせて伸ばせる分類体系として公開している点である。新しい行動が出てきたときに分類を追加できる手順も用意している。</p></article>
       </div>
     </section>
 
-    <section class="section visual-section" id="method">
+    <section class="section steps-section" id="method">
       <h2>手法のしくみ</h2>
       <div class="route">
         <article class="step">
@@ -120,92 +117,57 @@
       </div>
     </section>
 
-    <section class="section visual-section" id="results">
+    <section class="section results-section" id="results">
       <h2>検証結果</h2>
-      <div class="route">
-        <article class="step">
-          <div class="num">1</div>
+      <div class="score-grid">
+        <article class="result-card">
+          <strong>検証結果</strong>
           <p>大規模分析では、エージェント関連論文211本から抽出された3,455件の行動説明に ACT*ONOMY を適用している。大分類では、外部とのやり取りと推論が大きな割合を占める。一方で、細分類まで見ると分布はかなり広がり、エージェントの行動語彙が細かく多様であることが分かる。</p>
         </article>
-        <article class="step">
-          <div class="num">2</div>
+        <article class="result-card">
+          <strong>検証結果</strong>
           <p>エージェント間の比較では、AG2、HyperAgent、SWE-Agent の公開実行記録を分析している。AG2 は評価、外部とのやり取り、意思決定が相対的に多い。HyperAgent は反省、推論、記憶操作が多い。SWE-Agent は実行が大きく多い。これは、それぞれの設計思想や解くタスクの違いを反映している。</p>
         </article>
-        <article class="step">
-          <div class="num">3</div>
-          <p>同じエージェント内の比較では、SWE-Agent の成功例と失敗例を見ている。成功例は、バグを見つける、修正する、検証する、提出する、という流れが比較的きれいに並ぶ。一方、失敗例は、探索、行き止まり、別の行き止まり、正しいファイルの発見、修正と提出、という長い迷走を含む。</p>
+        <article class="result-card">
+          <strong>同じエージェント内の比較では、SWE-Agent の成功例と失敗例を見ている。</strong>
+          <p>成功例は、バグを見つける、修正する、検証する、提出する、という流れが比較的きれいに並ぶ。一方、失敗例は、探索、行き止まり、別の行き止まり、正しいファイルの発見、修正と提出、という長い迷走を含む。</p>
         </article>
-        <article class="step">
-          <div class="num">4</div>
+        <article class="result-card">
+          <strong>検証結果</strong>
           <p>特に面白いのは、失敗例の細かなラベルから「検証せず提出」というパターンが見える点である。エージェントは、検証が必要だと認識している。検証できない理由も認識している。それでも最終的に提出してしまう。この細部は、成功/失敗や実行ターン数だけでは見えにくい。</p>
         </article>
-        <article class="step">
-          <div class="num">5</div>
+        <article class="result-card">
+          <strong>検証結果</strong>
           <p>論文は、ACT*ONOMY によって、エージェント間では設計や得意領域の違いが見え、同じエージェント内では失敗の前兆や行動の偏りが見えると主張している。</p>
         </article>
       </div>
     </section>
 
-    <section class="section visual-section" id="limits">
+    <section class="section warning" id="limits">
       <h2>限界と読みどころ</h2>
-      <div class="route">
-        <article class="step">
-          <div class="num">1</div>
-          <p>ACT*ONOMY は、完成済みの永久分類ではなく、出発点として提示されている。大分類と多くの小分類は比較的安定する想定だが、細分類は新しいエージェント設計、ツール利用、入出力形式に応じて増えていく。</p>
-        </article>
-        <article class="step">
-          <div class="num">2</div>
-          <p>分析の質は、実行記録の質に強く依存する。思考、ツール呼び出し、観察結果、実行した操作が十分な細かさで残っていなければ、行動の抜き出しや分類も粗くなる。</p>
-        </article>
-        <article class="step">
-          <div class="num">3</div>
-          <p>分類体系は、研究論文に書かれた行動説明を大きな根拠にしている。そのため、実運用ではよく起きるが、まだ論文で十分に語られていない行動は拾いにくい可能性がある。著者らは、分類を後から追加できる仕組みでこの問題に対応しようとしている。</p>
-        </article>
-        <article class="step">
-          <div class="num">4</div>
-          <p>ACT*ONOMY は、モデル内部の仕組みを直接解明するものではない。あくまで実行記録に現れた行動を読むための方法である。内部状態の分析とは競合するものではなく、外から見える行動の記述として補い合う関係にある。</p>
-        </article>
-      </div>
+      <div class="callout warning-item">ACT*ONOMY は、完成済みの永久分類ではなく、出発点として提示されている。大分類と多くの小分類は比較的安定する想定だが、細分類は新しいエージェント設計、ツール利用、入出力形式に応じて増えていく。</div>
+      <div class="callout warning-item">分析の質は、実行記録の質に強く依存する。思考、ツール呼び出し、観察結果、実行した操作が十分な細かさで残っていなければ、行動の抜き出しや分類も粗くなる。</div>
+      <div class="callout warning-item">分類体系は、研究論文に書かれた行動説明を大きな根拠にしている。そのため、実運用ではよく起きるが、まだ論文で十分に語られていない行動は拾いにくい可能性がある。著者らは、分類を後から追加できる仕組みでこの問題に対応しようとしている。</div>
+      <div class="callout warning-item">ACT*ONOMY は、モデル内部の仕組みを直接解明するものではない。あくまで実行記録に現れた行動を読むための方法である。内部状態の分析とは競合するものではなく、外から見える行動の記述として補い合う関係にある。</div>
     </section>
 
-    <section class="section visual-section" id="figures">
+    <section class="section list-section" id="figures">
       <h2>読みながら見る図表や節</h2>
-      <div class="route">
-        <article class="step">
-          <div class="num">1</div>
-          <p>Figure 1 は、SWE-bench の実行記録に ACT*ONOMY のラベルを付ける例である。長い記録の中の観察、思考、行動に対して、確認、つまずき、原因特定のようなラベルを付ける意味が分かりやすい。</p>
-        </article>
-        <article class="step">
-          <div class="num">2</div>
-          <p>手法の図は、分類体系を作る流れを見る場所である。初期分類、行動説明、言語モデルによる候補提案、人手レビュー、妥当性確認、分類の拡張という流れを確認できる。</p>
-        </article>
-        <article class="step">
-          <div class="num">3</div>
-          <p>分類体系の全体図は、10個の大分類と46個の小分類を見る入口である。計画、推論、評価、実行、記憶操作などをどう分けているかを把握するのに向いている。</p>
-        </article>
-        <article class="step">
-          <div class="num">4</div>
-          <p>実験の図は、エージェント間比較と、同じエージェント内の成功例・失敗例の比較を見る場所である。AG2、HyperAgent、SWE-Agent の行動プロフィールの違いと、SWE-Agent の成功例・失敗例の流れを追うと、この分類が何に効くかが分かる。</p>
-        </article>
-      </div>
+      <ul class="reading-list">
+        <li>Figure 1 は、SWE-bench の実行記録に ACT*ONOMY のラベルを付ける例である。長い記録の中の観察、思考、行動に対して、確認、つまずき、原因特定のようなラベルを付ける意味が分かりやすい。</li>
+        <li>手法の図は、分類体系を作る流れを見る場所である。初期分類、行動説明、言語モデルによる候補提案、人手レビュー、妥当性確認、分類の拡張という流れを確認できる。</li>
+        <li>分類体系の全体図は、10個の大分類と46個の小分類を見る入口である。計画、推論、評価、実行、記憶操作などをどう分けているかを把握するのに向いている。</li>
+        <li>実験の図は、エージェント間比較と、同じエージェント内の成功例・失敗例の比較を見る場所である。AG2、HyperAgent、SWE-Agent の行動プロフィールの違いと、SWE-Agent の成功例・失敗例の流れを追うと、この分類が何に効くかが分かる。</li>
+      </ul>
     </section>
 
-    <section class="section visual-section" id="next">
+    <section class="section list-section" id="next">
       <h2>次に読むなら</h2>
-      <div class="route">
-        <article class="step">
-          <div class="num">1</div>
-          <p>この論文は、エージェントの性能を直接上げる手法というより、エージェントの振る舞いを読むための言葉と観察面を作る論文として読むとよい。</p>
-        </article>
-        <article class="step">
-          <div class="num">2</div>
-          <p>Counterfactual Trace Auditing と並べると位置づけが見えやすい。あちらは、スキルあり/なしで実行軌跡がどう変わったかを見る。こちらは、その実行軌跡をそもそもどんな行動ラベルで読めばよいかを扱っている。</p>
-        </article>
-        <article class="step">
-          <div class="num">3</div>
-          <p>実務に引くなら、Codex skills や paper-watch の実行ログを、成功/失敗だけでなく、計画、検索、評価、実行、反省、記憶操作の分布として眺める小さな点検表を作れないか、と考えるのがよい。</p>
-        </article>
-      </div>
+      <ul class="reading-list">
+        <li>この論文は、エージェントの性能を直接上げる手法というより、エージェントの振る舞いを読むための言葉と観察面を作る論文として読むとよい。</li>
+        <li>Counterfactual Trace Auditing と並べると位置づけが見えやすい。あちらは、スキルあり/なしで実行軌跡がどう変わったかを見る。こちらは、その実行軌跡をそもそもどんな行動ラベルで読めばよいかを扱っている。</li>
+        <li>実務に引くなら、Codex skills や paper-watch の実行ログを、成功/失敗だけでなく、計画、検索、評価、実行、反省、記憶操作の分布として眺める小さな点検表を作れないか、と考えるのがよい。</li>
+      </ul>
     </section>
 
     <section id="qa">

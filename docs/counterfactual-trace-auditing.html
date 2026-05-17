@@ -72,29 +72,17 @@
       <p>使っているデータは SWE-Skills-Bench の paired trace で、同じタスクを skill あり/なしで実行したもの。著者らは Claude Sonnet 4.5 で49タスクを監査し、pass rate ではほぼ見えない skill の行動影響を取り出している。</p>
     </section>
 
-    <section class="section visual-section" id="contributions">
+    <section class="section insights-section" id="contributions">
       <h2>課題と貢献</h2>
-      <div class="route">
-        <article class="step">
-          <div class="num">1</div>
-          <p>第一の貢献は、skill あり trace と skill なし trace を比較し、段階ごとの差分を取り出す CTA framework である。trace を typed events に変換し、phase segmentation、phase alignment、intent alignment、divergence extraction を行う。</p>
-        </article>
-        <article class="step">
-          <div class="num">2</div>
-          <p>第二の貢献は、Skill Influence Pattern、SIP の taxonomy である。Procedural Scaffolding と Edge-case Prompting は constructive、Redundant Exploration は neutral、Surface Anchoring と Concept Bleed は destructive な影響として扱われる。</p>
-        </article>
-        <article class="step">
-          <div class="num">3</div>
-          <p>第三の貢献は、SWE-Skills-Bench 49タスクでの observational study である。平均 pass-rate delta は +0.3 pp にすぎないが、696 divergence と522 SIP が観測され、skill が実行過程を大きく変えていることを示す。</p>
-        </article>
-        <article class="step">
-          <div class="num">4</div>
-          <p>第四の貢献は、case study によって pass rate だけでは読めない機構を示したこと。たとえば、skill が defensive shell template をほぼそのまま適用して pass rate を上げるケースや、skill の完了手順が agent の validation loop を早く閉じてしまう premature closure が見つかる。</p>
-        </article>
+      <div class="insight-list">
+        <article class="insight-card"><p>第一の貢献は、skill あり trace と skill なし trace を比較し、段階ごとの差分を取り出す CTA framework である。trace を typed events に変換し、phase segmentation、phase alignment、intent alignment、divergence extraction を行う。</p></article>
+        <article class="insight-card"><p>第二の貢献は、Skill Influence Pattern、SIP の taxonomy である。Procedural Scaffolding と Edge-case Prompting は constructive、Redundant Exploration は neutral、Surface Anchoring と Concept Bleed は destructive な影響として扱われる。</p></article>
+        <article class="insight-card"><p>第三の貢献は、SWE-Skills-Bench 49タスクでの observational study である。平均 pass-rate delta は +0.3 pp にすぎないが、696 divergence と522 SIP が観測され、skill が実行過程を大きく変えていることを示す。</p></article>
+        <article class="insight-card"><p>第四の貢献は、case study によって pass rate だけでは読めない機構を示したこと。たとえば、skill が defensive shell template をほぼそのまま適用して pass rate を上げるケースや、skill の完了手順が agent の validation loop を早く閉じてしまう premature closure が見つかる。</p></article>
       </div>
     </section>
 
-    <section class="section visual-section" id="method">
+    <section class="section steps-section" id="method">
       <h2>手法のしくみ</h2>
       <div class="route">
         <article class="step">
@@ -120,92 +108,57 @@
       </div>
     </section>
 
-    <section class="section visual-section" id="results">
+    <section class="section results-section" id="results">
       <h2>検証結果</h2>
-      <div class="route">
-        <article class="step">
-          <div class="num">1</div>
+      <div class="score-grid">
+        <article class="result-card">
+          <strong>検証結果</strong>
           <p>全49タスクで、平均 pass-rate delta は +0.34 percentage points、中央値は0だった。45タスクは pass rate が変わらず、改善は3タスク、悪化は1タスクだけだった。</p>
         </article>
-        <article class="step">
-          <div class="num">2</div>
+        <article class="result-card">
+          <strong>検証結果</strong>
           <p>一方で、同じ paired trace からは696件の behavioral divergence と522件の SIP instance が見つかった。1タスク平均では divergence が14.2件、SIP が10.7件で、pass rate だけでは見えない行動変化がかなり多い。</p>
         </article>
-        <article class="step">
-          <div class="num">3</div>
+        <article class="result-card">
+          <strong>検証結果</strong>
           <p>baseline pass rate が0.9以上の ceiling task は37件あり、全SIPの約80%にあたる415件を含んでいた。しかしこの群の平均 pass-rate delta は -0.5 pp で、成功率では skill の影響をほとんど表現できない。</p>
         </article>
-        <article class="step">
-          <div class="num">4</div>
+        <article class="result-card">
+          <strong>検証結果</strong>
           <p>mid-range task は10件で、平均 pass-rate delta は +3.6 pp と改善の主な余地を持っていた。ただし token overhead は平均2.77倍で、skill が役に立つ場合でもかなり高い読み込み・探索コストを伴うことがある。</p>
         </article>
-        <article class="step">
-          <div class="num">5</div>
-          <p>SIP の分布も baseline bucket ごとに違う。ceiling task では Surface Anchoring が最多で、mid / floor task では Edge-case Prompting が目立つ。つまり、どの skill effect が起きやすいかは、タスクの難易度や baseline の余地と結びついている。</p>
+        <article class="result-card">
+          <strong>SIP の分布も baseline bucket ごとに違う。</strong>
+          <p>ceiling task では Surface Anchoring が最多で、mid / floor task では Edge-case Prompting が目立つ。つまり、どの skill effect が起きやすいかは、タスクの難易度や baseline の余地と結びついている。</p>
         </article>
       </div>
     </section>
 
-    <section class="section visual-section" id="limits">
+    <section class="section warning" id="limits">
       <h2>限界と読みどころ</h2>
-      <div class="route">
-        <article class="step">
-          <div class="num">1</div>
-          <p>一番大きな制約は、モデルとベンチマークが限定されていること。実験は Claude Sonnet 4.5 と SWE-Skills-Bench に基づくため、SIP の頻度を他モデルや他ドメインへそのまま一般化するのは危ない。</p>
-        </article>
-        <article class="step">
-          <div class="num">2</div>
-          <p>各タスクの実行は skill あり/なしそれぞれ1回で、反復実行による分散推定はない。論文は全49タスクをカバーすることを優先しており、r=1 の観測研究として読む必要がある。</p>
-        </article>
-        <article class="step">
-          <div class="num">3</div>
-          <p>SIP detector は deterministic rule ensemble であり、人手ラベルの gold set で検証された分類器ではない。再現性と解釈性は高いが、taxonomy にない失敗は拾えない。実際、premature closure は既存5 SIP では検出されない重要ケースとして出てくる。</p>
-        </article>
-        <article class="step">
-          <div class="num">4</div>
-          <p>CTA は trace が残っていることを前提にする。agent harness が reasoning、tool call、file write、test execution を十分な粒度で記録していない場合、同じ監査は難しい。これは CTA の限界であると同時に、agent harness 側に必要な observability 要件でもある。</p>
-        </article>
-      </div>
+      <div class="callout warning-item">一番大きな制約は、モデルとベンチマークが限定されていること。実験は Claude Sonnet 4.5 と SWE-Skills-Bench に基づくため、SIP の頻度を他モデルや他ドメインへそのまま一般化するのは危ない。</div>
+      <div class="callout warning-item">各タスクの実行は skill あり/なしそれぞれ1回で、反復実行による分散推定はない。論文は全49タスクをカバーすることを優先しており、r=1 の観測研究として読む必要がある。</div>
+      <div class="callout warning-item">SIP detector は deterministic rule ensemble であり、人手ラベルの gold set で検証された分類器ではない。再現性と解釈性は高いが、taxonomy にない失敗は拾えない。実際、premature closure は既存5 SIP では検出されない重要ケースとして出てくる。</div>
+      <div class="callout warning-item">CTA は trace が残っていることを前提にする。agent harness が reasoning、tool call、file write、test execution を十分な粒度で記録していない場合、同じ監査は難しい。これは CTA の限界であると同時に、agent harness 側に必要な observability 要件でもある。</div>
     </section>
 
-    <section class="section visual-section" id="figures">
+    <section class="section list-section" id="figures">
       <h2>読みながら見る図表や節</h2>
-      <div class="route">
-        <article class="step">
-          <div class="num">1</div>
-          <p>Figure 1 は CTA pipeline の全体図。paired trace を typed event にし、phase segmentation、alignment、divergence extraction、SIP annotation へ流す構造を確認するのに向いている。</p>
-        </article>
-        <article class="step">
-          <div class="num">2</div>
-          <p>Table 1 は baseline bucket ごとの pass-rate delta、token overhead、divergence 数、SIP 数を並べている。特に ceiling task が415 SIP を含むのに pass rate ではほぼ動かない点を見ると、この論文の主張がつかみやすい。</p>
-        </article>
-        <article class="step">
-          <div class="num">3</div>
-          <p>Table 2 は SIP category の分布。Surface Anchoring、Edge-case Prompting、Concept Bleed などが baseline bucket ごとにどう変わるかを見る表で、skill がどのように効くかを読む入口になる。</p>
-        </article>
-        <article class="step">
-          <div class="num">4</div>
-          <p>case study section は、pass-rate gain と望ましくない機構が同時に起きる例、token cost だけ増える例、premature closure のように taxonomy 外の失敗が起きる例を具体的に見る場所。</p>
-        </article>
-      </div>
+      <ul class="reading-list">
+        <li>Figure 1 は CTA pipeline の全体図。paired trace を typed event にし、phase segmentation、alignment、divergence extraction、SIP annotation へ流す構造を確認するのに向いている。</li>
+        <li>Table 1 は baseline bucket ごとの pass-rate delta、token overhead、divergence 数、SIP 数を並べている。特に ceiling task が415 SIP を含むのに pass rate ではほぼ動かない点を見ると、この論文の主張がつかみやすい。</li>
+        <li>Table 2 は SIP category の分布。Surface Anchoring、Edge-case Prompting、Concept Bleed などが baseline bucket ごとにどう変わるかを見る表で、skill がどのように効くかを読む入口になる。</li>
+        <li>case study section は、pass-rate gain と望ましくない機構が同時に起きる例、token cost だけ増える例、premature closure のように taxonomy 外の失敗が起きる例を具体的に見る場所。</li>
+      </ul>
     </section>
 
-    <section class="section visual-section" id="next">
+    <section class="section list-section" id="next">
       <h2>次に読むなら</h2>
-      <div class="route">
-        <article class="step">
-          <div class="num">1</div>
-          <p>この論文は、agent skill を作る話ではなく、作った skill が agent の実行過程をどう変えたかを監査する話として読むとよい。</p>
-        </article>
-        <article class="step">
-          <div class="num">2</div>
-          <p>次に読むなら、SWE-Skills-Bench、SkillTester、TRACE、SWE-PRM のような trajectory / skill evaluation 系の論文と並べると位置づけが見えやすい。</p>
-        </article>
-        <article class="step">
-          <div class="num">3</div>
-          <p>実務に引くなら、skill を追加したあとに pass/fail だけを見るのではなく、読み込み量、探索先、余計な artifact、validation loop、終了条件を比較する mini CTA を作れないか、という方向に考えるのがよい。</p>
-        </article>
-      </div>
+      <ul class="reading-list">
+        <li>この論文は、agent skill を作る話ではなく、作った skill が agent の実行過程をどう変えたかを監査する話として読むとよい。</li>
+        <li>次に読むなら、SWE-Skills-Bench、SkillTester、TRACE、SWE-PRM のような trajectory / skill evaluation 系の論文と並べると位置づけが見えやすい。</li>
+        <li>実務に引くなら、skill を追加したあとに pass/fail だけを見るのではなく、読み込み量、探索先、余計な artifact、validation loop、終了条件を比較する mini CTA を作れないか、という方向に考えるのがよい。</li>
+      </ul>
     </section>
 
     <section id="qa">

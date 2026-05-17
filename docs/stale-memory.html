@@ -72,33 +72,21 @@
       <p>この論文は、記憶を『過去の発言の検索』ではなく、『時間とともに変わる潜在的なユーザー状態の追跡』として定式化する。ここが Memory And Skill Rot の記憶側とよくつながる。</p>
     </section>
 
-    <section class="section visual-section" id="contributions">
+    <section class="section insights-section" id="contributions">
       <h2>課題と貢献</h2>
-      <div class="route">
-        <article class="step">
-          <div class="num">1</div>
-          <p>第一の貢献は、Implicit Conflict という失敗モードを定義したこと。後の観察が古い記憶を無効化しているのに、表面上は否定や訂正が書かれていない状況を扱う。</p>
+      <div class="insight-list">
+        <article class="insight-card">
+          <strong>第一の貢献は、Implicit Conflict という失敗モードを定義したこと。</strong>
+          <p>後の観察が古い記憶を無効化しているのに、表面上は否定や訂正が書かれていない状況を扱う。</p>
         </article>
-        <article class="step">
-          <div class="num">2</div>
-          <p>第二の貢献は、Implicit Conflict を Type I と Type II に分けたこと。Type I は同じ属性の更新で、たとえば住む場所が暗に変わる場合。Type II は別属性への更新が伝播し、たとえばケガが通勤手段や運動習慣の古い記憶を無効化する場合である。</p>
-        </article>
-        <article class="step">
-          <div class="num">3</div>
-          <p>第三の貢献は、400シナリオ、1200評価質問、100超の日常トピック、最大150Kトークンの長い会話履歴からなる STALE ベンチマークを作ったこと。単発の事実検索ではなく、長期会話の中で古い状態と新しい状態を判定する。</p>
-        </article>
-        <article class="step">
-          <div class="num">4</div>
-          <p>第四の貢献は、State Resolution、Premise Resistance、Implicit Policy Adaptation という3つの評価プローブを分けたこと。これにより、古い記憶に気づくことと、それを実際の回答で使わないことが別能力だと見える。</p>
-        </article>
-        <article class="step">
-          <div class="num">5</div>
-          <p>第五の貢献は、CUPMem という試作により、書き込み時の状態判定が有効な方向だと示したこと。検索時にその場で矛盾を解くのではなく、記憶を保存する段階で現在状態を整理する。</p>
-        </article>
+        <article class="insight-card"><p>第二の貢献は、Implicit Conflict を Type I と Type II に分けたこと。Type I は同じ属性の更新で、たとえば住む場所が暗に変わる場合。Type II は別属性への更新が伝播し、たとえばケガが通勤手段や運動習慣の古い記憶を無効化する場合である。</p></article>
+        <article class="insight-card"><p>第三の貢献は、400シナリオ、1200評価質問、100超の日常トピック、最大150Kトークンの長い会話履歴からなる STALE ベンチマークを作ったこと。単発の事実検索ではなく、長期会話の中で古い状態と新しい状態を判定する。</p></article>
+        <article class="insight-card"><p>第四の貢献は、State Resolution、Premise Resistance、Implicit Policy Adaptation という3つの評価プローブを分けたこと。これにより、古い記憶に気づくことと、それを実際の回答で使わないことが別能力だと見える。</p></article>
+        <article class="insight-card"><p>第五の貢献は、CUPMem という試作により、書き込み時の状態判定が有効な方向だと示したこと。検索時にその場で矛盾を解くのではなく、記憶を保存する段階で現在状態を整理する。</p></article>
       </div>
     </section>
 
-    <section class="section visual-section" id="method">
+    <section class="section steps-section" id="method">
       <h2>手法のしくみ</h2>
       <div class="route">
         <article class="step">
@@ -124,92 +112,57 @@
       </div>
     </section>
 
-    <section class="section visual-section" id="results">
+    <section class="section results-section" id="results">
       <h2>検証結果</h2>
-      <div class="route">
-        <article class="step">
-          <div class="num">1</div>
-          <p>評価対象には、閉じたモデル、オープンモデル、既存の記憶フレームワークが含まれる。Gemini-3.1-pro が最も強いが、全体精度は55.2%にとどまる。多くのシステムはこれを大きく下回る。</p>
+      <div class="score-grid">
+        <article class="result-card">
+          <strong>評価対象には、閉じたモデル、オープンモデル、既存の記憶フレームワークが含まれる。</strong>
+          <p>Gemini-3.1-pro が最も強いが、全体精度は55.2%にとどまる。多くのシステムはこれを大きく下回る。</p>
         </article>
-        <article class="step">
-          <div class="num">2</div>
+        <article class="result-card">
+          <strong>検証結果</strong>
           <p>重要なのは、古い記憶が無効だと直接問われた時に気づけても、古い前提を含む質問に乗ってしまうことが多い点である。Premise Resistance は特に弱く、モデルは質問文に埋め込まれた古い前提を検証せず受け入れやすい。</p>
         </article>
-        <article class="step">
-          <div class="num">3</div>
-          <p>Type II、つまり伝播する無効化は Type I よりかなり難しい。現在のモデルは、同じ属性の更新には比較的反応できても、健康状態の変化が移動手段を変えるような、属性間の関係をまたぐ更新には弱い。</p>
+        <article class="result-card">
+          <strong>Type II、つまり伝播する無効化は Type I よりかなり難しい。</strong>
+          <p>現在のモデルは、同じ属性の更新には比較的反応できても、健康状態の変化が移動手段を変えるような、属性間の関係をまたぐ更新には弱い。</p>
         </article>
-        <article class="step">
-          <div class="num">4</div>
-          <p>記憶フレームワークを足せば解けるわけでもない。LightMem の診断では、新しい証拠が検索結果に出ていても、古い証拠が上位に残り、回答では古い状態が使われてしまうことがある。これは検索の問題というより、現在状態の裁定の問題である。</p>
+        <article class="result-card">
+          <strong>記憶フレームワークを足せば解けるわけでもない。</strong>
+          <p>LightMem の診断では、新しい証拠が検索結果に出ていても、古い証拠が上位に残り、回答では古い状態が使われてしまうことがある。これは検索の問題というより、現在状態の裁定の問題である。</p>
         </article>
-        <article class="step">
-          <div class="num">5</div>
+        <article class="result-card">
+          <strong>検証結果</strong>
           <p>CUPMem は同じ GPT-4o-mini 基盤で、素のモデルの8.7%から68.0%へ改善する。特に Premise Resistance で大きく伸びる。これは、古い前提を回答時に場当たり的に直すより、書き込み時に状態を判定しておく設計が効くことを示している。</p>
         </article>
       </div>
     </section>
 
-    <section class="section visual-section" id="limits">
+    <section class="section warning" id="limits">
       <h2>限界と読みどころ</h2>
-      <div class="route">
-        <article class="step">
-          <div class="num">1</div>
-          <p>CUPMem は有望だが、汎用の完成版記憶アーキテクチャではない。型付きの状態スキーマを使っており、扱える属性領域はそのスキーマに制約される。</p>
-        </article>
-        <article class="step">
-          <div class="num">2</div>
-          <p>論文自身も、任意のユーザー属性をスキーマなしで扱うこと、多段の伝播更新を扱うこと、複数属性が同時に結びついて変わるケースを今後の課題としている。</p>
-        </article>
-        <article class="step">
-          <div class="num">3</div>
-          <p>STALE は日常的な個人状態を中心にしているため、組織内の仕事、コードベース、プロジェクト知識、ツール権限のような実務記憶にそのまま移すには追加の設計が必要である。</p>
-        </article>
-        <article class="step">
-          <div class="num">4</div>
-          <p>それでも、古い記憶を検索できるかではなく、古い前提を退役させられるかを見る、という評価軸はかなり汎用的に使える。</p>
-        </article>
-      </div>
+      <div class="callout warning-item">CUPMem は有望だが、汎用の完成版記憶アーキテクチャではない。型付きの状態スキーマを使っており、扱える属性領域はそのスキーマに制約される。</div>
+      <div class="callout warning-item">論文自身も、任意のユーザー属性をスキーマなしで扱うこと、多段の伝播更新を扱うこと、複数属性が同時に結びついて変わるケースを今後の課題としている。</div>
+      <div class="callout warning-item">STALE は日常的な個人状態を中心にしているため、組織内の仕事、コードベース、プロジェクト知識、ツール権限のような実務記憶にそのまま移すには追加の設計が必要である。</div>
+      <div class="callout warning-item">それでも、古い記憶を検索できるかではなく、古い前提を退役させられるかを見る、という評価軸はかなり汎用的に使える。</div>
     </section>
 
-    <section class="section visual-section" id="figures">
+    <section class="section list-section" id="figures">
       <h2>読みながら見る図表や節</h2>
-      <div class="route">
-        <article class="step">
-          <div class="num">1</div>
-          <p>Implicit Conflict の概念図は、古い観察と新しい観察が、ユーザーの潜在状態をどう更新するかを見るための入口になる。元図の形ではなく、『発話そのものではなく状態を追う』という意味を見るとよい。</p>
-        </article>
-        <article class="step">
-          <div class="num">2</div>
-          <p>ベンチマーク生成パイプラインは、古い状態、暗黙の新状態、品質検査、長い会話履歴への埋め込みという流れを確認する場所である。</p>
-        </article>
-        <article class="step">
-          <div class="num">3</div>
-          <p>メイン結果表は最重要。SR、PR、IPA と Type I、Type II の組み合わせで、どの能力が落ちているかを見る。特に PR の弱さが、この論文の実務的な怖さである。</p>
-        </article>
-        <article class="step">
-          <div class="num">4</div>
-          <p>LightMem の診断表は、更新証拠が検索されても、それが回答の根拠になるとは限らないことを示す。ここが retrieval と memory の違いを考えるうえで重要である。</p>
-        </article>
-      </div>
+      <ul class="reading-list">
+        <li>Implicit Conflict の概念図は、古い観察と新しい観察が、ユーザーの潜在状態をどう更新するかを見るための入口になる。元図の形ではなく、『発話そのものではなく状態を追う』という意味を見るとよい。</li>
+        <li>ベンチマーク生成パイプラインは、古い状態、暗黙の新状態、品質検査、長い会話履歴への埋め込みという流れを確認する場所である。</li>
+        <li>メイン結果表は最重要。SR、PR、IPA と Type I、Type II の組み合わせで、どの能力が落ちているかを見る。特に PR の弱さが、この論文の実務的な怖さである。</li>
+        <li>LightMem の診断表は、更新証拠が検索されても、それが回答の根拠になるとは限らないことを示す。ここが retrieval と memory の違いを考えるうえで重要である。</li>
+      </ul>
     </section>
 
-    <section class="section visual-section" id="next">
+    <section class="section list-section" id="next">
       <h2>次に読むなら</h2>
-      <div class="route">
-        <article class="step">
-          <div class="num">1</div>
-          <p>Memory And Skill Rot と並べると、記憶の腐敗を『古くなった情報が残る』ではなく、『古い前提が現在状態として振る舞う』問題として捉え直せる。</p>
-        </article>
-        <article class="step">
-          <div class="num">2</div>
-          <p>Storage Is Not Memory と一緒に読むと、保存、検索、想起、現在状態の裁定を分けるための語彙が増える。</p>
-        </article>
-        <article class="step">
-          <div class="num">3</div>
-          <p>実務に引くなら、personal memory や wiki memory に、active / stale / unknown の状態管理、古い前提を含む依頼への premise check、更新時の影響範囲探索を足せるかを見るとよい。</p>
-        </article>
-      </div>
+      <ul class="reading-list">
+        <li>Memory And Skill Rot と並べると、記憶の腐敗を『古くなった情報が残る』ではなく、『古い前提が現在状態として振る舞う』問題として捉え直せる。</li>
+        <li>Storage Is Not Memory と一緒に読むと、保存、検索、想起、現在状態の裁定を分けるための語彙が増える。</li>
+        <li>実務に引くなら、personal memory や wiki memory に、active / stale / unknown の状態管理、古い前提を含む依頼への premise check、更新時の影響範囲探索を足せるかを見るとよい。</li>
+      </ul>
     </section>
 
     <section id="qa">
