@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MemLens Paper Summary</title>
+  <link rel="stylesheet" href="./assets/article-content.css">
+  <link rel="stylesheet" href="./assets/article-pages.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./index.html">Article Pages</a>
+    <nav class="top-nav" aria-label="Site navigation">
+      <a href="./index.html">Home</a>
+      <a href="./unread-reading-inventory.html">未読一覧</a>
+    </nav>
+  </header>
+
+
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="kicker">Reading artifact</p>
+      <h1>MemLens Paper Summary</h1>
+      <p>この論文は、画像とテキストが混ざる複数セッション会話で、長期記憶を持つ LVLM と memory-augmented agent が本当に視覚証拠を保持して使えるかを測る。STALE や MemEye の次に、personal assistant memory を multimodal multi-session memory として見るための強い評価軸を足してくれる一本。</p>
+      <div class="paper-meta">
+        <span class="meta-chip">作成日: 2026-05-17</span>
+        <span class="meta-chip">arXiv:2605.14906</span>
+        <span class="meta-chip">multimodal memory</span>
+        <span class="meta-chip">LVLM</span>
+        <span class="meta-chip">agent memory</span>
+        <span class="meta-chip">benchmark</span>
+      </div>
+      <div class="hero-actions">
+        <a class="button" href="https://arxiv.org/abs/2605.14906">元資料を開く</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="reader-grid">
+      <nav aria-label="Reading navigation">
+        <strong>目次</strong>
+        <a href="#paper">どんな論文か</a>
+        <a href="#contributions">課題と貢献</a>
+        <a href="#method">手法のしくみ</a>
+        <a href="#results">検証結果</a>
+        <a href="#limits">限界と読みどころ</a>
+        <a href="#figures">読みながら見る図表や節</a>
+        <a href="#next">次に読むなら</a>
+        <a href="#qa">読後Q&A</a>
+      </nav>
+
+      <div>
+        <figure class="graphic-recording">
+          <a class="graphic-zoom-trigger" href="#graphic-recording-lightbox" aria-label="グラレコを拡大表示する"><img src="./assets/graphic-recordings/memlens-memory.png" alt="MemLens の日本語グラレコ" loading="eager" decoding="async"></a>
+          <figcaption>画像つき長期会話記憶、5つの記憶能力、長文 LVLM と memory agent の比較、視覚証拠の忠実性を1枚で把握するためのグラレコ。</figcaption>
+        </figure>
+        <div id="graphic-recording-lightbox" class="graphic-lightbox" aria-label="グラレコ拡大表示">
+          <a class="graphic-lightbox-backdrop" href="#" aria-label="拡大表示を閉じる"></a>
+          <a class="graphic-lightbox-content" href="#" aria-label="拡大表示を閉じる"><img src="./assets/graphic-recordings/memlens-memory.png" alt="MemLens の日本語グラレコ"></a>
+        </div>
+
+    <section class="section" id="paper">
+      <h2>どんな論文か</h2>
+      <p>MemLens の問題意識は、長期記憶を持つ AI アシスタントがテキストだけを覚えていればよいのか、というところにある。現実の長い会話では、過去に共有された画像、スクリーンショット、文書、商品、場所の見た目が、あとから質問の根拠になる。</p>
+      <p>既存の長期記憶 benchmark は、会話が複数セッションにまたがっていても、画像がない、または画像の caption や周辺テキストだけで答えられることが多い。そのため、モデルが本当に視覚証拠を保持しているのか、単にテキスト化された手がかりで答えているのかが見えにくい。</p>
+      <p>MemLens は、multimodal multi-session conversation に対する 789 問の benchmark を作り、information extraction、multi-session reasoning、temporal reasoning、knowledge update、answer refusal の5能力で評価する。入力長は 32K、64K、128K、256K に揃えられ、長文 LVLM と memory-augmented agent を同じ枠組みで比較する。</p>
+      <p>結果は、multimodal memory が単一能力ではないことを示す。情報抽出が強いモデルが複数セッション推論にも強いとは限らず、知識更新や回答拒否も別の弱点として出る。長文 LVLM は視覚証拠へ直接アクセスできる一方、memory agent は長さには比較的頑健でも、視覚証拠の忠実性を失いやすい。</p>
+      <p>この論文は、memory を『長く入るか』ではなく、『画像証拠を保持できるか』『複数セッションを統合できるか』『状態更新できるか』『根拠がない時に答えないか』へ分解して見るための地図になる。</p>
+      <p>MemLens は、large vision-language model と memory-augmented agent の長期記憶を、画像とテキストが混ざる複数セッション会話で評価する benchmark 論文である。</p>
+      <p>対象は、ユーザーとアシスタントの長い会話履歴である。会話には画像とテキストが interleaved に含まれ、質問に答えるには、過去の画像証拠と周辺テキストを一緒に探して使う必要がある。</p>
+      <p>この論文は、長期記憶を単なる long context retrieval ではなく、multimodal evidence retrieval、cross-session aggregation、temporal reasoning、knowledge update、calibrated refusal の組み合わせとして扱う。</p>
+    </section>
+
+    <section class="section insights-section" id="contributions">
+      <h2>課題と貢献</h2>
+      <div class="insight-list">
+        <article class="insight-card"><p>第一の貢献は、789 問からなる multimodal conversational memory benchmark を作ったこと。32K、64K、128K、256K の4つの入力長で、長文コンテキストと memory agent を比較できる。</p></article>
+        <article class="insight-card">
+          <strong>第二の貢献は、記憶能力を5つに分けたこと。</strong>
+          <p>Information Extraction、Multi-Session Reasoning、Temporal Reasoning、Knowledge Update、Answer Refusal を分けることで、総合点では隠れる得意不得意が見える。</p>
+        </article>
+        <article class="insight-card"><p>第三の貢献は、画像が本当に必要な質問を作るための entity abstraction と image-ablation を入れたこと。画像を除くと強い LVLM でも大きく崩れるため、caption だけではない視覚証拠の必要性を検証している。</p></article>
+        <article class="insight-card"><p>第四の貢献は、27 の LVLM と 7 つの memory-augmented agent を同じ枠組みで評価したこと。直接長文を見るモデルと、記憶システムを通して読む agent の構造的な差が見える。</p></article>
+        <article class="insight-card"><p>第五の貢献は、memory agent の弱さを単なる検索失敗ではなく、視覚証拠への忠実性、adapter による情報損失、長さへの頑健性のトレードオフとして分析したこと。</p></article>
+      </div>
+    </section>
+
+    <section class="section steps-section" id="method">
+      <h2>手法のしくみ</h2>
+      <div class="route">
+        <article class="step">
+          <div class="num">1</div>
+          <p>まず topic ontology から話題を選び、画像でしか解けない visual anchor を作る。たとえば固有名詞を『画像に写っている橋』のような抽象表現に置き換え、テキストだけでは答えが漏れないようにする。</p>
+        </article>
+        <article class="step">
+          <div class="num">2</div>
+          <p>次に、画像と周辺テキストの両方が必要な evidence session を作り、長い multi-session conversation の中へ自然に埋め込む。証拠だけが浮かないよう、haystack sessions も文体や話題が近くなるよう作られる。</p>
+        </article>
+        <article class="step">
+          <div class="num">3</div>
+          <p>評価質問は、情報抽出、複数セッション推論、時間推論、知識更新、回答拒否の5種類に分かれる。単一画像の発見だけでなく、複数セッションの統合や古い情報の更新も測る。</p>
+        </article>
+        <article class="step">
+          <div class="num">4</div>
+          <p>モデル評価では、LVLM は元の画像とテキストを長文コンテキストとして直接読む。memory agent は各システムの公開された adapter に従い、caption 化、session 画像化、embedding memory などを通して回答する。</p>
+        </article>
+        <article class="step">
+          <div class="num">5</div>
+          <p>さらに image-ablation を行い、証拠画像を除いた時にどれだけ性能が落ちるかを見る。これにより、問題が本当に視覚証拠を必要としているかを検算している。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section results-section" id="results">
+      <h2>検証結果</h2>
+      <div class="score-grid">
+        <article class="result-card">
+          <strong>全体として難しい。</strong>
+          <p>論文本文では最強 LVLM でも全体精度は 58.68% にとどまるとされ、multimodal long-term memory がまだ解けた問題ではないことが分かる。</p>
+        </article>
+        <article class="result-card">
+          <strong>5つの記憶能力はかなり独立している。</strong>
+          <p>Information Extraction が強くても Multi-Session Reasoning が強いとは限らず、Knowledge Update や Answer Refusal も別の弱点として現れる。</p>
+        </article>
+        <article class="result-card">
+          <strong>長さが伸びると LVLM は retrieval-heavy な問題で劣化しやすい。</strong>
+          <p>一方で memory agent は長さに比較的頑健だが、caption や adapter を通すことで元画像の細かい証拠を失いやすい。</p>
+        </article>
+        <article class="result-card">
+          <strong>memory agent は direct LVLM より低い結果になることが多い。</strong>
+          <p>ただしこれは memory architecture 一般の限界というより、公開済み agent が画像をどう adapter して保持しているかの制約も含む。</p>
+        </article>
+        <article class="result-card">
+          <strong>image-ablation は重要である。</strong>
+          <p>証拠画像を除くと性能が大きく落ちるため、MemLens はテキストだけで解ける疑似 multimodal benchmark ではなく、視覚証拠そのものを必要とする評価になっている。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section warning" id="limits">
+      <h2>限界と読みどころ</h2>
+      <div class="callout warning-item">会話履歴と質問は合成データを含む。人間レビューで自然さは担保しているが、実ユーザーとの長期会話そのものではない。</div>
+      <div class="callout warning-item">画像つき benchmark なので、第三者画像のライセンスや再配布、takedown への配慮が必要になる。論文は provenance metadata と削除窓口を用意している。</div>
+      <div class="callout warning-item">memory agent の評価は、各システムの公開 adapter に依存する。caption 化や session 画像化で失われた情報と、memory 機構そのものの弱さは完全には切り分けられない。</div>
+      <div class="callout warning-item">LVLM の 256K 評価はモデル対応の制約があるため、全モデルで完全に同じ長さ比較ができるわけではない。</div>
+      <div class="callout warning-item">評価は offline な固定履歴に対する質問であり、実運用の online memory write、不可逆な更新、忘却、ユーザー反応に応じた記憶変更までは今後の課題である。</div>
+    </section>
+
+    <section class="section list-section" id="figures">
+      <h2>読みながら見る図表や節</h2>
+      <ul class="reading-list">
+        <li>Figure 1 相当の構成図は、topic から visual anchor を作り、画像とテキストを evidence session にして、長い会話履歴へ埋め込む流れを見る入口になる。見た目ではなく、テキストだけで答えが漏れないようにする設計思想を見るとよい。</li>
+        <li>データ統計の表では、789 問、5能力、32K から 256K までの長さ、画像とテキストの混在がどう揃えられているかを見る。</li>
+        <li>能力別ヒートマップでは、総合点よりも IE、MSR、TR、KU、AR のどこで落ちるかを見る。MemLens の価値は、memory を一枚岩にしないところにある。</li>
+        <li>context length の結果図では、LVLM と memory agent が長さに対して違う壊れ方をする点を見る。長文に直接入れる強さと、memory system で外出しする強さは同じではない。</li>
+        <li>image-ablation の表では、画像を除くと解けなくなることを確認する。ここが multimodal benchmark としての一番大事な検算である。</li>
+      </ul>
+    </section>
+
+    <section class="section list-section" id="next">
+      <h2>次に読むなら</h2>
+      <ul class="reading-list">
+        <li>STALE と並べると、Knowledge Update と Answer Refusal を、古い前提を退役させる能力として読める。</li>
+        <li>MemEye と並べると、視覚証拠の粒度、状態変化、複数セッション統合を分けて見る地図ができる。</li>
+        <li>GroupMemBench と並べると、personal assistant memory が単一ユーザーのテキスト履歴から、複数人・複数モダリティ・複数セッションへ広がる流れが見える。</li>
+        <li>実務に引くなら、screenshot、UI trace、graphic recording、添付画像を memory として扱う時に、caption だけで足りるのか、元画像証拠への再アクセスが必要なのかを設計論点にできる。</li>
+      </ul>
+    </section>
+
+    <section id="qa">
+      <h2>読後Q&A</h2>
+      <article class="qa">
+        <h3>この論文の中心問いは？</h3>
+        <p>長期会話の中で、LVLM や memory agent は過去の画像とテキストを本当に記憶し、あとから必要な視覚証拠として使えるのか、という問いである。</p>
+      </article>
+      <article class="qa">
+        <h3>MemLens は何を測る？</h3>
+        <p>画像とテキストが混ざる複数セッション会話に対して、情報抽出、複数セッション推論、時間推論、知識更新、回答拒否の5能力を測る。</p>
+      </article>
+      <article class="qa">
+        <h3>既存 benchmark と何が違う？</h3>
+        <p>テキストや caption だけで答えられる問題ではなく、画像証拠と周辺テキストの両方が必要な質問を作っている点が違う。</p>
+      </article>
+      <article class="qa">
+        <h3>なぜ image-ablation が重要？</h3>
+        <p>画像を除いても解けるなら multimodal memory を測っていない可能性がある。MemLens は画像を除くと性能が大きく落ちることを確認し、視覚証拠の必要性を検算している。</p>
+      </article>
+      <article class="qa">
+        <h3>5つの memory abilities は何？</h3>
+        <p>Information Extraction、Multi-Session Reasoning、Temporal Reasoning、Knowledge Update、Answer Refusal の5つである。</p>
+      </article>
+      <article class="qa">
+        <h3>一番面白い観察は？</h3>
+        <p>memory は単一能力ではないこと。ある能力で強いモデルが別の能力でも強いとは限らず、総合点だけでは弱点が隠れる。</p>
+      </article>
+      <article class="qa">
+        <h3>LVLM と memory agent の違いは？</h3>
+        <p>LVLM は長文コンテキスト内の元画像へ直接アクセスできるが、長さが伸びると retrieval-heavy な問題で劣化しやすい。memory agent は長さには比較的頑健でも、caption や adapter によって視覚証拠の忠実性を失いやすい。</p>
+      </article>
+      <article class="qa">
+        <h3>STALE とどうつながる？</h3>
+        <p>STALE は古い記憶を現在状態として使わない能力を見た。MemLens の Knowledge Update と Answer Refusal は、それを画像つき長期会話へ広げる読み方ができる。</p>
+      </article>
+      <article class="qa">
+        <h3>実務では何に効く？</h3>
+        <p>computer use agent や personal assistant が screenshot、UI trace、添付画像、グラレコを記憶として扱う時、caption 保存だけで十分か、元画像証拠への再アクセスが必要かを考える材料になる。</p>
+      </article>
+      <article class="qa">
+        <h3>一言でいうと？</h3>
+        <p>multimodal memory は、長く入ることではなく、画像証拠を保持し、更新し、統合し、根拠がない時は答えないことまで含む。</p>
+      </article>
+    </section>
+      </div>
+    </div>
+
+  </main>
+  <footer>
+    <p>Source: <a href="https://arxiv.org/abs/2605.14906">arXiv:2605.14906 / MemLens: Benchmarking Multimodal Long-Term Memory in Large Vision-Language Models</a>.</p>
+    <p>This page is a public reading artifact and does not include private workspace paths, logs, or internal metadata.</p>
+  </footer>
+
+</body>
+</html>
