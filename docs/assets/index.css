@@ -14,6 +14,7 @@
       background: var(--bg);
       color: var(--ink);
       line-height: 1.7;
+      overflow-x: hidden;
     }
     .site-header {
       display: flex;
@@ -60,6 +61,7 @@
       display: grid;
       gap: 14px;
       margin-top: 28px;
+      min-width: 0;
     }
     .areas {
       display: grid;
@@ -69,6 +71,7 @@
     }
     .card {
       display: block;
+      min-width: 0;
       padding: 20px;
       border: 1px solid var(--line);
       border-radius: 8px;
@@ -76,6 +79,7 @@
       color: var(--ink);
       text-decoration: none;
       box-shadow: var(--shadow);
+      overflow-wrap: anywhere;
     }
     .card strong {
       display: block;
@@ -105,4 +109,25 @@
       padding: 0 22px 34px;
       color: var(--muted);
       font-size: .92rem;
+    }
+
+    @media (max-width: 720px) {
+      main {
+        width: 100%;
+        padding: 34px 16px 56px;
+      }
+
+      .site-header {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .cards,
+      .areas {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .card {
+        padding: 16px;
+      }
     }

@@ -50,16 +50,15 @@
       </nav>
 
       <div>
-        <section class="section" aria-label="概要">
+
+
+    <section class="section" id="paper">
+      <h2>どんな論文か</h2>
       <p>Dynamic Skill Lifecycle Management for Agentic Reinforcement Learning は、LLM agent が使う外部スキルを、単なる追加コンテキストではなく、学習と一緒に管理される動的な能力境界として扱う論文。</p>
       <p>既存の skill-based agentic RL には、大きく二つの発想がある。ひとつは SkillRL のように外部スキルを蓄積し続ける方向。もうひとつは Skill0 のように、スキルを訓練中の足場として使い、最終的にはゼロスキル推論へ近づける方向。この論文は、そのどちらも単調すぎると見る。</p>
       <p>中心にあるのは、モデルのパラメータ容量は有限で、すべての手続きを内在化するのが常に正しいわけではないという見方。低頻度・長尾・狭い手順は外部スキルとして残した方がよく、一方で、既に policy に吸収されたスキルやノイズになるスキルは外した方がよい。</p>
       <p>SLIM は active external skill set を policy learning と同時に更新する。各スキルの marginal external contribution を leave-one-skill-out validation で測り、価値が残るものは retain、寄与が小さくなったものは retire、失敗が継続して能力の穴が見えたところには expand を行う。</p>
       <p>このページでは、論文の主張を「スキル管理のライフサイクル」という設計観点から読む。特に Codex skill や個人 AI assistant の運用では、スキルを増やすだけでなく、いつ残し、いつ畳み、いつ新しく作るかがそのまま運用品質に効く。</p>
-        </section>
-
-    <section id="paper">
-      <h2>どんな論文か</h2>
       <p>この論文は、LLM agent に外部スキルを与えて強化学習する時、スキル集合を固定の補助情報や一方向に変化する足場として扱わず、動的に管理する対象として扱う。</p>
       <p>問題設定は agentic RL。agent は ALFWorld のような長期手順タスクや SearchQA のような検索付き QA を解き、訓練中に外部スキルをプロンプトへ読み込める。スキルはモジュール化された手順知識で、モデルのパラメータだけでは安定しない行動を補う。</p>
       <p>論文が批判するのは、外部スキルの最終状態をあらかじめ決めてしまう考え方。蓄積型ではスキルバンクが膨らみ、routing noise や context overhead が増える。内在化型では、まだ外部に残すべき長尾手順まで消してしまう危険がある。</p>
@@ -67,57 +66,156 @@
       <p>この読み方で重要なのは、SLIM がスキルを memory と policy の中間に置いている点。ある手順は policy に吸収されるが、別の手順は外部 procedural memory として残り続ける。最終形はゼロでも全保持でもなく、タスクと訓練段階に依存する。</p>
     </section>
 
-    <section id="contributions">
+    <section class="section visual-section" id="contributions">
       <h2>課題と貢献</h2>
-      <p>第一の貢献は、スキル集合を単調に増やす、または単調に減らす対象ではなく、policy learning と同時に変わる active set として定式化したこと。</p>
-      <p>第二の貢献は、leave-one-skill-out validation による marginal external contribution の推定。あるスキルを含めた時と外した時の validation performance 差を局所的に測り、現在の policy がそのスキルをまだ外部支援として必要としているかを見る。</p>
-      <p>第三の貢献は、retain / retire / expand という三つのライフサイクル操作。寄与が明確に正なら保持し、十分な exposure の後に寄与が小さければ退役し、失敗が続く領域には新しいスキルを追加する。</p>
-      <p>第四の貢献は、SLIM が SkillRL と Skill0 の境界ケースとして読めることを示した点。退役を無効にすれば蓄積型に近づき、拡張を無効にして退役を進めればゼロスキル型に近づく。SLIM はその中間を学習する。</p>
-      <p>第五の貢献は、ALFWorld と SearchQA で、タスクによって最終的な外部スキル依存が異なることを実験で示した点。手順的な長期タスクでは外部スキルを残す価値が大きく、検索 QA では policy 側への吸収が相対的に強い。</p>
+      <div class="route">
+        <article class="step">
+          <div class="num">1</div>
+          <p>第一の貢献は、スキル集合を単調に増やす、または単調に減らす対象ではなく、policy learning と同時に変わる active set として定式化したこと。</p>
+        </article>
+        <article class="step">
+          <div class="num">2</div>
+          <p>第二の貢献は、leave-one-skill-out validation による marginal external contribution の推定。あるスキルを含めた時と外した時の validation performance 差を局所的に測り、現在の policy がそのスキルをまだ外部支援として必要としているかを見る。</p>
+        </article>
+        <article class="step">
+          <div class="num">3</div>
+          <p>第三の貢献は、retain / retire / expand という三つのライフサイクル操作。寄与が明確に正なら保持し、十分な exposure の後に寄与が小さければ退役し、失敗が続く領域には新しいスキルを追加する。</p>
+        </article>
+        <article class="step">
+          <div class="num">4</div>
+          <p>第四の貢献は、SLIM が SkillRL と Skill0 の境界ケースとして読めることを示した点。退役を無効にすれば蓄積型に近づき、拡張を無効にして退役を進めればゼロスキル型に近づく。SLIM はその中間を学習する。</p>
+        </article>
+        <article class="step">
+          <div class="num">5</div>
+          <p>第五の貢献は、ALFWorld と SearchQA で、タスクによって最終的な外部スキル依存が異なることを実験で示した点。手順的な長期タスクでは外部スキルを残す価値が大きく、検索 QA では policy 側への吸収が相対的に強い。</p>
+        </article>
+      </div>
     </section>
 
-    <section id="method">
+    <section class="section visual-section" id="method">
       <h2>手法のしくみ</h2>
-      <p>SLIM は三段構成になっている。まず hierarchical skill retrieval で、全スキルバンクから直接選ぶのではなく、現在 active な general skill と、タスクタイプごとの task-specific skill の中から、embedding 類似度と top-K で候補を絞る。</p>
-      <p>次に marginal external contribution を測る。監査対象のスキル s について、そのスキルが routing された validation task 集合を取り、active set A での性能と、A から s だけを外した時の性能差を測る。この差分が positive なら、そのスキルは現在の policy に対して外部支援としてまだ価値がある。</p>
-      <p>推定値は audit noise を減らすために指数移動平均で平滑化される。これは全スキル組み合わせに対する Shapley 的な大域寄与ではなく、現在の policy、routing、active set に条件づけられた局所的な指標として扱われる。</p>
-      <p>policy 側は GRPO で更新される。active set を固定して rollout を集め、成功報酬と invalid-action penalty などを使って policy を更新する。その後、policy を固定して skill lifecycle management を行う。</p>
-      <p>retain は、smoothed MEC が十分に正のスキルを active に残す操作。retire は、MEC が低く、十分な exposure と low-contribution streak があるスキルを外す操作。expand は、現在の active skill が routing された領域で失敗が続く時、新しい task-specific skill を作って追加する操作。</p>
-      <p>実装では、監査は全スキルに対して毎回行うのではなく、一定の GRPO step ごとに、最近 routing された上位のスキルを bounded audit budget の中で見る。論文の主設定では audit interval は 10 step、ALFWorld では top-K retrieval が 3、監査対象は recent routed usage の高いスキルに絞られる。</p>
+      <div class="route">
+        <article class="step">
+          <div class="num">1</div>
+          <p>SLIM は三段構成になっている。まず hierarchical skill retrieval で、全スキルバンクから直接選ぶのではなく、現在 active な general skill と、タスクタイプごとの task-specific skill の中から、embedding 類似度と top-K で候補を絞る。</p>
+        </article>
+        <article class="step">
+          <div class="num">2</div>
+          <p>次に marginal external contribution を測る。監査対象のスキル s について、そのスキルが routing された validation task 集合を取り、active set A での性能と、A から s だけを外した時の性能差を測る。この差分が positive なら、そのスキルは現在の policy に対して外部支援としてまだ価値がある。</p>
+        </article>
+        <article class="step">
+          <div class="num">3</div>
+          <p>推定値は audit noise を減らすために指数移動平均で平滑化される。これは全スキル組み合わせに対する Shapley 的な大域寄与ではなく、現在の policy、routing、active set に条件づけられた局所的な指標として扱われる。</p>
+        </article>
+        <article class="step">
+          <div class="num">4</div>
+          <p>policy 側は GRPO で更新される。active set を固定して rollout を集め、成功報酬と invalid-action penalty などを使って policy を更新する。その後、policy を固定して skill lifecycle management を行う。</p>
+        </article>
+        <article class="step">
+          <div class="num">5</div>
+          <p>retain は、smoothed MEC が十分に正のスキルを active に残す操作。retire は、MEC が低く、十分な exposure と low-contribution streak があるスキルを外す操作。expand は、現在の active skill が routing された領域で失敗が続く時、新しい task-specific skill を作って追加する操作。</p>
+        </article>
+        <article class="step">
+          <div class="num">6</div>
+          <p>実装では、監査は全スキルに対して毎回行うのではなく、一定の GRPO step ごとに、最近 routing された上位のスキルを bounded audit budget の中で見る。論文の主設定では audit interval は 10 step、ALFWorld では top-K retrieval が 3、監査対象は recent routed usage の高いスキルに絞られる。</p>
+        </article>
+      </div>
     </section>
 
-    <section id="results">
+    <section class="section visual-section" id="results">
       <h2>検証結果</h2>
-      <p>主実験は Qwen3-4B を使い、ALFWorld と SearchQA で行われる。比較対象には通常の GRPO、スキル蓄積型の SkillRL、スキル内在化型の Skill0、さらに ReAct、Reflexion、ExpeL、EvolveR などが含まれる。</p>
-      <p>全体では、SLIM は ALFWorld と SearchQA の平均で最良ベースラインを 7.1 ポイント上回る。ALFWorld では外部スキル込みの SLIM が 87.5 に達し、SkillRL より 12.5 ポイント高い。SearchQA では SLIM と SLIM with skills がともに 41.0 で、Skill0 を 1.7 ポイント上回る。</p>
-      <p>ALFWorld の結果は、手順的な状態変換タスクで特に強い。Clean では 91.4、Cool では 88.5 と、SkillRL や Skill0 を大きく上回る。これは、すべての手順を policy に押し込むより、特定の長期手順を外部スキルとして残す方が効く領域があることを示している。</p>
-      <p>SearchQA では、外部スキル込みとなしの差がほぼ消える。これは、検索 QA では最終的な外部スキル依存よりも、訓練中に skill-guided な経験を通じて policy が改善される側面が強いことを示している。</p>
-      <p>training dynamics では、SkillRL の active skill count は 38 から 73 へ増え続ける。Skill0 は 38 から 0 へ減る。SLIM は 38 から一度 46 に増え、その後 expand と retire を繰り返して、最終的に 21 の compact non-empty set に落ち着く。</p>
-      <p>ablation では、retirement を外すと ALFWorld が 87.5 から 73.4 に落ち、expansion を外すと 78.9 に落ちる。random audit は 68.8 まで下がるため、単にスキル集合を揺らすだけではなく、marginal contribution を見た lifecycle decision が重要だと読める。</p>
+      <div class="route">
+        <article class="step">
+          <div class="num">1</div>
+          <p>主実験は Qwen3-4B を使い、ALFWorld と SearchQA で行われる。比較対象には通常の GRPO、スキル蓄積型の SkillRL、スキル内在化型の Skill0、さらに ReAct、Reflexion、ExpeL、EvolveR などが含まれる。</p>
+        </article>
+        <article class="step">
+          <div class="num">2</div>
+          <p>全体では、SLIM は ALFWorld と SearchQA の平均で最良ベースラインを 7.1 ポイント上回る。ALFWorld では外部スキル込みの SLIM が 87.5 に達し、SkillRL より 12.5 ポイント高い。SearchQA では SLIM と SLIM with skills がともに 41.0 で、Skill0 を 1.7 ポイント上回る。</p>
+        </article>
+        <article class="step">
+          <div class="num">3</div>
+          <p>ALFWorld の結果は、手順的な状態変換タスクで特に強い。Clean では 91.4、Cool では 88.5 と、SkillRL や Skill0 を大きく上回る。これは、すべての手順を policy に押し込むより、特定の長期手順を外部スキルとして残す方が効く領域があることを示している。</p>
+        </article>
+        <article class="step">
+          <div class="num">4</div>
+          <p>SearchQA では、外部スキル込みとなしの差がほぼ消える。これは、検索 QA では最終的な外部スキル依存よりも、訓練中に skill-guided な経験を通じて policy が改善される側面が強いことを示している。</p>
+        </article>
+        <article class="step">
+          <div class="num">5</div>
+          <p>training dynamics では、SkillRL の active skill count は 38 から 73 へ増え続ける。Skill0 は 38 から 0 へ減る。SLIM は 38 から一度 46 に増え、その後 expand と retire を繰り返して、最終的に 21 の compact non-empty set に落ち着く。</p>
+        </article>
+        <article class="step">
+          <div class="num">6</div>
+          <p>ablation では、retirement を外すと ALFWorld が 87.5 から 73.4 に落ち、expansion を外すと 78.9 に落ちる。random audit は 68.8 まで下がるため、単にスキル集合を揺らすだけではなく、marginal contribution を見た lifecycle decision が重要だと読める。</p>
+        </article>
+      </div>
     </section>
 
-    <section id="limits">
+    <section class="section visual-section" id="limits">
       <h2>限界と読みどころ</h2>
-      <p>第一の限界は、MEC が局所的な single-skill leave-one-out 推定であること。現在の policy、routing、active set に条件づけられており、高次のスキル相互作用や全組み合わせの大域的寄与までは捉えない。</p>
-      <p>第二の限界は、閾値や audit budget に validation tuning が必要なこと。ALFWorld と SearchQA で使えた設定が、そのまま巨大な skill marketplace や実運用の個人 assistant に移るとは限らない。</p>
-      <p>第三の限界は、監査コスト。論文では bounded audit によって SkillRL や Skill0 と同程度の wall-clock に抑えているが、スキル数が非常に大きくなると、監査候補の選び方自体が研究課題になる。</p>
-      <p>読みどころは、SLIM をそのまま Codex skill に適用するというより、スキル運用の評価軸として使うこと。ある skill が今も外部支援として価値を出しているのか、単に古い手順として残っているだけなのか、失敗領域を埋める新 skill が必要なのか、という問いに変換できる。</p>
+      <div class="route">
+        <article class="step">
+          <div class="num">1</div>
+          <p>第一の限界は、MEC が局所的な single-skill leave-one-out 推定であること。現在の policy、routing、active set に条件づけられており、高次のスキル相互作用や全組み合わせの大域的寄与までは捉えない。</p>
+        </article>
+        <article class="step">
+          <div class="num">2</div>
+          <p>第二の限界は、閾値や audit budget に validation tuning が必要なこと。ALFWorld と SearchQA で使えた設定が、そのまま巨大な skill marketplace や実運用の個人 assistant に移るとは限らない。</p>
+        </article>
+        <article class="step">
+          <div class="num">3</div>
+          <p>第三の限界は、監査コスト。論文では bounded audit によって SkillRL や Skill0 と同程度の wall-clock に抑えているが、スキル数が非常に大きくなると、監査候補の選び方自体が研究課題になる。</p>
+        </article>
+        <article class="step">
+          <div class="num">4</div>
+          <p>読みどころは、SLIM をそのまま Codex skill に適用するというより、スキル運用の評価軸として使うこと。ある skill が今も外部支援として価値を出しているのか、単に古い手順として残っているだけなのか、失敗領域を埋める新 skill が必要なのか、という問いに変換できる。</p>
+        </article>
+      </div>
     </section>
 
-    <section id="figures">
+    <section class="section visual-section" id="figures">
       <h2>読みながら見る図表や節</h2>
-      <p>Figure 1 は、ALFWorld における validation success rate と active skill count の関係を示す。SkillRL はスキル数が増え続け、Skill0 はゼロへ向かう一方、SLIM は retain / retire / expand によって compact non-empty set に収束する。</p>
-      <p>Figure 2 は SLIM の全体像。active skill set を使って rollout し、GRPO で policy を更新し、その後に leave-one-skill-out validation でスキルの marginal external contribution を測り、ライフサイクル操作を行う流れを見る。</p>
-      <p>Figure 3 は ALFWorld の training dynamics。SLIM は no-skill performance も上げながら、with-skill performance を高く保つため、外部依存と policy learning が排他的ではないことが分かる。</p>
-      <p>Figure 4 と Table 2 は ablation。retirement、expansion、contribution-aware audit のどれを抜いても性能が落ちるため、三つの操作と MEC 推定が一体で効いている。</p>
-      <p>Figure 5 は具体的なスキルの lifecycle case study。スキルごとの selection count と marginal contribution を見ながら、retain / retire の判断が行動結果と対応していることを確認する箇所。</p>
+      <div class="route">
+        <article class="step">
+          <div class="num">1</div>
+          <p>Figure 1 は、ALFWorld における validation success rate と active skill count の関係を示す。SkillRL はスキル数が増え続け、Skill0 はゼロへ向かう一方、SLIM は retain / retire / expand によって compact non-empty set に収束する。</p>
+        </article>
+        <article class="step">
+          <div class="num">2</div>
+          <p>Figure 2 は SLIM の全体像。active skill set を使って rollout し、GRPO で policy を更新し、その後に leave-one-skill-out validation でスキルの marginal external contribution を測り、ライフサイクル操作を行う流れを見る。</p>
+        </article>
+        <article class="step">
+          <div class="num">3</div>
+          <p>Figure 3 は ALFWorld の training dynamics。SLIM は no-skill performance も上げながら、with-skill performance を高く保つため、外部依存と policy learning が排他的ではないことが分かる。</p>
+        </article>
+        <article class="step">
+          <div class="num">4</div>
+          <p>Figure 4 と Table 2 は ablation。retirement、expansion、contribution-aware audit のどれを抜いても性能が落ちるため、三つの操作と MEC 推定が一体で効いている。</p>
+        </article>
+        <article class="step">
+          <div class="num">5</div>
+          <p>Figure 5 は具体的なスキルの lifecycle case study。スキルごとの selection count と marginal contribution を見ながら、retain / retire の判断が行動結果と対応していることを確認する箇所。</p>
+        </article>
+      </div>
     </section>
 
-    <section id="next">
+    <section class="section visual-section" id="next">
       <h2>次に読むなら</h2>
-      <p>次に読むなら、SkillRL と Skill0 を並べて読むと SLIM の位置づけが明確になる。SkillRL は外部スキルを増やし続ける側、Skill0 は外部スキルを最終的に消す側の代表として機能する。</p>
-      <p>個人 assistant や Codex skills の運用へ接続するなら、SoK: Agentic Skills の lifecycle model と合わせるとよい。SLIM は RL training 内の active set 管理、SoK はより広い skill discovery / storage / evaluation / update / retirement の整理として読める。</p>
-      <p>memory 側へ接続するなら、Contextual Agentic Memory や Memory And Skill Rot と合わせると、外部 artifact を増やすだけではなく、いつ整理・退役・再評価するかという運用論に広がる。</p>
+      <div class="route">
+        <article class="step">
+          <div class="num">1</div>
+          <p>次に読むなら、SkillRL と Skill0 を並べて読むと SLIM の位置づけが明確になる。SkillRL は外部スキルを増やし続ける側、Skill0 は外部スキルを最終的に消す側の代表として機能する。</p>
+        </article>
+        <article class="step">
+          <div class="num">2</div>
+          <p>個人 assistant や Codex skills の運用へ接続するなら、SoK: Agentic Skills の lifecycle model と合わせるとよい。SLIM は RL training 内の active set 管理、SoK はより広い skill discovery / storage / evaluation / update / retirement の整理として読める。</p>
+        </article>
+        <article class="step">
+          <div class="num">3</div>
+          <p>memory 側へ接続するなら、Contextual Agentic Memory や Memory And Skill Rot と合わせると、外部 artifact を増やすだけではなく、いつ整理・退役・再評価するかという運用論に広がる。</p>
+        </article>
+      </div>
     </section>
 
     <section id="qa">

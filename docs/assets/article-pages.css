@@ -16,11 +16,19 @@ html {
   background: var(--ap-bg);
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 body {
   background: var(--ap-bg) !important;
   color: var(--ap-ink) !important;
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans", "Yu Gothic", sans-serif !important;
   line-height: 1.72;
+  min-width: 0;
+  overflow-x: hidden;
 }
 
 a {
@@ -95,6 +103,7 @@ main,
 main,
 .wrap {
   padding: 26px clamp(18px, 4vw, 44px) 80px !important;
+  min-width: 0 !important;
 }
 
 main:has(> .toc) {
@@ -150,6 +159,13 @@ main:has(> .toc) > section,
   box-shadow: var(--ap-shadow) !important;
 }
 
+.graphic-zoom-trigger {
+  display: block !important;
+  color: inherit !important;
+  cursor: zoom-in !important;
+  text-decoration: none !important;
+}
+
 .graphic-recording img {
   display: block !important;
   width: 100% !important;
@@ -157,6 +173,57 @@ main:has(> .toc) > section,
   border-radius: 6px !important;
   border: 1px solid rgba(31, 41, 51, .08) !important;
   background: #fff !important;
+}
+
+.graphic-lightbox {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 1000 !important;
+  display: none !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: clamp(14px, 4vw, 42px) !important;
+}
+
+.graphic-lightbox:target {
+  display: flex !important;
+}
+
+.graphic-lightbox-backdrop {
+  position: absolute !important;
+  inset: 0 !important;
+  background: rgba(20, 24, 28, .82) !important;
+  backdrop-filter: blur(6px) !important;
+}
+
+.graphic-lightbox-content {
+  position: relative !important;
+  z-index: 1 !important;
+  display: block !important;
+  max-width: min(1180px, 96vw) !important;
+  max-height: 92vh !important;
+  cursor: zoom-out !important;
+}
+
+.graphic-lightbox-content::before {
+  content: "閉じる" !important;
+  position: absolute !important;
+  top: -34px !important;
+  right: 0 !important;
+  color: #fff !important;
+  font-size: .9rem !important;
+  font-weight: 800 !important;
+}
+
+.graphic-lightbox-content img {
+  display: block !important;
+  max-width: 100% !important;
+  max-height: 92vh !important;
+  width: auto !important;
+  height: auto !important;
+  border-radius: 8px !important;
+  background: #fff !important;
+  box-shadow: 0 24px 72px rgba(0, 0, 0, .36) !important;
 }
 
 .graphic-recording figcaption {
@@ -168,6 +235,11 @@ main:has(> .toc) > section,
 .reader-grid {
   display: grid !important;
   gap: 20px !important;
+  min-width: 0 !important;
+}
+
+.reader-grid > div {
+  min-width: 0 !important;
 }
 
 @media (min-width: 920px) {
@@ -225,10 +297,24 @@ h3 {
   letter-spacing: 0 !important;
 }
 
+img,
+svg,
+video,
+canvas {
+  max-width: 100%;
+}
+
+pre,
+code {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 .hero p,
 p,
 .muted {
   color: var(--ap-muted);
+  overflow-wrap: anywhere;
 }
 
 .kicker {
@@ -327,11 +413,14 @@ p,
 .areas,
 .cards {
   gap: 14px !important;
+  min-width: 0 !important;
 }
 
 .panel,
 .card {
   padding: 18px !important;
+  min-width: 0 !important;
+  overflow-wrap: anywhere !important;
 }
 
 .panel strong,
@@ -344,6 +433,52 @@ p,
 blockquote,
 .callout {
   border-left-color: var(--ap-accent) !important;
+}
+
+.route {
+  display: grid !important;
+  gap: 10px !important;
+  margin-top: 18px !important;
+}
+
+.step {
+  display: grid !important;
+  grid-template-columns: 42px minmax(0, 1fr) !important;
+  gap: 12px !important;
+  align-items: start !important;
+  padding: 14px !important;
+  border: 1px solid var(--ap-line) !important;
+  border-radius: 8px !important;
+  background: #fffaf0 !important;
+}
+
+.num {
+  display: grid !important;
+  place-items: center !important;
+  width: 36px !important;
+  height: 36px !important;
+  border-radius: 50% !important;
+  background: var(--ap-accent) !important;
+  color: #fff !important;
+  font-weight: 850 !important;
+}
+
+.step p {
+  margin: 0 !important;
+  color: #37434d !important;
+}
+
+.visual-section:nth-of-type(even) .step {
+  background: #f4fbf8 !important;
+}
+
+.qa {
+  padding: 16px !important;
+}
+
+.qa h3 {
+  margin-top: 0 !important;
+  color: var(--ap-accent-3) !important;
 }
 
 footer {
@@ -362,12 +497,21 @@ footer {
   .hero-inner,
   main,
   .wrap {
+    width: 100% !important;
     padding-left: 16px !important;
     padding-right: 16px !important;
   }
 
+  h1 {
+    font-size: clamp(2rem, 14vw, 3.4rem) !important;
+    line-height: 1.03 !important;
+    overflow-wrap: anywhere !important;
+  }
+
   .hero {
     min-height: 62vh !important;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
   }
 
   .toc {
@@ -376,5 +520,15 @@ footer {
 
   .reader-grid > nav {
     position: static !important;
+  }
+
+  .step {
+    grid-template-columns: 34px minmax(0, 1fr) !important;
+    padding: 12px !important;
+  }
+
+  .num {
+    width: 30px !important;
+    height: 30px !important;
   }
 }
