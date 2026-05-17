@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agent Hooks Reading Guide</title>
+  <link rel="stylesheet" href="./assets/article-content.css">
+  <link rel="stylesheet" href="./assets/article-pages.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./index.html">Article Pages</a>
+    <nav class="top-nav" aria-label="Site navigation">
+      <a href="./index.html">Home</a>
+      <a href="./unread-reading-inventory.html">未読一覧</a>
+    </nav>
+  </header>
+
+
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="kicker">Reading artifact</p>
+      <h1>Agent Hooks Reading Guide</h1>
+      <p>Agent Hooks は、エージェントに毎回守ってほしいルールを、プロンプトの記憶力ではなくライフサイクル上の deterministic な処理として実行するための考え方。保護パス、テスト、監査ログ、完了判定のような反復ルールを、hook として作業フローに差し込む。</p>
+      <div class="paper-meta">
+        <span class="meta-chip">作成日: 2026-05-17</span>
+        <span class="meta-chip">Agent Hooks</span>
+        <span class="meta-chip">Harness Engineering</span>
+        <span class="meta-chip">Deterministic Control</span>
+        <span class="meta-chip">Codex / Claude Code / Devin / Cursor</span>
+        <span class="meta-chip">品質ゲート</span>
+      </div>
+      <div class="hero-actions">
+        <a class="button" href="https://x.com/i/article/2054716764811145216">元資料を開く</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="reader-grid">
+      <nav aria-label="Reading navigation">
+        <strong>目次</strong>
+        <a href="#paper">どんな論文か</a>
+        <a href="#contributions">課題と貢献</a>
+        <a href="#method">手法のしくみ</a>
+        <a href="#results">検証結果</a>
+        <a href="#limits">限界と読みどころ</a>
+        <a href="#figures">読みながら見る図表や節</a>
+        <a href="#next">次に読むなら</a>
+        <a href="#qa">読後Q&A</a>
+      </nav>
+
+      <div>
+
+
+    <section class="section" id="paper">
+      <h2>どんな論文か</h2>
+      <p>この記事の中心は、エージェントを強くするには、よいプロンプトだけでなく、作業フローの決まった地点で必ず動く処理が必要だということ。モデルは計画や実装を柔軟に進められる一方で、毎回守るべきルールを忘れたり、後回しにしたりする。その部分を hook に寄せる。</p>
+      <p>hook は、SessionStart、UserPromptSubmit、PreToolUse、PostToolUse、Stop、SessionEnd のようなライフサイクルイベントに紐づく。イベントごとに matcher や filter で対象を絞り、コマンド、HTTP、MCP、LLM、subagent などの handler を実行する。</p>
+      <p>重要なのは、hook がモデルの思考を deterministic にするわけではないこと。モデルの実装方針や回復手順は揺れる。しかし、選んだライフサイクル地点で自分のコードが必ず走るため、保護パスのブロック、テスト実行、監査ログ、完了条件チェックのような部分を安定させられる。</p>
+      <p>記事には小さな checkout calculator のデモがあり、tests、generated code、protected fixture を使って、実務に近い hook の使い方を見せている。狙いは大規模フレームワークではなく、既存の scripts、tests、policy、runbook をエージェント作業へ接続することにある。</p>
+      <p>これは論文ではなく、エージェント運用の実践記事である。主題は、agent workflow の特定地点に hook を差し込み、プロンプトだけでは守りきれない反復ルールを決定的に実行すること。</p>
+      <p>記事は Devin、Claude Code、Codex、Cursor のような複数環境を意識しており、demo では command handler を使う。shell script や Python script として policy を書けば、環境をまたいで再利用しやすい。</p>
+    </section>
+
+    <section class="section visual-section" id="contributions">
+      <h2>課題と貢献</h2>
+      <div class="route">
+        <article class="step">
+          <div class="num">1</div>
+          <p>第一に、hook を「モデルへの追加指示」ではなく「実行フローに入る制御点」として説明している。これにより、always、never、block、record、run、verify といった要件をプロンプトから分離できる。</p>
+        </article>
+        <article class="step">
+          <div class="num">2</div>
+          <p>第二に、SessionStart から SessionEnd までの代表的な lifecycle points を、開発者が最初に使いやすい形で整理している。開始時の文脈注入、プロンプト検査、ツール実行前ブロック、実行後検証、終了前チェック、終了時ログが一連の流れになる。</p>
+        </article>
+        <article class="step">
+          <div class="num">3</div>
+          <p>第三に、demo repo を通じて、保護パス、危険コマンド、テスト実行、品質ゲート、監査ログという実務で最初に欲しくなる hook を具体化している。</p>
+        </article>
+        <article class="step">
+          <div class="num">4</div>
+          <p>第四に、hook の価値を「目に見える出力」ではなく、避けられたミス、短くなった復旧ループ、残るログとして位置づけている。これは harness engineering の考え方に近い。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section visual-section" id="method">
+      <h2>手法のしくみ</h2>
+      <div class="route">
+        <article class="step">
+          <div class="num">1</div>
+          <p>基本モデルは event、optional matcher or filter、handler、outcome の4つ。event は PreToolUse や Stop のような lifecycle moment。matcher は shell command だけ、file edit だけ、といった対象の絞り込み。handler は実際に動く処理。outcome は context、decision、log、state update など。</p>
+        </article>
+        <article class="step">
+          <div class="num">2</div>
+          <p>SessionStart では、プロジェクト規約、active constraints、環境情報、関連 runbook を読み込ませる。毎回最初に必要な context を、ユーザーやモデルの思い出しに依存せず渡す。</p>
+        </article>
+        <article class="step">
+          <div class="num">3</div>
+          <p>UserPromptSubmit では、ユーザーの依頼をモデルが見る前に検査し、追加 context を付けたり、危険な依頼をブロックしたり、適切なルートへ寄せたりする。</p>
+        </article>
+        <article class="step">
+          <div class="num">4</div>
+          <p>PreToolUse では、実行前の tool call を検査する。生成物、機密 fixture、.env、.git、repo 外パスの編集などをブロックする用途に向く。</p>
+        </article>
+        <article class="step">
+          <div class="num">5</div>
+          <p>PostToolUse では、成功した tool call のあとに検証を走らせる。Python や JSON の編集後に unittest を実行し、失敗したら品質ゲート state を残す、といった使い方ができる。</p>
+        </article>
+        <article class="step">
+          <div class="num">6</div>
+          <p>Stop では、エージェントが完了を宣言する前に、最後の quality gate が失敗していないかを見る。SessionEnd では、セッション終了理由、時刻、transcript path などを監査ログへ書く。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section visual-section" id="results">
+      <h2>検証結果</h2>
+      <div class="route">
+        <article class="step">
+          <div class="num">1</div>
+          <p>記事が示す実務上の効果は、エージェントの自由度を残しながら、守るべき制約を実行環境側へ移せること。モデルには実装や判断を任せ、保護パス、危険コマンド、テスト、完了条件は hook に任せる。</p>
+        </article>
+        <article class="step">
+          <div class="num">2</div>
+          <p>良い最初の hook は、明確に言える policy に対応する。protected paths、blocked commands、required tests、audit logging、repo context、completion gates は特に始めやすい。</p>
+        </article>
+        <article class="step">
+          <div class="num">3</div>
+          <p>prompt instruction は guidance に向く。一方で、毎回必ず実行する必要があるものは hook に向く。記事中の短い rule of thumb は、always、never、block、record、run、verify と言える要件なら hook 候補、というもの。</p>
+        </article>
+        <article class="step">
+          <div class="num">4</div>
+          <p>demo の構成は、小さな checkout calculator、tests、generated client code、protected fixture、hooks、runtime configs でできている。小さいが、実務の hook flow を一通り試せる。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section visual-section" id="limits">
+      <h2>限界と読みどころ</h2>
+      <div class="route">
+        <article class="step">
+          <div class="num">1</div>
+          <p>hook はモデルの推論そのものを安定させるものではない。hook が安定させるのは、特定の lifecycle point で handler が走ることだけである。</p>
+        </article>
+        <article class="step">
+          <div class="num">2</div>
+          <p>導入には、event を選び、payload を見て、script を書き、失敗時の扱いを決める必要がある。プロンプトに一文足すよりは初期コストがある。</p>
+        </article>
+        <article class="step">
+          <div class="num">3</div>
+          <p>hook を増やしすぎると、作業が過度にブロックされたり、失敗原因が hook とモデルのどちらにあるのか分かりにくくなる。最初は明確な policy に絞るのがよい。</p>
+        </article>
+        <article class="step">
+          <div class="num">4</div>
+          <p>記事本文は実践ガイドであり、特定環境の hook API やイベント名の詳細は各公式ドキュメントで確認する必要がある。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section visual-section" id="figures">
+      <h2>読みながら見る図表や節</h2>
+      <div class="route">
+        <article class="step">
+          <div class="num">1</div>
+          <p>まず見るべき流れは、event → optional matcher/filter → handler → outcome。hook を大げさに捉えず、イベントに紐づいた小さな処理として読むと理解しやすい。</p>
+        </article>
+        <article class="step">
+          <div class="num">2</div>
+          <p>次に見るべきなのは、六つの lifecycle points。SessionStart、UserPromptSubmit、PreToolUse、PostToolUse、Stop、SessionEnd を、自分の作業フローのどこに対応するかで読む。</p>
+        </article>
+        <article class="step">
+          <div class="num">3</div>
+          <p>demo repo では hooks/ 配下の共通 policy logic と、.devin、.claude、.codex、.cursor の runtime config の分離を見る。環境ごとの差分を config に寄せ、policy 本体を共有する発想が使える。</p>
+        </article>
+        <article class="step">
+          <div class="num">4</div>
+          <p>コード例では、protected path block、command policy、quality gate、stop gate、session audit log を見る。最初に真似るなら、保護パスと品質ゲートが一番実用に近い。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section visual-section" id="next">
+      <h2>次に読むなら</h2>
+      <div class="route">
+        <article class="step">
+          <div class="num">1</div>
+          <p>自分の repo で最初に作るなら、PreToolUse の保護パス hook と、PostToolUse のテスト実行 hook がよい。どちらも policy が明確で、失敗時の挙動も決めやすい。</p>
+        </article>
+        <article class="step">
+          <div class="num">2</div>
+          <p>おい丸運用に引くなら、brain や wiki の非公開情報を公開 HTML に入れない、記事生成後にモバイル表示を確認する、テスト失敗時に完了しない、のような既存ルールを hook 候補として棚卸しできる。</p>
+        </article>
+        <article class="step">
+          <div class="num">3</div>
+          <p>次に読むなら、Codex hooks、Claude Code hooks、Cursor hooks、Devin lifecycle hooks の各公式ドキュメントを見て、同じ policy をどの event に写せるか比較するとよい。</p>
+        </article>
+        <article class="step">
+          <div class="num">4</div>
+          <p>さらに進めるなら、hooks を単発 script として増やすだけでなく、audit log、state、quality gate、skill 改善ループと接続する。ここまで行くと、プロンプト改善ではなく harness engineering になる。</p>
+        </article>
+      </div>
+    </section>
+
+    <section id="qa">
+      <h2>読後Q&A</h2>
+      <article class="qa">
+        <h3>この記事の一番大事な主張は？</h3>
+        <p>毎回守るべきルールは、モデルに覚えさせるだけでなく、agent workflow の lifecycle point に hook として差し込むと安定する、ということ。</p>
+      </article>
+      <article class="qa">
+        <h3>hook はプロンプトと何が違う？</h3>
+        <p>プロンプトはモデルへの guidance。hook は特定イベントで実際に動く処理。保護、検証、記録、完了判定のような deterministic にしたい部分に向く。</p>
+      </article>
+      <article class="qa">
+        <h3>代表的な lifecycle point は？</h3>
+        <p>SessionStart、UserPromptSubmit、PreToolUse、PostToolUse、Stop、SessionEnd。開始、依頼受付、ツール実行前、実行後、完了前、終了時に対応する。</p>
+      </article>
+      <article class="qa">
+        <h3>PreToolUse は何に使う？</h3>
+        <p>ツール実行前に payload を検査し、危険コマンド、保護ファイル、repo 外パス、機密ファイルの読み書きなどをブロックする。</p>
+      </article>
+      <article class="qa">
+        <h3>PostToolUse は何に使う？</h3>
+        <p>ツール実行後にテスト、formatter、scanner、logging、state capture を走らせる。編集後の品質ゲートに向く。</p>
+      </article>
+      <article class="qa">
+        <h3>Stop hook はなぜ必要？</h3>
+        <p>エージェントが完了を宣言する前に、直近の quality gate が失敗していないか、必要な確認が済んでいるかを止められるから。</p>
+      </article>
+      <article class="qa">
+        <h3>hook はモデルを deterministic にする？</h3>
+        <p>しない。モデルの計画や実装は揺れる。deterministic になるのは、選んだ lifecycle point で handler が走る部分。</p>
+      </article>
+      <article class="qa">
+        <h3>最初に作る hook は何がよい？</h3>
+        <p>protected paths、blocked commands、required tests、audit logging、repo context、completion gates のように、ルールが短く明確に書けるもの。</p>
+      </article>
+      <article class="qa">
+        <h3>おい丸運用にどう効く？</h3>
+        <p>AGENTS.md や memory に書いたルールのうち、毎回守るべきものを hook 化できる。公開ページ生成、テスト実行、秘密情報の混入防止、完了前チェックに特に効く。</p>
+      </article>
+      <article class="qa">
+        <h3>一言でいうと？</h3>
+        <p>hook は、エージェントにお願いするルールを、作業環境が実行するルールへ変えるための仕組み。</p>
+      </article>
+    </section>
+      </div>
+    </div>
+
+  </main>
+  <footer>
+    <p>Source: <a href="https://x.com/i/article/2054716764811145216">Agent Hooks: Deterministic Control for Agent Workflows</a>.</p>
+    <p>This page is a public reading artifact and does not include private workspace paths, logs, or internal metadata.</p>
+  </footer>
+
+</body>
+</html>
