@@ -40,13 +40,13 @@
     <div class="reader-grid">
       <nav aria-label="Reading navigation">
         <strong>目次</strong>
-        <a href="#paper">どんな論文か</a>
-        <a href="#contributions">課題と貢献</a>
-        <a href="#method">手法のしくみ</a>
-        <a href="#results">検証結果</a>
-        <a href="#limits">限界と読みどころ</a>
-        <a href="#figures">読みながら見る図表や節</a>
-        <a href="#next">次に読むなら</a>
+        <a href="#paper">どんな記事か</a>
+        <a href="#contributions">この記事の要点</a>
+        <a href="#method">Hook の使い方</a>
+        <a href="#results">実務で効くこと</a>
+        <a href="#limits">注意点と読みどころ</a>
+        <a href="#figures">読みながら見る場所</a>
+        <a href="#next">次にやるなら</a>
         <a href="#qa">読後Q&A</a>
       </nav>
 
@@ -54,17 +54,17 @@
 
 
     <section class="section" id="paper">
-      <h2>どんな論文か</h2>
+      <h2>どんな記事か</h2>
       <p>この記事の中心は、エージェントを強くするには、よいプロンプトだけでなく、作業フローの決まった地点で必ず動く処理が必要だということ。モデルは計画や実装を柔軟に進められる一方で、毎回守るべきルールを忘れたり、後回しにしたりする。その部分を hook に寄せる。</p>
       <p>hook は、SessionStart、UserPromptSubmit、PreToolUse、PostToolUse、Stop、SessionEnd のようなライフサイクルイベントに紐づく。イベントごとに matcher や filter で対象を絞り、コマンド、HTTP、MCP、LLM、subagent などの handler を実行する。</p>
       <p>重要なのは、hook がモデルの思考を deterministic にするわけではないこと。モデルの実装方針や回復手順は揺れる。しかし、選んだライフサイクル地点で自分のコードが必ず走るため、保護パスのブロック、テスト実行、監査ログ、完了条件チェックのような部分を安定させられる。</p>
       <p>記事には小さな checkout calculator のデモがあり、tests、generated code、protected fixture を使って、実務に近い hook の使い方を見せている。狙いは大規模フレームワークではなく、既存の scripts、tests、policy、runbook をエージェント作業へ接続することにある。</p>
-      <p>これは論文ではなく、エージェント運用の実践記事である。主題は、agent workflow の特定地点に hook を差し込み、プロンプトだけでは守りきれない反復ルールを決定的に実行すること。</p>
+      <p>エージェント運用の実践記事である。主題は、agent workflow の特定地点に hook を差し込み、プロンプトだけでは守りきれない反復ルールを決定的に実行すること。</p>
       <p>記事は Devin、Claude Code、Codex、Cursor のような複数環境を意識しており、demo では command handler を使う。shell script や Python script として policy を書けば、環境をまたいで再利用しやすい。</p>
     </section>
 
     <section class="section insights-section" id="contributions">
-      <h2>課題と貢献</h2>
+      <h2>この記事の要点</h2>
       <div class="insight-list">
         <article class="insight-card"><p>第一に、hook を「モデルへの追加指示」ではなく「実行フローに入る制御点」として説明している。これにより、always、never、block、record、run、verify といった要件をプロンプトから分離できる。</p></article>
         <article class="insight-card"><p>第二に、SessionStart から SessionEnd までの代表的な lifecycle points を、開発者が最初に使いやすい形で整理している。開始時の文脈注入、プロンプト検査、ツール実行前ブロック、実行後検証、終了前チェック、終了時ログが一連の流れになる。</p></article>
@@ -74,7 +74,7 @@
     </section>
 
     <section class="section steps-section" id="method">
-      <h2>手法のしくみ</h2>
+      <h2>Hook の使い方</h2>
       <div class="route">
         <article class="step">
           <div class="num">1</div>
@@ -104,10 +104,10 @@
     </section>
 
     <section class="section results-section" id="results">
-      <h2>検証結果</h2>
+      <h2>実務で効くこと</h2>
       <div class="score-grid">
         <article class="result-card">
-          <strong>検証結果</strong>
+          <strong>実務で効くこと</strong>
           <p>記事が示す実務上の効果は、エージェントの自由度を残しながら、守るべき制約を実行環境側へ移せること。モデルには実装や判断を任せ、保護パス、危険コマンド、テスト、完了条件は hook に任せる。</p>
         </article>
         <article class="result-card">
@@ -119,14 +119,14 @@
           <p>一方で、毎回必ず実行する必要があるものは hook に向く。記事中の短い rule of thumb は、always、never、block、record、run、verify と言える要件なら hook 候補、というもの。</p>
         </article>
         <article class="result-card">
-          <strong>検証結果</strong>
+          <strong>実務で効くこと</strong>
           <p>demo の構成は、小さな checkout calculator、tests、generated client code、protected fixture、hooks、runtime configs でできている。小さいが、実務の hook flow を一通り試せる。</p>
         </article>
       </div>
     </section>
 
     <section class="section warning" id="limits">
-      <h2>限界と読みどころ</h2>
+      <h2>注意点と読みどころ</h2>
       <div class="callout warning-item">hook はモデルの推論そのものを安定させるものではない。hook が安定させるのは、特定の lifecycle point で handler が走ることだけである。</div>
       <div class="callout warning-item">導入には、event を選び、payload を見て、script を書き、失敗時の扱いを決める必要がある。プロンプトに一文足すよりは初期コストがある。</div>
       <div class="callout warning-item">hook を増やしすぎると、作業が過度にブロックされたり、失敗原因が hook とモデルのどちらにあるのか分かりにくくなる。最初は明確な policy に絞るのがよい。</div>
@@ -134,7 +134,7 @@
     </section>
 
     <section class="section list-section" id="figures">
-      <h2>読みながら見る図表や節</h2>
+      <h2>読みながら見る場所</h2>
       <ul class="reading-list">
         <li>まず見るべき流れは、event → optional matcher/filter → handler → outcome。hook を大げさに捉えず、イベントに紐づいた小さな処理として読むと理解しやすい。</li>
         <li>次に見るべきなのは、六つの lifecycle points。SessionStart、UserPromptSubmit、PreToolUse、PostToolUse、Stop、SessionEnd を、自分の作業フローのどこに対応するかで読む。</li>
@@ -144,7 +144,7 @@
     </section>
 
     <section class="section list-section" id="next">
-      <h2>次に読むなら</h2>
+      <h2>次にやるなら</h2>
       <ul class="reading-list">
         <li>自分の repo で最初に作るなら、PreToolUse の保護パス hook と、PostToolUse のテスト実行 hook がよい。どちらも policy が明確で、失敗時の挙動も決めやすい。</li>
         <li>おい丸運用に引くなら、brain や wiki の非公開情報を公開 HTML に入れない、記事生成後にモバイル表示を確認する、テスト失敗時に完了しない、のような既存ルールを hook 候補として棚卸しできる。</li>
