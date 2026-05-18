@@ -1,0 +1,240 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>EvolveMem Paper Summary</title>
+  <link rel="stylesheet" href="./assets/article-content.css">
+  <link rel="stylesheet" href="./assets/article-pages.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./index.html">Article Pages</a>
+    <nav class="top-nav" aria-label="Site navigation">
+      <a href="./index.html">Home</a>
+      <a href="./unread-reading-inventory.html">未読一覧</a>
+    </nav>
+  </header>
+
+
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="kicker">Reading artifact</p>
+      <h1>EvolveMem Paper Summary</h1>
+      <p>この論文は、AIエージェントの長期記憶を『何を保存するか』だけでなく、『どう検索し、どう証拠を束ね、どう回答するか』まで失敗ログから自己進化させる。memory を DB ではなく、評価と巻き戻しを持つ harness として見るための一本。</p>
+      <div class="paper-meta">
+        <span class="meta-chip">作成日: 2026-05-17</span>
+        <span class="meta-chip">arXiv:2605.13941</span>
+        <span class="meta-chip">agent memory</span>
+        <span class="meta-chip">AutoResearch</span>
+        <span class="meta-chip">retrieval</span>
+        <span class="meta-chip">self-evolution</span>
+      </div>
+      <div class="hero-actions">
+        <a class="button" href="https://arxiv.org/abs/2605.13941">元資料を開く</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="reader-grid">
+      <nav aria-label="Reading navigation">
+        <strong>目次</strong>
+        <a href="#paper">どんな論文か</a>
+        <a href="#contributions">課題と貢献</a>
+        <a href="#method">手法のしくみ</a>
+        <a href="#results">検証結果</a>
+        <a href="#limits">限界と読みどころ</a>
+        <a href="#figures">読みながら見る図表や節</a>
+        <a href="#next">次に読むなら</a>
+        <a href="#qa">読後Q&A</a>
+      </nav>
+
+      <div>
+        <figure class="graphic-recording">
+          <a class="graphic-zoom-trigger" href="#graphic-recording-lightbox" aria-label="グラレコを拡大表示する"><img src="./assets/graphic-recordings/evolvemem-memory.png" alt="EvolveMem の日本語グラレコ" loading="eager" decoding="async"></a>
+          <figcaption>記憶内容だけでなく、検索設定・融合・文脈予算・回答検証まで失敗ログから育てる EvolveMem の全体像を1枚で把握するためのグラレコ。</figcaption>
+        </figure>
+        <div id="graphic-recording-lightbox" class="graphic-lightbox" aria-label="グラレコ拡大表示">
+          <a class="graphic-lightbox-backdrop" href="#" aria-label="拡大表示を閉じる"></a>
+          <a class="graphic-lightbox-content" href="#" aria-label="拡大表示を閉じる"><img src="./assets/graphic-recordings/evolvemem-memory.png" alt="EvolveMem の日本語グラレコ"></a>
+        </div>
+
+    <section class="section" id="paper">
+      <h2>どんな論文か</h2>
+      <p>EvolveMem の出発点は、長期記憶システムの見落としにある。多くの memory system は、会話ログから記憶を抽出したり、重複をまとめたり、古い情報を整理したりする。しかし、検索の設定そのものは導入時に決めたまま固定されることが多い。</p>
+      <p>これは、エージェントが長く動くほど苦しくなる。記憶が数十件から数百件へ増え、質問も事実確認、時間推論、複数段階推論、名前入れ替えのように多様になると、同じ検索設定では対応しきれない。EvolveMem は、保存内容と検索基盤の両方が進化するべきだと主張する。</p>
+      <p>手法の核は、検索設定全体を操作可能な空間として外に出すこと。BM25、意味検索、構造化メタデータ検索、順位融合、文脈予算、回答スタイル、質問分解、人名を外した再検索、回答検証などが、失敗ログを読んだ LLM 診断によって更新候補になる。</p>
+      <p>ただし、LLM の提案をそのまま信じるわけではない。各ラウンドで評価し、悪化した提案は自動で巻き戻し、停滞したら探索を入れる。著者らはこの閉ループを AutoResearch と呼ぶ。システムが自分自身の検索アーキテクチャを研究対象にして、観測、仮説、実験、検証を回す、という見方である。</p>
+      <p>結果として、LoCoMo では最強ベースラインを相対 25.7% 上回り、最小構成からは相対 78.0% 改善した。MemBench でも最強ベースライン比で相対 18.9% 改善する。さらに、LoCoMo で進化した設定が MemBench にも正に転移する点が、この論文の読みどころである。</p>
+      <p>EvolveMem は、LLM エージェントの長期記憶アーキテクチャを、保存内容と検索機構の共進化として設計する論文である。</p>
+      <p>従来の記憶システムは、記憶内容の抽出、圧縮、統合、忘却を扱ってきた。一方で、どの検索器を使うか、候補を何件取るか、BM25 と意味検索をどう混ぜるか、回答時にどれだけ文脈を入れるか、といった検索基盤は固定されがちだった。</p>
+      <p>この論文は、その固定設定を問題にする。長期記憶は、保存箱ではなく、質問の種類や失敗ログに応じて読み方を育てる仕組みとして設計されるべきだ、という立場に立つ。</p>
+    </section>
+
+    <section class="section insights-section" id="contributions">
+      <h2>課題と貢献</h2>
+      <div class="insight-list">
+        <article class="insight-card">
+          <strong>第一の貢献は、検索基盤そのものを自己進化の対象にしたこと。</strong>
+          <p>保存内容だけでなく、スコアリング、融合、文脈予算、回答方針まで進化対象にする。</p>
+        </article>
+        <article class="insight-card">
+          <strong>第二の貢献は、型つき記憶ストアと複数視点検索を組み合わせたこと。</strong>
+          <p>記憶には本文、埋め込み、記憶タイプ、重要度、信頼度、人物、場所、トピック、時刻などを持たせる。</p>
+        </article>
+        <article class="insight-card"><p>第三の貢献は、LLM 診断モジュールが質問ごとの失敗ログを読み、根本原因を分類し、設定変更を提案する閉ループを作ったこと。</p></article>
+        <article class="insight-card">
+          <strong>第四の貢献は、ガード付きのメタ分析器を入れたこと。</strong>
+          <p>性能が悪化すればベスト設定へ戻し、停滞すれば探索を入れるため、自己進化が単なる思いつきの上書きになりにくい。</p>
+        </article>
+        <article class="insight-card">
+          <strong>第五の貢献は、進化後の設定がベンチマーク間で正に転移することを示したこと。</strong>
+          <p>これは、特定 benchmark への小手先ではなく、ある程度汎用的な検索原理を見つけている可能性を示す。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section steps-section" id="method">
+      <h2>手法のしくみ</h2>
+      <div class="route">
+        <article class="step">
+          <div class="num">1</div>
+          <p>会話ログをスライディングウィンドウで読み、LLM が型つき記憶を抽出する。抽出失敗時のリトライ、長すぎる窓の分割、参照キーワードに対するカバレッジ検証で、記憶ストアの抜けを減らす。</p>
+        </article>
+        <article class="step">
+          <div class="num">2</div>
+          <p>各記憶には、自然言語本文、埋め込み、記憶タイプ、重要度、信頼度、人物や場所、トピック、作成時刻などのメタデータを持たせる。重複統合、重要度の減衰、エンティティ強化も行う。</p>
+        </article>
+        <article class="step">
+          <div class="num">3</div>
+          <p>検索時は、BM25 による語彙検索、埋め込みによる意味検索、人物や場所などの構造化メタデータ検索を別々に走らせる。結果は sum、weighted-sum、RRF のいずれかで融合する。</p>
+        </article>
+        <article class="step">
+          <div class="num">4</div>
+          <p>質問カテゴリに応じて、人名を外した再検索や、複数段階質問の分解検索を使う。回答生成では、簡潔、説明的、検証的、推論的といったスタイルを設定でき、低信頼回答には二段目の検証も入れられる。</p>
+        </article>
+        <article class="step">
+          <div class="num">5</div>
+          <p>評価後、質問、予測、正解、スコア、検索された証拠を含む失敗ログを残す。LLM 診断モジュールがこのログを読み、違う人物を拾った、文脈が足りない、時間の扱いが弱い、といった原因を分類し、設定変更を提案する。</p>
+        </article>
+        <article class="step">
+          <div class="num">6</div>
+          <p>メタ分析器は、提案を評価ラウンドで検証する。悪化すれば巻き戻し、停滞すれば探索、改善が見込める場合だけ変更を適用する。これにより、評価、診断、提案、ガード、再評価の AutoResearch ループが閉じる。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section results-section" id="results">
+      <h2>検証結果</h2>
+      <div class="score-grid">
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>LoCoMo では、GPT-4o 使用時に EvolveMem は全体 F1 0.543 を達成し、SimpleMem の 0.432 を相対 25.7% 上回った。最小構成の 0.305 からは相対 78.0% の改善である。</p>
+        </article>
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>GPT-5.1 でも EvolveMem は全体 F1 0.572 を達成し、SimpleMem の 0.418 を相対 36.8% 上回った。時間推論、単発検索、オープンドメイン系の改善が特に大きい。</p>
+        </article>
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>MemBench では、GPT-4o で全体精度 67.9%、GPT-5.1 で 71.4% を達成した。GPT-4o では最強ベースラインから相対 18.9% 改善している。</p>
+        </article>
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>自己進化の軌跡では、R0 の BM25 のみの弱い構成から始まり、R1 で RRF 融合、R3 で entity-swap、R5 で query decomposition、R7 で answer verification と文脈予算調整が入る。R2 の悪化提案は自動で巻き戻された。</p>
+        </article>
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>除去実験では、抽出品質管理を外すと F1 が 23.22 ポイント落ち、最も大きな影響を持つ。次に意味検索、LLM 診断、BM25 が大きい。検索を育てる前に、必要な記憶がちゃんと保存されていることが土台になる。</p>
+        </article>
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>ベンチマーク間転移では、LoCoMo で進化した設定を MemBench にそのまま適用しても 54.3% を出し、さらに MemBench で継続進化すると 79.2% に上がる。しかも LoCoMo 側も 0.543 から 0.593 に改善しており、正の転移になっている。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section warning" id="limits">
+      <h2>限界と読みどころ</h2>
+      <div class="callout warning-item">関連記憶がそもそもストアに存在しない場合、検索設定だけでは救えない。MemBench の post_processing ではこの限界が出ている。</div>
+      <div class="callout warning-item">評価セットを使って検索設定を進化させるため、評価セットの設計が弱いと、現実の運用に合わない方向へ最適化される可能性がある。</div>
+      <div class="callout warning-item">診断 LLM が新しい設定次元を提案できる点は強いが、実運用では提案してよい変更範囲を設計しないと、システムが複雑化しすぎる可能性がある。</div>
+      <div class="callout warning-item">論文の主な評価は LoCoMo と MemBench であり、コードベース探索、個人 wiki、実作業ログのような環境にそのまま転移するかは別途検証が必要である。</div>
+    </section>
+
+    <section class="section list-section" id="figures">
+      <h2>読みながら見る図表や節</h2>
+      <ul class="reading-list">
+        <li>architecture 図では、型つき記憶ストア、複数視点検索、自己進化エンジンの3層を見る。重要なのは、検索層の設定が固定値ではなく、変更可能な操作空間として設計されている点である。</li>
+        <li>進化軌跡の図では、評価、診断、提案、ガードのループを見る。悪い提案が残らず巻き戻されることが、自己進化を安全な更新ループにしている。</li>
+        <li>LoCoMo の主結果表では、全体点だけでなく、時間推論、単発検索、オープンドメイン、名前入れ替えでどこが伸びているかを見る。</li>
+        <li>MemBench の結果表では、Recall と Reasoning が伸び、Robustness が弱めに残る点を見る。これは検索設定だけでなく記憶カバレッジが必要だという限界にもつながる。</li>
+        <li>除去実験では、抽出品質管理、意味検索、LLM 診断の順に大きな寄与が見える。検索改善だけでなく、記憶ストアの品質と診断ログの読み方が要になる。</li>
+      </ul>
+    </section>
+
+    <section class="section list-section" id="next">
+      <h2>次に読むなら</h2>
+      <ul class="reading-list">
+        <li>Memory And Skill Rot と並べると、memory を保存ファイルではなく、読み込み、適用、忘却、評価、巻き戻しを含む harness interface として見やすくなる。</li>
+        <li>STALE と並べると、古い記憶を見抜く current-state adjudication と、検索設定を育てる EvolveMem の関係が見える。片方は記憶の有効性、もう片方は記憶の読み方を扱う。</li>
+        <li>Is Grep All You Need? と並べると、retriever 単体ではなく、検索手段、結果の渡し方、文脈予算、agent harness の相互作用として検索性能を見る視点が揃う。</li>
+        <li>実務に引くなら、wiki query や learn-from-logs で、失敗した時に『ルールを足す』だけでなく『次にどの記憶をどう読むか』まで評価つきで育てる設計が使える。</li>
+      </ul>
+    </section>
+
+    <section id="qa">
+      <h2>読後Q&A</h2>
+      <article class="qa">
+        <h3>この論文の中心問いは？</h3>
+        <p>長期記憶システムは、保存内容だけでなく、検索設定や回答方針まで失敗ログから自律的に改善できるのか、という問いである。</p>
+      </article>
+      <article class="qa">
+        <h3>何が新しい？</h3>
+        <p>記憶の中身ではなく、記憶の読み方を進化対象にした点。BM25、意味検索、融合、文脈予算、回答検証などを、評価ログに基づいて更新する。</p>
+      </article>
+      <article class="qa">
+        <h3>AutoResearch とは？</h3>
+        <p>システムが自分自身のアーキテクチャを研究対象にして、観測、仮説、実験、検証を自律的に回すという考え方である。EvolveMem では検索基盤がその対象になる。</p>
+      </article>
+      <article class="qa">
+        <h3>LLM 診断は何を読む？</h3>
+        <p>質問ごとの失敗ログを読む。質問、予測、正解、スコア、検索された証拠を見て、なぜ失敗したかを分類し、設定変更を提案する。</p>
+      </article>
+      <article class="qa">
+        <h3>提案が悪かったらどうする？</h3>
+        <p>メタ分析器が評価結果を見て、性能が悪化した場合はベスト設定へ自動で戻す。停滞した場合は探索のための変更を入れる。</p>
+      </article>
+      <article class="qa">
+        <h3>一番効いた部品は？</h3>
+        <p>除去実験では、抽出品質管理が最も大きい。必要な記憶がストアに入っていなければ、どれだけ検索設定を育てても答えられない。</p>
+      </article>
+      <article class="qa">
+        <h3>RAG のチューニングと何が違う？</h3>
+        <p>単に top-k や重みを調整するだけではなく、質問分解、人名を外した再検索、回答検証、カテゴリ別方針など、検索から回答までの構造も進化対象にしている点が違う。</p>
+      </article>
+      <article class="qa">
+        <h3>実務では何に効く？</h3>
+        <p>wiki や agent memory を、ただ増やすだけでなく、失敗ログから検索順、読むファイル、文脈量、検証方法を育てる設計に使える。</p>
+      </article>
+      <article class="qa">
+        <h3>限界は？</h3>
+        <p>記憶ストアに関連情報がない場合は検索設定だけでは解けない。また評価セットに合わせて進化するため、評価設計が実運用とズレると危ない。</p>
+      </article>
+      <article class="qa">
+        <h3>一言でいうと？</h3>
+        <p>memory は DB ではない。失敗から『どう読むか』まで育つ harness として設計できる。</p>
+      </article>
+    </section>
+      </div>
+    </div>
+
+  </main>
+  <footer>
+    <p>Source: <a href="https://arxiv.org/abs/2605.13941">arXiv:2605.13941 / EvolveMem: Self-Evolving Memory Architecture via AutoResearch for LLM Agents</a>.</p>
+    <p>This page is a public reading artifact and does not include private workspace paths, logs, or internal metadata.</p>
+  </footer>
+
+</body>
+</html>
