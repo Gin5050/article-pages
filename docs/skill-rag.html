@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Skill-RAG Paper Summary</title>
+  <link rel="stylesheet" href="./assets/article-content.css">
+  <link rel="stylesheet" href="./assets/article-pages.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./index.html">Article Pages</a>
+    <nav class="top-nav" aria-label="Site navigation">
+      <a href="./index.html">Home</a>
+      <a href="./unread-reading-inventory.html">未読一覧</a>
+    </nav>
+  </header>
+
+
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="kicker">Reading artifact</p>
+      <h1>Skill-RAG Paper Summary</h1>
+      <p>この論文は、RAG の失敗を単なる再検索ではなく、失敗状態を診断して適切な retrieval skill を選ぶ問題として扱う。hidden-state prober と skill router を組み合わせ、query rewriting、question decomposition、evidence focusing、exit へ分岐する。</p>
+      <div class="paper-meta">
+        <span class="meta-chip">作成日: 2026-05-19</span>
+        <span class="meta-chip">arXiv:2604.15771</span>
+        <span class="meta-chip">RAG</span>
+        <span class="meta-chip">hidden-state probing</span>
+        <span class="meta-chip">skill routing</span>
+        <span class="meta-chip">failure recovery</span>
+      </div>
+      <div class="hero-actions">
+        <a class="button" href="https://arxiv.org/abs/2604.15771">元資料を開く</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="reader-grid">
+      <nav aria-label="Reading navigation">
+        <strong>目次</strong>
+        <a href="#paper">どんな論文か</a>
+        <a href="#contributions">課題と貢献</a>
+        <a href="#method">手法のしくみ</a>
+        <a href="#results">検証結果</a>
+        <a href="#limits">限界と読みどころ</a>
+        <a href="#figures">読みながら見る図表や節</a>
+        <a href="#next">次に読むなら</a>
+        <a href="#qa">読後Q&A</a>
+      </nav>
+
+      <div>
+        <figure class="graphic-recording">
+          <a class="graphic-zoom-trigger" href="#graphic-recording-lightbox" aria-label="グラレコを拡大表示する"><img src="./assets/graphic-recordings/skill-rag.png" alt="Skill-RAG の日本語グラレコ" loading="eager" decoding="async"></a>
+          <figcaption>RAG の失敗状態を検出し、4つの retrieval skill へ route する流れを1枚で把握するためのグラレコ。</figcaption>
+        </figure>
+        <div id="graphic-recording-lightbox" class="graphic-lightbox" aria-label="グラレコ拡大表示">
+          <a class="graphic-lightbox-backdrop" href="#" aria-label="拡大表示を閉じる"></a>
+          <a class="graphic-lightbox-content" href="#" aria-label="拡大表示を閉じる"><img src="./assets/graphic-recordings/skill-rag.png" alt="Skill-RAG の日本語グラレコ"></a>
+        </div>
+
+    <section class="section" id="paper">
+      <h2>どんな論文か</h2>
+      <p>Skill-RAG の中心問いは、RAG がうまく答えられなかったときに、ただ検索を繰り返すだけでよいのか、というもの。既存の adaptive retrieval は、retrieve するか、何回 retrieve するかを制御する方向に寄りがちだった。しかし hard case では、関連文書がまったく無いのではなく、質問の形と証拠空間の合い方が悪く、近いが答えに足りない文書を拾い続けることがある。</p>
+      <p>論文はこの状態を query-evidence alignment gap として捉える。広すぎる質問は evidence focusing が必要で、複数の前提が絡む質問は decomposition が必要で、表現が文書側の索引とずれている質問は rewriting が必要になる。つまり retrieval failure は一種類の失敗ではなく、型を持った失敗として扱える、という見方である。</p>
+      <p>Skill-RAG は、hidden-state prober でモデル内部の failure state を検出し、prompt-based skill router で原因を診断する。router は query rewriting、question decomposition、evidence focusing、exit の四つから選び、次の検索前に query または evidence の向きを直す。prober は、検索前と検索後の二段階で gate として働く。</p>
+      <p>実験では Gemma2-9B を使い、HotpotQA、NQ、TriviaQA を in-domain、MuSiQue と 2WikiMultiHopQA を out-of-domain として評価する。Skill-RAG は Probing-RAG に対して、特に OOD で大きく改善し、MuSiQue で ACC +6.1、2WikiMultiHopQA で +13.6 を示す。</p>
+      <p>面白いのは、skill を増やせば増やすほどよい、という結論ではないこと。representation-space analysis では、四つの skill vocabulary は failure state の構造に合っている一方、LLM に六つ以上の skill を自動生成させるとクラスタ構造が崩れる。少数のよく切られた skill が、RAG の失敗回復には効く。</p>
+      <p>Skill-RAG は、RAG の post-retrieval failure を、再検索の回数調整ではなく、失敗型に応じた skill selection として扱う論文である。</p>
+      <p>対象にしているのは、retrieval をしても答えが直らない persistent failure である。論文は、その多くが relevant evidence の不在だけではなく、query と evidence space の alignment gap に由来すると見る。</p>
+      <p>提案手法は、軽量な hidden-state prober と prompt-based skill router を組み合わせる。prober はモデルの内部状態から、回答準備ができているか、retrieval や recovery が必要かを判定する。</p>
+    </section>
+
+    <section class="section insights-section" id="contributions">
+      <h2>課題と貢献</h2>
+      <div class="insight-list">
+        <article class="insight-card"><p>第一の貢献は、post-retrieval failure recovery に hidden-state prober gating と prompt-based skill routing を統合したこと。失敗を検出したあと、単に再検索するのではなく、原因に応じた retrieval action を選ぶ。</p></article>
+        <article class="insight-card"><p>第二の貢献は、query rewriting、question decomposition、evidence focusing、exit という四つの retrieval skill を transferable skill vocabulary として整理したこと。RAG の失敗回復を、再利用できる skill taxonomy として扱っている。</p></article>
+        <article class="insight-card"><p>第三の貢献は、複数 benchmark で、prober-only baseline より OOD dataset で大きく改善することを示したこと。単純な retrieval gate だけではなく、failure-conditioned routing が効いている。</p></article>
+        <article class="insight-card"><p>第四の貢献は、failure representation space の分析で、失敗状態が skill ごとに構造化され分離可能な領域を持つことを示したこと。query-evidence misalignment は monolithic ではなく typed な現象だという主張を支えている。</p></article>
+      </div>
+    </section>
+
+    <section class="section steps-section" id="method">
+      <h2>手法のしくみ</h2>
+      <div class="route">
+        <article class="step">
+          <div class="num">1</div>
+          <p>まず、入力質問に対して hidden-state prober が、parametric knowledge だけで答えられるか、retrieval が必要かを判定する。</p>
+        </article>
+        <article class="step">
+          <div class="num">2</div>
+          <p>retrieval が必要なら、標準的な BM25 retrieval を行い、取得した evidence を条件にモデルが回答を生成する。</p>
+        </article>
+        <article class="step">
+          <div class="num">3</div>
+          <p>生成後の hidden state をもう一度 prober が見て、回答状態が十分か、まだ failure state かを判定する。</p>
+        </article>
+        <article class="step">
+          <div class="num">4</div>
+          <p>failure state が検出されると、prompt-based skill router が、元の質問、失敗した reasoning と answer、現在の evidence を受け取り、misalignment の原因を診断する。</p>
+        </article>
+        <article class="step">
+          <div class="num">5</div>
+          <p>router は query rewriting、question decomposition、evidence focusing、exit の四つから選ぶ。選ばれた skill が query または evidence の向きを直し、次の retrieval round に入る。</p>
+        </article>
+        <article class="step">
+          <div class="num">6</div>
+          <p>ループは、prober が十分と判定する、router が exit を選ぶ、または最大 retrieval round に達するまで続く。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section results-section" id="results">
+      <h2>検証結果</h2>
+      <div class="score-grid">
+        <article class="result-card">
+          <strong>Main benchmark。</strong>
+          <p>HotpotQA、NQ、TriviaQA を in-domain、MuSiQue と 2WikiMultiHopQA を OOD として、Gemma2-9B で評価している。すべての方法は BM25 retriever を使う。</p>
+        </article>
+        <article class="result-card">
+          <strong>OOD improvement。</strong>
+          <p>Skill-RAG は Probing-RAG に対して、MuSiQue で ACC +6.1、2WikiMultiHopQA で +13.6 を示す。prober gating だけでなく、failure-conditioned skill routing が OOD hard case に効いている。</p>
+        </article>
+        <article class="result-card">
+          <strong>In-domain behavior。</strong>
+          <p>HotpotQA、NQ、TriviaQA でも competitive または state-of-the-art に近い性能を示す。特に ACC では Probing-RAG と同等以上の結果が多い。</p>
+        </article>
+        <article class="result-card">
+          <strong>Representation analysis。</strong>
+          <p>三回の標準 retrieval 後も間違う hard case の hidden-state embedding を見ると、alignment gap 系の修正可能な失敗と、retriever limitation や missing knowledge に近い irreducible failure が分かれる。</p>
+        </article>
+        <article class="result-card">
+          <strong>Skill vocabulary size。</strong>
+          <p>四つの skill では cluster が収縮し、修正可能な失敗が減る。一方で、LLM に六つ以上の skill を自動生成させると、cluster structure が崩れ、過度に細かい skill set が routing を難しくする可能性が示される。</p>
+        </article>
+        <article class="result-card">
+          <strong>Case study。</strong>
+          <p>My Hero Academia の映画公開日の例では、Probing-RAG は再検索で off-topic な band に drift する。Skill-RAG は query rewriting を選び、Japan release date へ query を直して正しい July 5, 2018 に到達する。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section warning" id="limits">
+      <h2>限界と読みどころ</h2>
+      <div class="callout warning-item">skill router は prompt-based なので、基盤 LLM の instruction following 能力に依存する。弱いモデルでは診断品質が落ちる可能性がある。</div>
+      <div class="callout warning-item">四つの skill vocabulary は open-domain QA benchmark から導かれている。科学論文、多言語 corpus、企業内文書など、retrieval characteristic が違う領域では分類が足りない可能性がある。</div>
+      <div class="callout warning-item">実験は主に Gemma2-9B で行われている。モデルサイズやアーキテクチャをまたいだ広い検証は今後の課題として残る。</div>
+      <div class="callout warning-item">retriever は BM25 で統一されている。dense retrieval や hybrid retrieval、agentic search harness との組み合わせでは、failure state や skill の効き方が変わる可能性がある。</div>
+    </section>
+
+    <section class="section list-section" id="figures">
+      <h2>読みながら見る図表や節</h2>
+      <ul class="reading-list">
+        <li>Figure 1 は、Skill-RAG の全体パイプラインを見る図。training data construction、prober training、skill-based RAG の三つを分けている。</li>
+        <li>Section 3.1 は prober training の要点。no retrieval と single-step retrieval の出力から hidden state と correctness label を作り、layer ごとの prober を平均する。</li>
+        <li>Section 3.2 は四つの skill の定義を見る場所。rewriting、decomposition、focusing、exit がそれぞれどの失敗型に対応するかを確認できる。</li>
+        <li>Table 1 は最重要の結果表。in-domain と OOD で、No Retrieval、Single-step RAG、FLARE、DRAGIN、Adaptive-RAG、Probing-RAG、Skill-RAG を比べている。</li>
+        <li>Figure 2 は representation-space analysis。skill routing によって修正可能な failure cluster が縮む一方、skill を増やしすぎると構造が崩れるという読みどころがある。</li>
+        <li>Table 2 は case study。単純な再検索が query drift を悪化させる一方、query rewriting が正しい証拠へ戻す流れを具体例で見せている。</li>
+      </ul>
+    </section>
+
+    <section class="section list-section" id="next">
+      <h2>次に読むなら</h2>
+      <ul class="reading-list">
+        <li>Self-RAG、Adaptive-RAG、FLARE、DRAGIN、Probing-RAG を並べると、retrieval の trigger、depth、critique、hidden-state gate、skill routing の違いが見えやすい。</li>
+        <li>Direct Corpus Interaction や Is Grep All You Need? と合わせると、retrieval skill を選ぶ以前に、corpus をどう歩けるようにするか、検索結果をどう agent に渡すかという harness 側の論点に接続できる。</li>
+        <li>実務 RAG に引くなら、失敗ログを「再検索すべき」だけで終わらせず、rewrite が必要か、分解が必要か、証拠を絞るべきか、そもそも exit すべきかに分類してみるとよい。</li>
+        <li>agent skill 運用の文脈では、skill を増やすほど良いのではなく、失敗空間の構造に合った少数の skill vocabulary を保つ、という設計原則として読める。</li>
+      </ul>
+    </section>
+
+    <section id="qa">
+      <h2>読後Q&A</h2>
+      <article class="qa">
+        <h3>この論文の中心問いは？</h3>
+        <p>RAG が検索後も失敗したとき、ただ再検索するのではなく、失敗状態を診断して適切な retrieval skill を選べるか、という問い。</p>
+      </article>
+      <article class="qa">
+        <h3>Skill-RAG の skill とは何？</h3>
+        <p>retrieval を直す操作の種類。query rewriting、question decomposition、evidence focusing、exit の四つが定義されている。</p>
+      </article>
+      <article class="qa">
+        <h3>hidden-state prober は何をする？</h3>
+        <p>モデルの hidden state から、回答できる状態か、retrieval や recovery が必要な failure state かを判定する軽量な分類器として働く。</p>
+      </article>
+      <article class="qa">
+        <h3>なぜ出力だけでなく hidden state を見るの？</h3>
+        <p>論文は、retrieval が詰まっている状態がモデル内部表現に構造として現れると見ている。出力後の retry signal だけでなく、内部状態を gate に使うのが狙い。</p>
+      </article>
+      <article class="qa">
+        <h3>query rewriting はどんなときに使う？</h3>
+        <p>質問の表面表現が corpus の索引や文書表現とずれているときに、retrievable evidence に合う形へ query を書き換える。</p>
+      </article>
+      <article class="qa">
+        <h3>question decomposition はどんなときに使う？</h3>
+        <p>multi-hop query の前提が絡み合っていて、一度の検索では必要な推論ステップを分けにくいときに、複数の sub-query へ分解する。</p>
+      </article>
+      <article class="qa">
+        <h3>evidence focusing はどんなときに使う？</h3>
+        <p>質問が広すぎて、関係はあるが答えに足りない文書を拾い続けるときに、欠けている証拠スロットを狙って検索を絞る。</p>
+      </article>
+      <article class="qa">
+        <h3>exit skill は諦めるだけ？</h3>
+        <p>単なる失敗ではなく、証拠不足やモデル能力限界など、retrieval を続けても改善しにくい irreducible case を識別し、不要な推論コストを避ける役割。</p>
+      </article>
+      <article class="qa">
+        <h3>一番重要な実験結果は？</h3>
+        <p>OOD benchmark で Probing-RAG より大きく改善したこと。MuSiQue で ACC +6.1、2WikiMultiHopQA で +13.6 を示している。</p>
+      </article>
+      <article class="qa">
+        <h3>skill は多いほど良い？</h3>
+        <p>この論文の結果では、そう単純ではない。LLM に六つ以上の skill を自動生成させると failure representation の cluster structure が崩れ、routing が難しくなる可能性が示される。</p>
+      </article>
+      <article class="qa">
+        <h3>実務 RAG に使うなら何を見る？</h3>
+        <p>失敗ログを、rewrite、decompose、focus、exit のどれに近いか分類する。単に top-k や検索回数を増やす前に、query と evidence space のずれ方を見る。</p>
+      </article>
+      <article class="qa">
+        <h3>この論文の限界は？</h3>
+        <p>router が prompt-based で LLM 能力に依存すること、四つの skill が別ドメインで十分とは限らないこと、実験が主に Gemma2-9B に限られること。</p>
+      </article>
+    </section>
+      </div>
+    </div>
+
+  </main>
+  <footer>
+    <p>Source: <a href="https://arxiv.org/abs/2604.15771">arXiv:2604.15771 / Skill-RAG: Failure-State-Aware Retrieval Augmentation via Hidden-State Probing and Skill Routing</a>.</p>
+    <p>This page is a public reading artifact and does not include private workspace paths, logs, or internal metadata.</p>
+  </footer>
+
+</body>
+</html>
