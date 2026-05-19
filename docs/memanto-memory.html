@@ -101,18 +101,30 @@
         </article>
         <article class="step">
           <div class="num">2</div>
-          <p>新しい記憶が既存記憶と意味的にぶつかる場合は、矛盾として扱う。古い記憶を置き換える、古い記憶を残す、両方を矛盾つきで保持する、といった選択肢を持つ。</p>
+          <p>13種類の型は、fact、preference、decision、commitment、goal、event、instruction、relationship、context、learning、observation、error、artifact である。論文上は、認知科学の記憶分類と ENGRAM の型分離の知見を踏まえた predefined schema として提示されており、データから自動発見した13分類ではない。</p>
         </article>
         <article class="step">
           <div class="num">3</div>
-          <p>検索には Moorcheh の情報理論的検索を使う。通常の近似最近傍索引に強く依存するのではなく、クエリの不確実性をどれだけ減らすかという観点で、関連する記憶を取り出すと説明されている。</p>
+          <p>新しい記憶が既存記憶と意味的にぶつかる場合は、矛盾として扱う。古い記憶を置き換える、古い記憶を残す、両方を矛盾つきで保持する、といった選択肢を持つ。</p>
         </article>
         <article class="step">
           <div class="num">4</div>
-          <p>検索方針は再現率寄りである。狭く高精度に取るより、少しノイズが混じっても広めに取り出し、LLM が必要な情報を読む設計にする。</p>
+          <p>検索には Moorcheh の情報理論的検索を使う。通常の近似最近傍索引に強く依存するのではなく、クエリの不確実性をどれだけ減らすかという観点で、関連する記憶を取り出すと説明されている。</p>
         </article>
         <article class="step">
           <div class="num">5</div>
+          <p>Moorcheh は、論文中では MIB、EDM、ITS の3要素で説明される。MIB は embedding を情報を保ったまま二値表現へ圧縮し、EDM は cosine 類似度ではなく不確実性低減を基準に距離を見る。ITS は検索結果の価値を 0 から 1 のスコアとして出し、しきい値ベースの決定的検索を可能にする。</p>
+        </article>
+        <article class="step">
+          <div class="num">6</div>
+          <p>検索方針は再現率寄りである。狭く高精度に取るより、少しノイズが混じっても広めに取り出し、LLM が必要な情報を読む設計にする。</p>
+        </article>
+        <article class="step">
+          <div class="num">7</div>
+          <p>通常のベクトル検索で足りないとされる点は、近い文が必ずしも必要な記憶ではないこと、index 更新の遅延が write-read loop と噛み合わないこと、近似検索の揺れが agent の再現性とデバッグを難しくすることである。</p>
+        </article>
+        <article class="step">
+          <div class="num">8</div>
           <p>回答時は、取り出した記憶を根拠としてモデルに読ませる。関係グラフを事前に作り込むより、型、時間、矛盾、広めの検索を整えたうえで、推論モデルに整理させる立場である。</p>
         </article>
       </div>
@@ -147,9 +159,10 @@
     <section class="section warning" id="limits">
       <h2>限界と読みどころ</h2>
       <div class="callout warning-item">Moorcheh 依存が強い。Memanto の設計が強いのか、Moorcheh の情報理論的検索が強いのかは、この論文だけでは切り分けにくい。</div>
+      <div class="callout warning-item">Moorcheh は API や SDK として使うだけなら比較的試しやすいが、Moorcheh 相当の検索エンジンを自前実装するのは別問題である。MIB、情報理論的距離、決定的スコアリング、no-index search を再現するには、研究・インフラ寄りの実装が必要になる。</div>
       <div class="callout warning-item">評価は LongMemEval と LoCoMo が中心で、どちらも会話記憶に寄っている。研究エージェント、コード生成エージェント、複数エージェント協調などでは追加検証が必要である。</div>
       <div class="callout warning-item">最終段階で推論モデルを Gemini 3 に変更しているため、記憶アーキテクチャの改善とモデルの読解力の改善が混ざる。切り分け実験では寄与が示されているが、慎重に読む必要がある。</div>
-      <div class="callout warning-item">13種類の記憶型は汎用的だが、個人 wiki、投資判断、論文ウォッチ、作業ログのような運用には、そのままでは粗い可能性がある。実務では領域ごとの型設計が必要になる。</div>
+      <div class="callout warning-item">13種類の記憶型は汎用的だが、個人 wiki、投資判断、論文ウォッチ、作業ログのような運用には、そのままでは粗い可能性がある。論文の Appendix では、現状の型割り当ては書き込み時にユーザーが選び、自動分類は将来の rule-based decision tree とされている。</div>
     </section>
 
     <section class="section list-section" id="figures">
@@ -190,6 +203,30 @@
       <article class="qa">
         <h3>13種類の記憶型はなぜ重要？</h3>
         <p>記憶をただのテキストとして保存するのではなく、決定、指示、状況、学び、エラーのように分けることで、検索時の絞り込みや優先度づけ、矛盾解決がしやすくなる。</p>
+      </article>
+      <article class="qa">
+        <h3>13種類の型は具体的に何？</h3>
+        <p>fact、preference、decision、commitment、goal、event、instruction、relationship、context、learning、observation、error、artifact の13種類である。事実、好み、決定、約束、目標、出来事、指示、関係、状況、学び、観察、失敗回避、文書やコード参照を分ける。</p>
+      </article>
+      <article class="qa">
+        <h3>13という数はどう決めた？</h3>
+        <p>論文では、認知科学の記憶分類と ENGRAM の型分離の知見に基づく predefined schema として説明されている。データから自動発見した分類ではなく、現状の型割り当ても書き込み時にユーザーが選ぶ設計である。</p>
+      </article>
+      <article class="qa">
+        <h3>Moorcheh はどんな手法？</h3>
+        <p>論文中では、embedding を二値圧縮する MIB、cosine 類似度ではなく不確実性低減を見る EDM、検索結果の価値を 0 から 1 で出す ITS を組み合わせた情報理論的検索として説明されている。</p>
+      </article>
+      <article class="qa">
+        <h3>なぜ Moorcheh を選んだ？</h3>
+        <p>保存してすぐ検索できること、近似最近傍ではなく決定的な意味検索を狙えること、クエリに効く情報量で関連度を見られること、検索と取り込みの運用コストを下げられることを重視したためである。</p>
+      </article>
+      <article class="qa">
+        <h3>通常のベクトル検索では何が足りない？</h3>
+        <p>長期記憶では、embedding 空間で近い文が必要な記憶とは限らない。さらに index 更新遅延、近似検索の揺れ、top-k で重要断片を取り逃がす問題が、agent の write-read loop やデバッグを難しくする。</p>
+      </article>
+      <article class="qa">
+        <h3>Moorcheh は簡単に組める？</h3>
+        <p>API や SDK として使うだけなら比較的試しやすい。一方で、MIB、情報理論的距離、決定的スコアリング、no-index search を備えた Moorcheh 相当の検索エンジンを自作するのはかなり重い。</p>
       </article>
       <article class="qa">
         <h3>一番効いた改善は？</h3>
