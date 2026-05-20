@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Memory And Skill Rot In Agent Harnesses</title>
+  <title>From Skill Text to Skill Structure: The Scheduling-Structural-Logical Representation for Agent Skills</title>
   <link rel="stylesheet" href="./assets/article-content.css">
   <link rel="stylesheet" href="./assets/article-pages.css">
 </head>
@@ -20,15 +20,15 @@
   <header class="hero">
     <div class="hero-inner">
       <p class="kicker">Reading artifact</p>
-      <h1>Memory And Skill Rot In Agent Harnesses</h1>
-      <p>long-running agent の memory と skill は、保存ファイルではなく、読み込み・適用・退役・統合・risk review を含む harness interface として設計する必要がある。増やすほど強くなるのではなく、古さ、重複、危険な副作用を管理できないと rot が起きる。</p>
+      <h1>From Skill Text to Skill Structure: The Scheduling-Structural-Logical Representation for Agent Skills</h1>
+      <p>Agent skill を自然言語の塊として置くだけでは、呼び出し条件、実行構造、副作用、resource use が混ざり、検索や risk review が難しくなる。この論文は、skill を Scheduling、Structural、Logical の三層に分ける SSL 表現を提案し、skill discovery と risk assessment の改善を示す。</p>
       <div class="paper-meta">
         <span class="meta-chip">作成日: 2026-05-20</span>
-        <span class="meta-chip">agent memory</span>
-        <span class="meta-chip">agent skills</span>
-        <span class="meta-chip">harness interface</span>
-        <span class="meta-chip">skill rot</span>
-        <span class="meta-chip">lifecycle governance</span>
+        <span class="meta-chip">arXiv:2604.24026</span>
+        <span class="meta-chip">Agent Skills</span>
+        <span class="meta-chip">SSL Representation</span>
+        <span class="meta-chip">Skill Discovery</span>
+        <span class="meta-chip">Risk Assessment</span>
       </div>
       <div class="hero-actions">
         <a class="button" href="https://arxiv.org/abs/2604.24026">元資料を開く</a>
@@ -40,171 +40,165 @@
     <div class="reader-grid">
       <nav aria-label="Reading navigation">
         <strong>目次</strong>
-        <a href="#paper">このメモの中心</a>
-        <a href="#contributions">拾っておきたい補助線</a>
-        <a href="#method">Harness として見る</a>
-        <a href="#results">運用で起きる失敗</a>
-        <a href="#limits">注意点と読みどころ</a>
-        <a href="#figures">実務へ引くなら</a>
+        <a href="#paper">どんな論文か</a>
+        <a href="#contributions">課題と貢献</a>
+        <a href="#method">手法のしくみ</a>
+        <a href="#results">検証結果</a>
+        <a href="#limits">限界と読みどころ</a>
+        <a href="#figures">読みながら見る図表や節</a>
         <a href="#next">次に読むなら</a>
         <a href="#qa">読後Q&A</a>
       </nav>
 
       <div>
-
+        <figure class="graphic-recording">
+          <a class="graphic-zoom-trigger" href="#graphic-recording-lightbox" aria-label="グラレコを拡大表示する"><img src="./assets/graphic-recordings/memory-and-skill-rot.svg" alt="From Skill Text to Skill Structure の日本語グラレコ" loading="eager" decoding="async"></a>
+          <figcaption>自然言語 skill が抱える混線、SSL の三層表現、skill discovery と risk assessment の改善を1枚で把握するためのグラレコ。</figcaption>
+        </figure>
+        <div id="graphic-recording-lightbox" class="graphic-lightbox" aria-label="グラレコ拡大表示">
+          <a class="graphic-lightbox-backdrop" href="#" aria-label="拡大表示を閉じる"></a>
+          <a class="graphic-lightbox-content" href="#" aria-label="拡大表示を閉じる"><img src="./assets/graphic-recordings/memory-and-skill-rot.svg" alt="From Skill Text to Skill Structure の日本語グラレコ"></a>
+        </div>
 
     <section class="section" id="paper">
-      <h2>このメモの中心</h2>
-      <p>このページは単一論文の要約ではなく、agent memory、agent skill、harness engineering をつなぐ公開用の読書 artifact である。中心にある問いは、長く動く agent が『覚える』だけで本当に良くなるのか、というもの。</p>
-      <p>結論はかなりはっきりしている。memory も skill も、保存された Markdown、DB row、SKILL.md だけでは完結しない。いつロードされるか、どんな根拠形式で提示されるか、どの条件で呼ばれるか、古いものをどう退役させるかまで含めて harness interface になる。</p>
-      <p>この見方に立つと、agent の長期運用で怖いのは不足よりも腐敗である。古い記憶、似た skill、危険な side effect、曖昧な呼び出し条件が増えると、保存量は増えているのに判断は不安定になる。</p>
-      <p>特に自然言語 skill は扱いやすい一方で、invocation interface、execution flow、tool/resource side effects、権限、失敗時の扱いが一つの文章に混ざりやすい。registry が大きくなるほど、discovery、risk review、重複統合が難しくなる。</p>
-      <p>だから memory と skill の設計は、追加する仕組みだけでなく、整理する仕組みとして考える必要がある。catalog、metadata、lint、usage history、archive、restore は地味だが、agent を長く使うほど中核部品になる。</p>
-      <p>このメモは、Agent Memory Engineering、From Skill Text to Skill Structure、skill lifecycle 管理の議論を、個人用 agent harness の設計論として束ねる。</p>
-      <p>memory transfer は file copy ではない。同じ情報を別の agent に渡しても、常時ロード、on-demand search、引用形式、system reminder、更新 API、削除や拒否の制約が違えば、使われ方は変わる。</p>
-      <p>skill も同じで、SKILL.md の本文だけを増やしても運用は強くならない。どの状況で呼ぶべきか、どの resource に触るか、どんな side effect を持つか、古くなったときにどう扱うかが必要になる。</p>
+      <h2>どんな論文か</h2>
+      <p>この論文の出発点は、LLM agent が reusable skills に頼るようになった一方で、その skill がまだ自然言語中心の artifact として扱われていることにある。SKILL.md のような文書は人間にも LLM にも読みやすいが、呼び出し条件、制御フロー、制約、tool call、resource use が一つの文章面に混ざりやすい。</p>
+      <p>著者らは、この混線が skill-centered agent system の運用を難しくすると見る。skill を探すときには『どんな状況で呼ぶべきか』を読みたい。risk review では『どの resource に触り、どんな副作用を持つか』を読みたい。しかし自然言語の塊では、これらの証拠が分離されていない。</p>
+      <p>そこで提案されるのが Scheduling-Structural-Logical、略して SSL 表現である。Scheduling layer は skill-level の呼び出し信号、Structural layer は scene-level の実行構造、Logical layer は action と resource-use の証拠を表す。論文は、Schank and Abelson の scripts、MOPs、conceptual dependency を背景に、この三層で agent skill artifacts を構造化する。</p>
+      <p>評価では、LLM-based normalizer で既存 skill を SSL に変換し、Skill Discovery と Risk Assessment の二つのタスクで text-only baseline と比較する。結果として、Skill Discovery の MRR は 0.573 から 0.707 へ、Risk Assessment の macro F1 は 0.744 から 0.787 へ改善する。</p>
+      <p>読後に残るポイントは、SSL が完成した標準や end-to-end skill management ではなく、skill を検索しやすく、監査しやすく、運用しやすくするための実用的な中間表現だということ。Memory And Skill Rot の文脈では、自然言語 skill を増やすだけでは registry が腐るので、機械可読な index と risk surface を重ねる必要がある、という話につながる。</p>
+      <p>From Skill Text to Skill Structure: The Scheduling-Structural-Logical Representation for Agent Skills は、LLM agent の skill artifact を、自然言語の本文から機械が使いやすい構造へ変換するための論文である。</p>
+      <p>対象にしている skill は、instructions、control flow、constraints、tool calls を含む reusable capability package である。著者らは、現在の agent systems ではこうした skill が text-heavy artifact として表現され、機械が使うべき証拠が自然言語に埋もれていると指摘する。</p>
+      <p>この論文は、agent skill の知識表現を、呼び出し、実行構造、具体的な action / resource use に分ける。これにより、skill discovery と risk assessment を、全文検索や embedding 類似度だけに頼らず、skill の意味構造に基づいて支援しようとする。</p>
     </section>
 
     <section class="section insights-section" id="contributions">
-      <h2>拾っておきたい補助線</h2>
+      <h2>課題と貢献</h2>
       <div class="insight-list">
-        <article class="insight-card">
-          <strong>Memory is interface：</strong>
-          <p>記憶の実体はファイルや行ではなく、読み込みタイミング、提示形式、更新・拒否・削除の動線まで含む harness interface である。</p>
-        </article>
-        <article class="insight-card">
-          <strong>Skills need structure：</strong>
-          <p>人間にも LLM にも読める skill 本文は便利だが、呼び出し条件、手順、副作用、リスクを機械可読に分けないと registry が育った時に崩れやすい。</p>
-        </article>
-        <article class="insight-card">
-          <strong>Rot is lifecycle：</strong>
-          <p>古い memory や skill を消せば終わりではない。使用頻度、最終利用時刻、patch 履歴、重複、drift、pin、archive、restore を持つ管理が必要になる。</p>
-        </article>
-        <article class="insight-card">
-          <strong>Curation is capability：</strong>
-          <p>catalog、lint、metadata、related link、status 更新は事務作業ではなく、agent の長期性能を守るための harness capability と見られる。</p>
-        </article>
+        <article class="insight-card"><p>第一の貢献は、agent skill artifact 向けの SSL 表現を提案したこと。Scheduling、Structural、Logical の三層で、呼び出し信号、実行 scene、action / resource-use evidence を分離する。</p></article>
+        <article class="insight-card"><p>第二の貢献は、Schank and Abelson の Memory Organization Packets、Script Theory、Conceptual Dependency を、現代の LLM agent skill 表現へ接続したこと。自然言語 instructions を、場面と行為の構造として読む補助線を与える。</p></article>
+        <article class="insight-card"><p>第三の貢献は、LLM-based normalizer により既存 skill artifact から SSL を生成する pipeline を示したこと。人間が全部を手で構造化するのではなく、既存の skill 文書から構造を抽出する方向を取る。</p></article>
+        <article class="insight-card"><p>第四の貢献は、Skill Discovery と Risk Assessment で text-only baseline より良い結果を示したこと。MRR と macro F1 の改善により、明示的で source-grounded な構造が skill 検索と監査に効くことを示す。</p></article>
       </div>
     </section>
 
     <section class="section steps-section" id="method">
-      <h2>Harness として見る</h2>
+      <h2>手法のしくみ</h2>
       <div class="route">
         <article class="step">
           <div class="num">1</div>
-          <p>まず memory を storage ではなく loading policy として見る。何を常時読むのか、何を必要時だけ探すのか、何を現在の判断基準として扱うのかを分ける。</p>
+          <p>入力は、自然言語を中心にした skill artifact である。そこには、いつ使うべきか、どんな手順を踏むか、どの tool や resource に触るか、どんな制約があるかが混在している。</p>
         </article>
         <article class="step">
           <div class="num">2</div>
-          <p>次に presentation を見る。記憶を事実、方針、履歴、候補、警告のどれとして提示するかで agent の行動は変わる。根拠形式そのものが interface になる。</p>
+          <p>Scheduling layer は、skill-level の invocation interface を表す。どんな task signal、ユーザー意図、環境条件、前提があると skill を呼ぶべきかを扱う。</p>
         </article>
         <article class="step">
           <div class="num">3</div>
-          <p>skill は Scheduling、Structural、Logical の三層で見る。いつ呼ぶか、どんな流れで動くか、どの atomic action と resource use を持つかを分ける。</p>
+          <p>Structural layer は、scene-level の execution structure を表す。skill がどんな場面、手順、分岐、subgoal、control flow を持つかを扱う。</p>
         </article>
         <article class="step">
           <div class="num">4</div>
-          <p>最後に lifecycle を置く。active、draft、stale、archived、pinned のような状態と、usage count、last used、review history を使い、増やすだけの運用から抜ける。</p>
+          <p>Logical layer は、concrete side effects に近い情報を表す。atomic action、tool call、resource use、制約、リスクに関わる証拠を分けて取り出す。</p>
+        </article>
+        <article class="step">
+          <div class="num">5</div>
+          <p>著者らは LLM-based normalizer を使って、text-heavy skill artifact から SSL 表現を生成する。そのうえで、Skill Discovery と Risk Assessment の downstream task に利用し、text-only 表現と比較する。</p>
         </article>
       </div>
     </section>
 
     <section class="section results-section" id="results">
-      <h2>運用で起きる失敗</h2>
+      <h2>検証結果</h2>
       <div class="score-grid">
         <article class="result-card">
-          <strong>Stale memory：</strong>
-          <p>当時は正しかった記憶が今の状態や方針と合わなくなり、更新日や適用条件がないと古い前提が現在の根拠として混ざる。</p>
+          <strong>Skill Discovery：</strong>
+          <p>SSL 表現を使うことで MRR が 0.573 から 0.707 に改善し、自然言語全文だけを見るより呼び出し信号や構造化された skill evidence を分けて読む方が有利だと分かる。</p>
         </article>
         <article class="result-card">
-          <strong>Duplicate skills：</strong>
-          <p>似た skill が複数あり、どれを優先するか分からないため、routing が揺れて似た作業なのに毎回違う手順へ入る。</p>
+          <strong>Risk Assessment：</strong>
+          <p>macro F1 が 0.744 から 0.787 に改善し、tool / resource side effects や constraints が構造として取り出されている方が risk review しやすいと分かる。</p>
         </article>
         <article class="result-card">
-          <strong>Hidden side effects：</strong>
-          <p>skill 本文に tool 操作、外部送信、ファイル更新、権限変更が自然文で埋もれ、risk review が呼び出し前に効きにくくなる。</p>
+          <strong>Corpus scale：</strong>
+          <p>論文が使う corpus は 6,184 skills、403 task queries、500 risk-labeled skills であり、この規模になると discovery と review を構造で支える意味が出てくる。</p>
         </article>
         <article class="result-card">
-          <strong>Registry blindness：</strong>
-          <p>skill や memory が増えすぎると存在を見つけられないか、見つけても古さや信頼度を判断できなくなる。</p>
-        </article>
-        <article class="result-card">
-          <strong>Accumulation trap：</strong>
-          <p>learn-from-logs のような仕組みで知識を増やすほど賢くなるように見えても、統合と退役がなければ矛盾とノイズも増える。</p>
+          <strong>Practical step：</strong>
+          <p>SSL は agent skill の最終標準ではなく、自然言語 skill を operationally actionable にするための source-grounded な中間構造として読むのがよい。</p>
         </article>
       </div>
     </section>
 
     <section class="section warning" id="limits">
-      <h2>注意点と読みどころ</h2>
-      <div class="callout warning-item">このページは公開用の設計メモであり、単一実験の結果を報告する論文要約ではない。数値や評価結果は、参照元の論文や記事側で確認する必要がある。</div>
-      <div class="callout warning-item">自然言語 skill を否定しているわけではない。むしろ、人間が読める本文を残したうえで、機械可読な index、risk surface、lifecycle metadata を重ねるのが現実的な方向である。</div>
-      <div class="callout warning-item">memory や skill の退役は、単純な削除とは違う。古いものが再利用される場合、監査や復元のために archive と理由を残す設計が必要になる。</div>
-      <div class="callout warning-item">個人用 assistant と組織用 agent では、必要な governance の重さが違う。小さく始めるなら、updated、status、related、risk label くらいからでよい。</div>
+      <h2>限界と読みどころ</h2>
+      <div class="callout warning-item">SSL は、skill management の完成形ではない。論文自身も、end-to-end mechanism for managing and using skills ではなく、inspectable、reusable、operationally actionable な skill representation へ向かう実用的な一歩として位置づけている。</div>
+      <div class="callout warning-item">LLM-based normalizer に依存するため、抽出された構造が常に正しいとは限らない。skill 本文が曖昧だったり、副作用が暗黙だったりすると、SSL も不完全になる。</div>
+      <div class="callout warning-item">評価タスクは Skill Discovery と Risk Assessment に絞られている。実際の agent が skill を使ってタスク成功率を上げるか、skill registry を長期運用できるかまでは直接評価していない。</div>
+      <div class="callout warning-item">自然言語 skill の強みも残る。人間が読み、修正し、文脈を補えることは重要なので、SSL は SKILL.md を捨てる話ではなく、本文の上に machine-readable structure を重ねる話として読むのがよい。</div>
     </section>
 
     <section class="section list-section" id="figures">
-      <h2>実務へ引くなら</h2>
+      <h2>読みながら見る図表や節</h2>
       <ul class="reading-list">
-        <li>wiki の catalog は、単なるファイル一覧ではなく retrieval policy の入口として扱う。summary、status、updated、related は agent が読む順序を決める信号になる。</li>
-        <li>skill metadata には、trigger、必要入力、触る resource、外部副作用、必要権限、last reviewed、stale 条件を持たせる余地がある。</li>
-        <li>wiki-lint は整合性確認だけでなく、memory rot を見つける curator として育てられる。薄い index、古い catalog、重複ページ、壊れた related link は performance issue でもある。</li>
-        <li>learn-from-logs は memory を増やす skill だが、将来的には memory を減らす、統合する、退役させる skill と対にした方がよい。</li>
-        <li>公開ページや読書 artifact も同じで、古い手書き HTML と新しい JSON spec 生成ページが混在すると、更新フロー自体が rot する。生成元を持つことが保守性になる。</li>
+        <li>論文の Figure 1 は、skill text から SSL 表現へ変換する全体像を見る入口になる。元図の見た目ではなく、自然言語の skill artifact から三層の structured representation を取り出す流れを読むとよい。</li>
+        <li>Scheduling layer、Structural layer、Logical layer の違いを見るときは、呼び出し条件、実行手順、副作用の三つが一つの SKILL.md に混ざる場面を想像すると分かりやすい。</li>
+        <li>結果を見るときは、Skill Discovery の MRR 改善と Risk Assessment の macro F1 改善を並べる。前者は見つけやすさ、後者は危険性の読みやすさに対応する。</li>
+        <li>Memory And Skill Rot の文脈で読むなら、skill registry が増えたときに discovery、risk review、重複統合、古さの管理が難しくなる、という実務上の痛みと接続するとよい。</li>
       </ul>
     </section>
 
     <section class="section list-section" id="next">
       <h2>次に読むなら</h2>
       <ul class="reading-list">
-        <li>From Skill Text to Skill Structure は、自然言語 skill を構造化するための三層表現を読む入口になる。</li>
-        <li>STALE は、古い記憶が現在の前提として残る問題を評価するための補助線になる。</li>
-        <li>Dynamic Skill Lifecycle Management は、skill を追加だけでなく retain、retire、expand の lifecycle として扱う視点をくれる。</li>
-        <li>Counterfactual Trace Auditing of LLM Agent Skills は、skill が成功率に出ない形で agent の行動を変えることを trace から監査する読み物としてつながる。</li>
+        <li>この論文は、SKILL.md のような自然言語 skill を否定するものではなく、自然言語本文に構造化された索引と監査面を足す話として読むとよい。</li>
+        <li>次に読むなら、Counterfactual Trace Auditing of LLM Agent Skills と並べると、skill を構造化する話と、実行 trace 上で skill の影響を監査する話がつながる。</li>
+        <li>Dynamic Skill Lifecycle Management と並べると、skill を retain、retire、expand する lifecycle と、SSL のような skill metadata がどう接続できるかを考えやすい。</li>
+        <li>実務に引くなら、既存 skill に trigger、resource use、side effects、risk label、last reviewed を持たせる設計から試すのが近い。</li>
       </ul>
     </section>
 
     <section id="qa">
       <h2>読後Q&A</h2>
       <article class="qa">
-        <h3>このページの中心問いは？</h3>
-        <p>long-running agent の memory と skill は、保存すればするほど良くなるのか、それとも古さや重複やリスクを管理しないと腐るのか、という問いである。</p>
+        <h3>この論文の中心問いは？</h3>
+        <p>自然言語中心の agent skill artifact を、検索や risk review に使いやすい構造としてどう表現するか。</p>
       </article>
       <article class="qa">
-        <h3>memory transfer が file copy ではないとは？</h3>
-        <p>同じ内容を移しても、常時ロード、検索、引用、更新、拒否、削除の interface が違えば、agent の使い方も変わるという意味である。</p>
+        <h3>なぜ skill text だけでは足りないの？</h3>
+        <p>呼び出し条件、実行手順、制約、tool call、resource use、副作用が同じ文章面に混ざり、skill discovery や risk assessment で必要な証拠を取り出しにくいから。</p>
       </article>
       <article class="qa">
-        <h3>skill rot とは何が腐ること？</h3>
-        <p>手順そのものだけでなく、呼び出し条件、副作用、権限、前提となる tool や API、似た skill との優先順位が古くなり、registry 全体が扱いにくくなること。</p>
+        <h3>SSL とは？</h3>
+        <p>Scheduling-Structural-Logical の略。agent skill を、呼び出し信号、実行構造、action / resource-use evidence の三層に分ける表現である。</p>
       </article>
       <article class="qa">
-        <h3>自然言語 skill はだめなの？</h3>
-        <p>だめではない。人間と LLM の両方が読める強みがある。ただし大きな registry では、trigger、resource use、risk、lifecycle state を別の metadata として持つ方が安全になる。</p>
+        <h3>Scheduling layer は何を見る？</h3>
+        <p>その skill をいつ呼ぶべきか、どんな task signal やユーザー意図や環境条件が invocation interface になるかを見る。</p>
       </article>
       <article class="qa">
-        <h3>Scheduling、Structural、Logical の三層は何を見る？</h3>
-        <p>Scheduling はいつ呼ぶか、Structural はどんな手順で動くか、Logical はどの atomic action と resource use を持つかを見る。</p>
+        <h3>Structural layer は何を見る？</h3>
+        <p>skill がどんな scene、subgoal、手順、分岐、control flow を持つかを見る。</p>
       </article>
       <article class="qa">
-        <h3>memory rot で一番怖いのは？</h3>
-        <p>古い記憶が古いと分からないまま、現在の判断基準として使われ続けること。単に検索に出るだけならまだよいが、回答を支配すると危ない。</p>
+        <h3>Logical layer は何を見る？</h3>
+        <p>atomic action、tool call、resource use、constraints、side effects のような、監査や実行に効く具体的な証拠を見る。</p>
       </article>
       <article class="qa">
-        <h3>catalog や lint はなぜ重要？</h3>
-        <p>agent にとっては、ファイルの存在より、どの情報が active で、何に関係し、いつ更新され、どれを優先して読むべきかが重要だから。catalog と lint はその信号を保つ。</p>
+        <h3>評価結果は？</h3>
+        <p>Skill Discovery の MRR は 0.573 から 0.707 に、Risk Assessment の macro F1 は 0.744 から 0.787 に改善した。</p>
       </article>
       <article class="qa">
-        <h3>まず何から導入すればいい？</h3>
-        <p>小さく始めるなら、memory と skill に updated、status、related、risk label、last reviewed を持たせ、古いものを見つける lint を回すところからでよい。</p>
+        <h3>この論文は SKILL.md を捨てる話？</h3>
+        <p>違う。自然言語 skill の読みやすさを残しつつ、その上に machine-readable な index、structure、risk surface を重ねる話である。</p>
       </article>
       <article class="qa">
-        <h3>この公開ページ自体を作り直す意味は？</h3>
-        <p>古い手書き HTML では更新元が曖昧で、今の article-pages の生成フローと合わない。JSON spec を source of truth にすると、他ページと同じ形で保守できる。</p>
+        <h3>Memory And Skill Rot とどうつながる？</h3>
+        <p>skill registry が増えるほど discovery、risk review、重複統合、古さの管理が難しくなる。SSL は、その rot を防ぐための構造化された skill interface として読める。</p>
       </article>
       <article class="qa">
         <h3>一言でいうと？</h3>
-        <p>agent を長く使うなら、覚える仕組みだけでなく、古さを見つけ、統合し、退役させる仕組みが必要である。</p>
+        <p>agent skill は読めるだけでは足りない。呼び出し、構造、副作用を分けて、探せて監査できる形にする必要がある。</p>
       </article>
     </section>
       </div>
@@ -212,7 +206,7 @@
 
   </main>
   <footer>
-    <p>Source: <a href="https://arxiv.org/abs/2604.24026">arXiv:2604.24026 / From Skill Text to Skill Structure, plus public agent memory and skill lifecycle notes</a>.</p>
+    <p>Source: <a href="https://arxiv.org/abs/2604.24026">arXiv:2604.24026 / From Skill Text to Skill Structure: The Scheduling-Structural-Logical Representation for Agent Skills</a>.</p>
     <p>This page is a public reading artifact and does not include private workspace paths, logs, or internal metadata.</p>
   </footer>
 
