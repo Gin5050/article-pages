@@ -242,6 +242,11 @@
           <p>A. 広い意味ではそう言える。ただしこの論文が批判している既存の agentic search は、agent が query を改善して retriever に投げる形が中心。agent が corpus のファイル構造や本文を直接たどる動きは、Direct Corpus Interaction 側の主張として扱われている。</p>
         </div>
         <div class="panel">
+          <strong>Q. 最近のコーディングエージェントがやっていることと同じ？</strong>
+          <p>A. 大枠では同じと見てよい。grep する、ファイルを読む、shell で絞る、周辺文脈を見る、仮説を立ててまた検索する、という行動は Claude Code、Codex、SWE-agent 系のコーディングエージェントがすでに日常的にやっている。</p>
+          <p>A. ただし、この論文の価値は新しいアルゴリズムを出したことより、そうした実務的な探索行動を Direct Corpus Interaction として定式化し、検索・RAG の文脈で評価したところにある。検索品質を「近い文書を取れるか」だけでなく「エージェントがどの粒度で証拠を観察・検証・操作できるか」で見る、という検索インターフェース解像度の言語化がいちばんおいしい。</p>
+        </div>
+        <div class="panel">
           <strong>Q. 普段の wiki / repo 探索とはどちらに近い？</strong>
           <p>A. grep して、catalog を見て、raw や pages を開き、途中で探し方を変える探索は、この論文の分類では Direct Corpus Interaction に近い。だから実務感覚としては「それ普段やっているやつでは？」と感じやすい。</p>
         </div>
