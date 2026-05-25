@@ -1,0 +1,223 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SkillOpt: Executive Strategy for Self-Evolving Agent Skills</title>
+  <link rel="stylesheet" href="./assets/article-content.css">
+  <link rel="stylesheet" href="./assets/article-pages.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./index.html">Article Pages</a>
+    <nav class="top-nav" aria-label="Site navigation">
+      <a href="./index.html">Home</a>
+      <a href="./unread-reading-inventory.html">未読一覧</a>
+    </nav>
+  </header>
+
+
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="kicker">Reading artifact</p>
+      <h1>SkillOpt: Executive Strategy for Self-Evolving Agent Skills</h1>
+      <p>SkillOpt は、自然言語の agent skill を凍結モデルの外側にある trainable state として扱い、rollout、反省、bounded edit、validation gate によって安定に改善する手法。skill を一度きりのメモではなく、評価つきで育てる artifact として読む論文。</p>
+      <div class="paper-meta">
+        <span class="meta-chip">作成日: 2026-05-25</span>
+        <span class="meta-chip">arXiv:2605.23904</span>
+        <span class="meta-chip">Agent Skills</span>
+        <span class="meta-chip">Skill Optimization</span>
+        <span class="meta-chip">Codex / Claude Code</span>
+        <span class="meta-chip">Paper Watch 本命</span>
+      </div>
+      <div class="hero-actions">
+        <a class="button" href="https://arxiv.org/abs/2605.23904">元資料を開く</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="reader-grid">
+      <nav aria-label="Reading navigation">
+        <strong>目次</strong>
+        <a href="#paper">どんな論文か</a>
+        <a href="#contributions">課題と貢献</a>
+        <a href="#method">手法のしくみ</a>
+        <a href="#results">検証結果</a>
+        <a href="#limits">限界と読みどころ</a>
+        <a href="#figures">読みながら見る図表や節</a>
+        <a href="#next">次に読むなら</a>
+        <a href="#qa">読後Q&A</a>
+      </nav>
+
+      <div>
+        <figure class="graphic-recording">
+          <a class="graphic-zoom-trigger" href="#graphic-recording-lightbox" aria-label="グラレコを拡大表示する"><img src="./assets/graphic-recordings/skillopt.png" alt="SkillOpt の日本語グラレコ" loading="eager" decoding="async"></a>
+          <figcaption>SkillOpt の問題設定、skill 最適化ループ、安定化の工夫、Codex / Claude Code を含む評価結果を1枚で把握するためのグラレコ。</figcaption>
+        </figure>
+        <div id="graphic-recording-lightbox" class="graphic-lightbox" aria-label="グラレコ拡大表示">
+          <a class="graphic-lightbox-backdrop" href="#" aria-label="拡大表示を閉じる"></a>
+          <a class="graphic-lightbox-content" href="#" aria-label="拡大表示を閉じる"><img src="./assets/graphic-recordings/skillopt.png" alt="SkillOpt の日本語グラレコ"></a>
+        </div>
+
+    <section class="section" id="paper">
+      <h2>どんな論文か</h2>
+      <p>SkillOpt の中心的な発想は、agent skill を「プロンプトに貼る便利メモ」ではなく、凍結した agent の外側にある trainable external state として扱うことにある。モデル重みは変えず、自然言語の skill document を評価つきで少しずつ編集し、次のタスクで再利用できる artifact として育てる。</p>
+      <p>問題意識はかなり実務寄りである。skill は手書きでも、一回生成でも、ログから雑に追記しても作れる。しかし、どの記述が本当に効いたのか、どの修正が過学習や劣化を招いたのかを見ないまま自己編集すると、便利なはずの skill が壊れたり、特定の失敗ログにだけ過剰適応したりする。</p>
+      <p>SkillOpt はこの問題を、text-space optimizer として定式化する。target agent が現在の skill でタスクを解き、scored rollout を残す。別の optimizer model が成功と失敗を反省し、skill document に add / delete / replace の bounded edit を提案する。候補 skill は held-out validation で改善した時だけ採用される。</p>
+      <p>面白いのは、評価対象が direct chat だけではないこと。論文は Codex と Claude Code の agentic loop も含め、6 benchmark、7 target models、3 execution harnesses で検証し、52 の model / benchmark / harness セルすべてで best or tied と報告している。skill 文書を trainable artifact として扱う発想は、wiki、memory、skill、reviewer を運用する実務にかなり近い。</p>
+      <p>凍結した LLM agent の能力を、モデル重みではなく自然言語 skill document の最適化によって伸ばす論文である。</p>
+      <p>従来の skill 運用は、手書き、少数例からの生成、自己反省による追記に寄りがちだった。SkillOpt はそこに optimizer discipline を入れ、rollout evidence、bounded edit、validation gate、rejected-edit buffer で skill を育てる。</p>
+      <p>出力されるものは、追加の推論時 API 呼び出しではなく、最終的な best_skill.md である。つまり deployment 時には通常の agent に skill 文書を渡すだけでよい。</p>
+    </section>
+
+    <section class="section insights-section" id="contributions">
+      <h2>課題と貢献</h2>
+      <div class="insight-list">
+        <article class="insight-card">
+          <strong>Skill を trainable external state として扱う。</strong>
+          <p>モデル重みを変えず、自然言語の skill document を評価つきで更新する。</p>
+        </article>
+        <article class="insight-card">
+          <strong>Bounded edit を使う。</strong>
+          <p>optimizer は skill 全体を書き換えるのではなく、add / delete / replace の小さな編集を提案する。</p>
+        </article>
+        <article class="insight-card">
+          <strong>Held-out validation gate を入れる。</strong>
+          <p>訓練 rollouts で良く見える編集でも、検証で改善しなければ採用しない。</p>
+        </article>
+        <article class="insight-card"><p>Textual learning-rate budget、rejected-edit buffer、epoch-wise slow / meta update で、自然言語 skill の不安定な自己編集を抑える。</p></article>
+        <article class="insight-card"><p>Direct chat だけでなく、Codex と Claude Code の agentic loop を含む複数 harness で評価している。</p></article>
+      </div>
+    </section>
+
+    <section class="section steps-section" id="method">
+      <h2>手法のしくみ</h2>
+      <div class="route">
+        <article class="step">
+          <div class="num">1</div>
+          <p>現在の skill を target agent に渡し、benchmark task を解かせて scored rollouts を集める。</p>
+        </article>
+        <article class="step">
+          <div class="num">2</div>
+          <p>optimizer model が成功例と失敗例を読み、skill document のどこを直すべきかを反省する。</p>
+        </article>
+        <article class="step">
+          <div class="num">3</div>
+          <p>optimizer は add / delete / replace の bounded edit を複数提案し、編集予算の範囲で candidate skill を作る。</p>
+        </article>
+        <article class="step">
+          <div class="num">4</div>
+          <p>candidate skill は held-out validation で評価され、改善が確認された場合だけ best skill として採用される。</p>
+        </article>
+        <article class="step">
+          <div class="num">5</div>
+          <p>reject された編集は buffer に残り、同じ失敗を繰り返さないための negative evidence として使われる。</p>
+        </article>
+        <article class="step">
+          <div class="num">6</div>
+          <p>最終的には best_skill.md が export され、推論時には追加の optimizer 呼び出しなしで再利用される。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section results-section" id="results">
+      <h2>検証結果</h2>
+      <div class="score-grid">
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>論文は、6 benchmark、7 target models、3 execution harnesses で評価している。harness には direct chat、Codex、Claude Code が含まれる。</p>
+        </article>
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>52 個の model / benchmark / harness セルすべてで、SkillOpt は best または tied-best と報告されている。</p>
+        </article>
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>GPT-5.5 では、direct chat、Codex loop、Claude Code の各設定で平均改善が報告されている。</p>
+        </article>
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>optimized skill artifacts は、model scale、execution environment、近い benchmark をまたいで transfer する傾向がある。</p>
+        </article>
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>推論時に追加の optimizer call を必要としないため、改善後の skill は通常の agent 実行に組み込みやすい。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section warning" id="limits">
+      <h2>限界と読みどころ</h2>
+      <div class="callout warning-item">optimizer model の品質に依存する。悪い反省や編集提案が出ると、validation gate があっても探索効率は落ちる。</div>
+      <div class="callout warning-item">validation design が重要である。held-out validation が狭いと、skill がその検証セットへ過適応する可能性がある。</div>
+      <div class="callout warning-item">自然言語 skill の編集は可読性と性能が両立するとは限らない。長くなりすぎた skill や局所ルールの蓄積は、別途整理が必要になる。</div>
+      <div class="callout warning-item">これはモデル重みの学習ではなく、外部 skill artifact の最適化である。未知の能力を獲得するというより、手続き知を外側で整える手法として読むのがよい。</div>
+    </section>
+
+    <section class="section list-section" id="figures">
+      <h2>読みながら見る図表や節</h2>
+      <ul class="reading-list">
+        <li>読む時は、まず SkillOpt の全体ループを見る。rollout evidence、reflection、bounded edit、validation gate、best_skill.md という流れが中心である。</li>
+        <li>次に安定化の工夫を見る。textual learning-rate budget、rejected-edit buffer、slow / meta update は、自然言語 skill の暴走を抑えるための仕組みである。</li>
+        <li>結果を見る時は、direct chat だけでなく Codex / Claude Code harness を含む点に注目する。これは skill が実際の agent loop に効くかを見るために重要である。</li>
+        <li>transfer の結果は、おい丸の skill や wiki 運用にかなり近い。ある環境で育てた手続き知が、別モデルや別 harness でも使えるかという問いにつながる。</li>
+      </ul>
+    </section>
+
+    <section class="section list-section" id="next">
+      <h2>次に読むなら</h2>
+      <ul class="reading-list">
+        <li>まず paper-watch の本命として読むなら、method の optimizer loop と validation gate を重点的に見る。</li>
+        <li>次に From Raw Experience to Skill Consumption を読むと、model-generated skills がいつ効き、いつ negative transfer するかの地図が作れる。</li>
+        <li>おい丸運用へ引き込むなら、learn-from-logs と empirical-prompt-tuning を、rollout、編集、検証、reject buffer の流れとして見直す。</li>
+        <li>記事化するなら、skill は増やすだけでなく、腐らせず育てる artifact である、という切り口が強い。</li>
+      </ul>
+    </section>
+
+    <section id="qa">
+      <h2>読後Q&A</h2>
+      <article class="qa">
+        <h3>この論文の中心問いは？</h3>
+        <p>agent skill を手書きメモや一回生成の補助ではなく、評価つきで改善できる trainable artifact として扱えるか、という問いである。</p>
+      </article>
+      <article class="qa">
+        <h3>SkillOpt はモデルを fine-tuning するの？</h3>
+        <p>しない。target agent のモデル重みは凍結し、外部の自然言語 skill document を最適化する。</p>
+      </article>
+      <article class="qa">
+        <h3>何を入力して何を出す？</h3>
+        <p>入力は初期 skill、タスク rollouts、スコア、失敗や成功の証拠。出力は検証で改善が確認された best_skill.md である。</p>
+      </article>
+      <article class="qa">
+        <h3>普通の自己反省型 skill 更新と何が違う？</h3>
+        <p>bounded edit、validation gate、rejected-edit buffer、編集予算を持つ点が違う。思いつきで追記するのではなく、optimizer として制御する。</p>
+      </article>
+      <article class="qa">
+        <h3>なぜ Codex / Claude Code で評価している点が大事？</h3>
+        <p>skill が単発チャットだけで効いても、実際の agent loop で効くとは限らない。Codex / Claude Code を含めることで、実行ハーネス内の手続き知として効くかを見ている。</p>
+      </article>
+      <article class="qa">
+        <h3>おい丸運用にどう効く？</h3>
+        <p>learn-from-logs、skill 更新、wiki ルール更新を、単なる追記ではなく rollout evidence、編集、検証、reject buffer のループとして設計する材料になる。</p>
+      </article>
+      <article class="qa">
+        <h3>注意点は？</h3>
+        <p>validation set が狭いと skill が過適応する可能性がある。また、性能改善だけを追うと skill 文書が長く複雑になり、運用上の可読性が落ちる。</p>
+      </article>
+      <article class="qa">
+        <h3>次に読むなら何？</h3>
+        <p>From Raw Experience to Skill Consumption とセットで読むのがよい。SkillOpt が最適化手法なら、そちらは skill lifecycle と negative transfer の地図になる。</p>
+      </article>
+    </section>
+      </div>
+    </div>
+
+  </main>
+  <footer>
+    <p>Source: <a href="https://arxiv.org/abs/2605.23904">arXiv:2605.23904 / SkillOpt: Executive Strategy for Self-Evolving Agent Skills</a>.</p>
+    <p>This page is a public reading artifact and does not include private workspace paths, logs, or internal metadata.</p>
+  </footer>
+
+</body>
+</html>
