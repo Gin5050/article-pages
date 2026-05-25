@@ -136,7 +136,7 @@
         </article>
         <article class="result-card">
           <strong>Enhanced RAG が強い場面。</strong>
-          <p>検索結果のノイズを reranker で落とす、短い質問を query rewriting で補う、対象外質問を router で弾くなど、失敗パターンが既知で専用部品を置ける場合。低コスト・低遅延の本番運用にも向く。</p>
+          <p>検索結果のノイズを reranker で落とす、短い質問を query rewriting で補う、対象外質問を router で弾くなど、失敗パターンが既知で専用部品を置ける場合。特に文書集合が安定し、インデックス運用が整っているなら低レイテンシにしやすい。</p>
         </article>
         <article class="result-card">
           <strong>Agentic RAG が強い場面。</strong>
@@ -153,7 +153,8 @@
       <div class="callout warning-item">Enhanced 側の実装は semantic-router、HyDE、ELECTRA reranker に依存する。別の部品を使うと差は変わる可能性がある。</div>
       <div class="callout warning-item">実務では、ユーザーの言葉、文書の書き方、社内メモリ、過去ログ、更新状態が揺れる。ここが揺れないなら問題はかなり簡単であり、揺れるからこそ Agentic な判断余地が出てくる。</div>
       <div class="callout warning-item">検索だけに焦点を当てると視野が狭い。検索対象の文書をどう整えるか、検索時に参照するメモリをどう選ぶか、足りない情報をどう追加収集するかまで含めて見る必要がある。</div>
-      <div class="callout warning-item">本番制約として最も重いのはコストとレイテンシーである。常時 Agentic にするより、通常は Enhanced RAG で返し、曖昧さ・低信頼・証拠不足・複数資料比較のときだけ Agentic workflow に上げる設計が現実的である。</div>
+      <div class="callout warning-item">本番制約として最も重いのはコストとレイテンシーである。ただし、コストは1リクエストのトークン代だけではなく、チャンク設計、embedding、検索インデックスの構築と更新、reranker、検索品質評価、文書更新時の再処理まで含めて見る必要がある。</div>
+      <div class="callout warning-item">Enhanced が常に安いとは限らない。文書集合が安定しているなら Enhanced は強いが、対象文書やメモリが頻繁に変わる、探索対象が毎回違う、低頻度で深い調査をする、といった状況では Agentic workflow のほうが総運用コストに見合う場合もある。</div>
     </section>
 
     <section class="section list-section" id="figures">
@@ -221,7 +222,7 @@
       </article>
       <article class="qa">
         <h3>それでも Agentic RAG を常時使わない理由は？</h3>
-        <p>コストとレイテンシーが大きいから。推論回数、ツール呼び出し、検証ステップが増えるため、通常は軽い Enhanced RAG で返し、曖昧さや証拠不足があるケースだけ Agentic に上げるほうが現実的である。</p>
+        <p>主にオンライン推論のコストとレイテンシーが増えるから。ただし Enhanced 側にもインデックス構築・更新、embedding、reranker、検索品質評価の運用コストが乗るため、総コストでは単純に Enhanced が安いとは限らない。</p>
       </article>
       <article class="qa">
         <h3>この論文の注意点は？</h3>
