@@ -194,6 +194,10 @@
         <p>agent の性能を model だけで見ないこと。sandbox、権限、ファイルシステム、テスト、ログ、memory、approval、rollback まで含めて harness として設計・評価する。</p>
       </article>
       <article class="qa">
+        <h3>これは、これまでやってきたことの言語化？ それとも Codex というハーネス自体を触る話？</h3>
+        <p>両方だが、まずはこれまでやってきたことの言語化に近い。今の運用は、Codex / ChatGPT / Discord / Git / GitHub Pages など既存ハーネスに乗りながら、その外側に AGENTS.md、brain/memory、workspace/wiki、skills、audit log、state JSON、article-pages、おい丸の人格と判断基準を重ねている。つまり、Codex という土台の上に、自分専用の second-layer harness を育てている状態。次の段階では、Codex を単なる利用環境ではなく実行エンジンの一つとして扱い、scheduler、Discord bot、state freshness、skill 評価、wiki の corpus 化など、自前で触れる層を増やしていく話になる。この論文は、その移行を「便利な運用」ではなく agent harness engineering として説明するための地図になる。</p>
+      </article>
+      <article class="qa">
         <h3>一番注意すべき限界は？</h3>
         <p>コードが実行可能であるほど、権限と安全性が重要になること。agent-authored code を何でも実行・保存・再利用できるようにすると、失敗や危険な変更も harness に取り込まれてしまう。</p>
       </article>
