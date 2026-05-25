@@ -43,7 +43,7 @@
         <a href="#paper">どんな論文か</a>
         <a href="#contributions">課題と貢献</a>
         <a href="#method">手法のしくみ</a>
-        <a href="#results">検証結果</a>
+        <a href="#results">検証結果と使い分け</a>
         <a href="#limits">限界と読みどころ</a>
         <a href="#figures">読みながら見る図表や節</a>
         <a href="#next">次に読むなら</a>
@@ -65,7 +65,7 @@
       <p>この論文の問いはかなり実務寄りで、「Agentic RAG は本当に採用する価値があるのか？」である。RAG は本番システムの中心部品になり、固定パイプラインに router、rewriter、reranker を足す Enhanced RAG と、LLM が検索や再検索を判断する Agentic RAG のどちらを使うべきかが現場の設計判断になっている。</p>
       <p>著者らは、RAG の弱点を4つに分けて比較する。対象外質問にも検索してしまうこと、質問と文書の表現がずれて検索が弱くなること、検索結果にノイズが混ざること、基盤 LLM の強さやコストに左右されることである。それぞれに対して、Enhanced は専用モジュール、Agentic は LLM の判断で対処する。</p>
       <p>結果はきれいな二択ではない。Agentic RAG は、明確なドメインでの意図判定と、ケースごとに変えられるクエリ書き換えで強い。一方で、検索後の文書リスト改善では、明示的な reranker を使う Enhanced RAG のほうが良い。Agentic が再検索しても、同じ文書を再び拾いやすく、方向転換が十分に起きなかった。</p>
-      <p>コストも重要で、Agentic RAG は平均で入力トークン 3.3 倍、出力トークン 1.9 倍、時間 1.5 倍を要する。結論としては、Agentic RAG を全部に被せるのではなく、動的判断が効く場所に使い、reranking など既知の弱点には Enhanced の明示的部品を残すのがよさそうである。</p>
+      <p>コストも重要で、Agentic RAG は平均で入力トークン 3.3 倍、出力トークン 1.9 倍、時間 1.5 倍を要する。結論としては、Agentic RAG は「賢い上位互換」ではなく「迷う必要がある検索」に向く方式であり、動的判断が効く場所だけに使い、reranking など既知の弱点には Enhanced の明示的部品を残すのがよさそうである。</p>
       <p>Enhanced RAG と Agentic RAG を、複数データセット、複数評価軸、コストと遅延まで含めて比較する論文である。</p>
       <p>Enhanced RAG は、router、query rewriting、retriever、reranker、generator のような固定モジュール列として扱われる。Agentic RAG は、LLM が検索するか、クエリを書き換えるか、再検索するか、回答するかを選ぶループとして扱われる。</p>
       <p>Agentic 側は単一 RAG ツールに限定されている。これは外部 API や複数ツールによる追加能力を混ぜず、Enhanced RAG と機能範囲を揃えるためである。</p>
@@ -107,14 +107,14 @@
     </section>
 
     <section class="section results-section" id="results">
-      <h2>検証結果</h2>
+      <h2>検証結果と使い分け</h2>
       <div class="score-grid">
         <article class="result-card">
-          <strong>検証結果</strong>
+          <strong>検証結果と使い分け</strong>
           <p>意図判定では、Agentic は FIQA と CQADupStack-English で Enhanced を少し上回る。一方、FEVER では F1 が大きく落ち、検索すべきでない場合にも検索を使いがちだった。</p>
         </article>
         <article class="result-card">
-          <strong>検証結果</strong>
+          <strong>検証結果と使い分け</strong>
           <p>クエリ書き換えでは、Agentic が平均で Enhanced より +2.8 NDCG@10 ポイント高い。NQ では +7.8 と差が大きく、多様な質問形式に対する柔軟な書き換えが効いている。</p>
         </article>
         <article class="result-card">
@@ -122,12 +122,24 @@
           <p>平均 NDCG@10 は Naive 45.5、Enhanced with rewriting 49.5、Agentic 43.9 で、Agentic の再検索は十分な改善につながらなかった。</p>
         </article>
         <article class="result-card">
-          <strong>検証結果</strong>
+          <strong>検証結果と使い分け</strong>
           <p>基盤 LLM を大きくすると、Enhanced と Agentic の両方で似たように性能が上がる。Agentic だけがモデルサイズの恩恵を特別に受けるわけではない。</p>
         </article>
         <article class="result-card">
-          <strong>検証結果</strong>
+          <strong>検証結果と使い分け</strong>
           <p>コスト分析では、Agentic RAG は平均で入力トークン 3.3 倍、出力トークン 1.9 倍、時間 1.5 倍を要する。</p>
+        </article>
+        <article class="result-card">
+          <strong>Naive RAG が強い場面。</strong>
+          <p>文書が少ない、質問が単純、ユーザーの言葉と文書の言葉が近い、まず PoC として動かしたい場合。議事録、README、単一 PDF の要点確認ではこれで十分なことが多い。</p>
+        </article>
+        <article class="result-card">
+          <strong>Enhanced RAG が強い場面。</strong>
+          <p>検索結果のノイズを reranker で落とす、短い質問を query rewriting で補う、対象外質問を router で弾くなど、失敗パターンが既知で専用部品を置ける場合。低コスト・低遅延の本番運用にも向く。</p>
+        </article>
+        <article class="result-card">
+          <strong>Agentic RAG が強い場面。</strong>
+          <p>検索すべきか、何を検索すべきか、どう検索語を変えるべきかを質問ごとに考え直す必要がある場合。曖昧な質問、表現ずれ、多段階の調査・比較、対象ドメイン判定のようなタスクで効きやすい。</p>
         </article>
       </div>
     </section>
@@ -190,6 +202,14 @@
       <article class="qa">
         <h3>実務ではどう組み合わせるのがよさそう？</h3>
         <p>Agentic を全段に使うより、意図判定やクエリ書き換えに使い、reranking などは Enhanced の明示的部品を残すのが自然。コストが厳しいなら Agentic ループは必要時だけに絞る。</p>
+      </article>
+      <article class="qa">
+        <h3>Naive、Enhanced、Agentic はどう使い分ける？</h3>
+        <p>まず簡単に動かす、文書が少ない、質問が単純なら Naive。検索結果のノイズや対象外質問など既知の弱点を直すなら Enhanced。検索方法自体を質問ごとに考え直す必要があるなら Agentic が向く。</p>
+      </article>
+      <article class="qa">
+        <h3>Agentic RAG を一番わかりやすく言うと？</h3>
+        <p>Agentic RAG は「賢い RAG」というより「迷える RAG」に向いている。迷う必要がある仕事では強いが、迷わなくていい仕事では高くつきやすい。</p>
       </article>
       <article class="qa">
         <h3>この論文の注意点は？</h3>
