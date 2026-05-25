@@ -66,6 +66,7 @@
       <p>著者らは、RAG の弱点を4つに分けて比較する。対象外質問にも検索してしまうこと、質問と文書の表現がずれて検索が弱くなること、検索結果にノイズが混ざること、基盤 LLM の強さやコストに左右されることである。それぞれに対して、Enhanced は専用モジュール、Agentic は LLM の判断で対処する。</p>
       <p>結果はきれいな二択ではない。Agentic RAG は、明確なドメインでの意図判定と、ケースごとに変えられるクエリ書き換えで強い。一方で、検索後の文書リスト改善では、明示的な reranker を使う Enhanced RAG のほうが良い。Agentic が再検索しても、同じ文書を再び拾いやすく、方向転換が十分に起きなかった。</p>
       <p>コストも重要で、Agentic RAG は平均で入力トークン 3.3 倍、出力トークン 1.9 倍、時間 1.5 倍を要する。結論としては、Agentic RAG は「賢い上位互換」ではなく「迷う必要がある検索」に向く方式であり、動的判断が効く場所だけに使い、reranking など既知の弱点には Enhanced の明示的部品を残すのがよさそうである。</p>
+      <p>ただし実務では、論文の実験ほど綺麗に問題を切り分けられないことが多い。ユーザーが文書側の語彙に合わせて質問できるとは限らず、文書自体も整理されているとは限らない。検索対象の文書、過去ログ、運用メモリ、証拠の残し方まで含めて自動化できる現在では、retriever 単体よりも agentic workflow 全体として見るほうが自然である。</p>
       <p>Enhanced RAG と Agentic RAG を、複数データセット、複数評価軸、コストと遅延まで含めて比較する論文である。</p>
       <p>Enhanced RAG は、router、query rewriting、retriever、reranker、generator のような固定モジュール列として扱われる。Agentic RAG は、LLM が検索するか、クエリを書き換えるか、再検索するか、回答するかを選ぶループとして扱われる。</p>
       <p>Agentic 側は単一 RAG ツールに限定されている。これは外部 API や複数ツールによる追加能力を混ぜず、Enhanced RAG と機能範囲を揃えるためである。</p>
@@ -150,6 +151,9 @@
       <div class="callout warning-item">FEVER のようにドメイン境界が広いタスクでは、意図判定の定義が難しく、Agentic の強みが出にくい。</div>
       <div class="callout warning-item">NQ と FEVER の文書リスト改善は知識ベースが大きく、Agentic RAG では7日超かかる見込みとして除外されている。</div>
       <div class="callout warning-item">Enhanced 側の実装は semantic-router、HyDE、ELECTRA reranker に依存する。別の部品を使うと差は変わる可能性がある。</div>
+      <div class="callout warning-item">実務では、ユーザーの言葉、文書の書き方、社内メモリ、過去ログ、更新状態が揺れる。ここが揺れないなら問題はかなり簡単であり、揺れるからこそ Agentic な判断余地が出てくる。</div>
+      <div class="callout warning-item">検索だけに焦点を当てると視野が狭い。検索対象の文書をどう整えるか、検索時に参照するメモリをどう選ぶか、足りない情報をどう追加収集するかまで含めて見る必要がある。</div>
+      <div class="callout warning-item">本番制約として最も重いのはコストとレイテンシーである。常時 Agentic にするより、通常は Enhanced RAG で返し、曖昧さ・低信頼・証拠不足・複数資料比較のときだけ Agentic workflow に上げる設計が現実的である。</div>
     </section>
 
     <section class="section list-section" id="figures">
@@ -210,6 +214,14 @@
       <article class="qa">
         <h3>Agentic RAG を一番わかりやすく言うと？</h3>
         <p>Agentic RAG は「賢い RAG」というより「迷える RAG」に向いている。迷う必要がある仕事では強いが、迷わなくていい仕事では高くつきやすい。</p>
+      </article>
+      <article class="qa">
+        <h3>実務では論文より Agentic が強く見えることはある？</h3>
+        <p>ある。実務ではユーザーの言葉も文書の書き方も揺れ、検索対象の文書や運用メモリも未整理なことが多い。検索だけでなく、文書整備、メモリ選択、追加収集、証拠管理まで含めると Agentic な workflow の価値は広がる。</p>
+      </article>
+      <article class="qa">
+        <h3>それでも Agentic RAG を常時使わない理由は？</h3>
+        <p>コストとレイテンシーが大きいから。推論回数、ツール呼び出し、検証ステップが増えるため、通常は軽い Enhanced RAG で返し、曖昧さや証拠不足があるケースだけ Agentic に上げるほうが現実的である。</p>
       </article>
       <article class="qa">
         <h3>この論文の注意点は？</h3>
