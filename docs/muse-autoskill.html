@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MUSE-Autoskill: Self-Evolving Agents via Skill Creation, Memory, Management, and Evaluation</title>
+  <link rel="stylesheet" href="./assets/article-content.css">
+  <link rel="stylesheet" href="./assets/article-pages.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./index.html">Article Pages</a>
+    <nav class="top-nav" aria-label="Site navigation">
+      <a href="./index.html">Home</a>
+      <a href="./unread-reading-inventory.html">未読一覧</a>
+    </nav>
+  </header>
+
+
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="kicker">Reading artifact</p>
+      <h1>MUSE-Autoskill: Self-Evolving Agents via Skill Creation, Memory, Management, and Evaluation</h1>
+      <p>MUSE-Autoskill は、エージェントのスキルを一度きりの生成物ではなく、作成・記憶・管理・評価・改善のライフサイクルで育てるフレームワーク。スキルを長く生きる、経験を持つ、テスト可能で転移できる資産として読む論文。</p>
+      <div class="paper-meta">
+        <span class="meta-chip">作成日: 2026-05-27</span>
+        <span class="meta-chip">arXiv:2605.27366</span>
+        <span class="meta-chip">Agent Skills</span>
+        <span class="meta-chip">Skill Lifecycle</span>
+        <span class="meta-chip">Skill-level Memory</span>
+        <span class="meta-chip">Paper Watch 本命</span>
+      </div>
+      <div class="hero-actions">
+        <a class="button" href="https://arxiv.org/abs/2605.27366">元資料を開く</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="reader-grid">
+      <nav aria-label="Reading navigation">
+        <strong>目次</strong>
+        <a href="#paper">どんな論文か</a>
+        <a href="#contributions">課題と貢献</a>
+        <a href="#method">手法のしくみ</a>
+        <a href="#results">検証結果</a>
+        <a href="#limits">限界と読みどころ</a>
+        <a href="#figures">読みながら見る図表や節</a>
+        <a href="#next">次に読むなら</a>
+        <a href="#qa">読後Q&A</a>
+      </nav>
+
+      <div>
+        <figure class="graphic-recording">
+          <a class="graphic-zoom-trigger" href="#graphic-recording-lightbox" aria-label="グラレコを拡大表示する"><img src="./assets/graphic-recordings/muse-autoskill.png" alt="MUSE-Autoskill の日本語グラレコ" loading="eager" decoding="async"></a>
+          <figcaption>MUSE-Autoskill の問題設定、5段階のスキルライフサイクル、スキル単位の記憶、評価と改善、主要結果を1枚で把握するためのグラレコ。</figcaption>
+        </figure>
+        <div id="graphic-recording-lightbox" class="graphic-lightbox" aria-label="グラレコ拡大表示">
+          <a class="graphic-lightbox-backdrop" href="#" aria-label="拡大表示を閉じる"></a>
+          <a class="graphic-lightbox-content" href="#" aria-label="拡大表示を閉じる"><img src="./assets/graphic-recordings/muse-autoskill.png" alt="MUSE-Autoskill の日本語グラレコ"></a>
+        </div>
+
+    <section class="section" id="paper">
+      <h2>どんな論文か</h2>
+      <p>MUSE-Autoskill の中心的な発想は、agent skill を「便利な手順書」ではなく、作成され、記憶を持ち、管理され、テストされ、失敗から改善される長寿命の資産として扱うことにある。モデル重みを更新するのではなく、モデルの外側にあるスキルバンクと運用ループを育てる。</p>
+      <p>問題意識はかなり実務寄りである。既存の自動スキル生成は、作成と利用が分離しやすく、スキルごとの経験が残らず、単体テストや実行時フィードバックで継続改善されにくい。結果として、スキルは増えても、再利用性や信頼性が伸びにくい。</p>
+      <p>MUSE-Autoskill はこの問題を、スキルのライフサイクルとして定式化する。エージェントは ReAct ループの中で、既存スキルを探し、足りなければ `skill_create` で新しいスキルを作り、`SKILL.md`、scripts、tests、resources を含むパッケージとして保存する。登録前にはテストを走らせ、失敗すれば修正する。</p>
+      <p>面白いのは、スキル単位の記憶を持つ点である。全体の長期記憶とは別に、各スキルが過去の注意点、失敗モード、入力形式の癖、性能上の caveat を持つ。これにより、スキル本体を肥大化させすぎず、経験だけを横に育てられる。</p>
+      <p>LLM エージェントが使うスキルを、作って終わりの静的 artifact ではなく、creation、memory、management、evaluation、refinement の lifecycle で扱う論文である。</p>
+      <p>MUSE-Autoskill は、スキルをオンデマンドで作成し、タスクをまたいで保存・再利用し、単体テストと実行フィードバックで改善する。さらに、各スキルに紐づく経験を蓄積する skill-level memory を導入する。</p>
+      <p>評価では SkillsBench の 51 タスクを使い、GPT-5.5 を背骨にした MUSE-Autoskill、Codex、Hermes を比較している。モデル能力ではなく、エージェントシステム設計とスキル運用の差を見る構成である。</p>
+    </section>
+
+    <section class="section insights-section" id="contributions">
+      <h2>課題と貢献</h2>
+      <div class="insight-list">
+        <article class="insight-card">
+          <strong>スキルライフサイクルを定義する。</strong>
+          <p>作成、記憶、管理、評価、改善を、実用的な skill-centric agent system の必須段階として整理する。</p>
+        </article>
+        <article class="insight-card">
+          <strong>実行ループ内でスキルを作る。</strong>
+          <p>`skill_create` をランタイムの中から呼び出し、実行時文脈に合ったスキルパッケージを作成する。</p>
+        </article>
+        <article class="insight-card">
+          <strong>スキル単位の記憶を持つ。</strong>
+          <p>各スキルに `.memory.md` を紐づけ、既知の失敗モードや入力形式の癖を後続タスクで使えるようにする。</p>
+        </article>
+        <article class="insight-card">
+          <strong>テストで登録を gate する。</strong>
+          <p>生成されたスキルは `tests/` を通過した時だけスキルバンクに登録され、失敗した場合は修正ループに入る。</p>
+        </article>
+        <article class="insight-card">
+          <strong>生成スキルの転移を評価する。</strong>
+          <p>MUSE が作ったスキルを別エージェントの Hermes に入れても性能が上がることを確認している。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section steps-section" id="method">
+      <h2>手法のしくみ</h2>
+      <div class="route">
+        <article class="step">
+          <div class="num">1</div>
+          <p>エージェントは ReAct ループで、計画、行動、観察を繰り返す。</p>
+        </article>
+        <article class="step">
+          <div class="num">2</div>
+          <p>既存スキルで足りる場合は、スキルカタログから該当スキルを選び、`SKILL.md` を読んで実行する。</p>
+        </article>
+        <article class="step">
+          <div class="num">3</div>
+          <p>足りない場合は `skill_create` が、目的、入力、期待出力から `SKILL.md`、scripts、resources、tests を含むスキルパッケージを作る。</p>
+        </article>
+        <article class="step">
+          <div class="num">4</div>
+          <p>評価器がスキルの単体テストを sandbox 内で実行し、通った場合だけスキルバンクへ登録する。</p>
+        </article>
+        <article class="step">
+          <div class="num">5</div>
+          <p>失敗した場合は、エラー情報をもとに更新器がスキルを修正し、再びテストする。</p>
+        </article>
+        <article class="step">
+          <div class="num">6</div>
+          <p>スキル利用時の観察、失敗、入力形式の癖などは、そのスキルに紐づく記憶へ追記される。</p>
+        </article>
+        <article class="step">
+          <div class="num">7</div>
+          <p>長いタスクでは、会話履歴を DAG として保持しつつ、アクティブ文脈だけを段階的に圧縮する。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section results-section" id="results">
+      <h2>検証結果</h2>
+      <div class="score-grid">
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>人間が作ったスキルを入れると、MUSE-Autoskill、Codex、Hermes のすべてで成功率が 13〜15 ポイント程度改善した。</p>
+        </article>
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>MUSE-Autoskill は人間スキルありで 68.40% に到達し、三つのエージェントの中で最も高い全体スコアだった。</p>
+        </article>
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>MUSE-Autoskill が成功軌跡からスキルを生成できた 35 タスクでは、生成スキル利用時に 87.94% に到達し、人間スキル利用時を上回った。</p>
+        </article>
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>生成スキルを Hermes にそのまま注入しても +10.51pp の改善があり、スキルが特定ランタイムだけの振る舞いではなく、外部化された知識資産として働く可能性を示した。</p>
+        </article>
+        <article class="result-card">
+          <strong>一方で、16 タスクでは成功軌跡がなくスキル生成に失敗した。</strong>
+          <p>さらに、特定 run の前提に寄りすぎて退行するスキルもあった。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section warning" id="limits">
+      <h2>限界と読みどころ</h2>
+      <div class="callout warning-item">評価は SkillsBench の 51 タスクに限られる。94 タスク全体ではなく、除外タスクにはより複雑な Docker 環境が含まれる可能性がある。</div>
+      <div class="callout warning-item">生成スキルは単一の成功軌跡から作られるため、その run に固有の前提やノイズへ過適合する可能性がある。</div>
+      <div class="callout warning-item">別エージェントへの転移は MUSE-Autoskill から Hermes 方向で確認されているが、より多くの agent runtime での一般性は未確認である。</div>
+      <div class="callout warning-item">スキル単位の記憶を共有するか、個人・環境ごとに分けるかは運用上の設計論点である。論文でもスキル本体と経験記憶は分けられている。</div>
+    </section>
+
+    <section class="section list-section" id="figures">
+      <h2>読みながら見る図表や節</h2>
+      <ul class="reading-list">
+        <li>Figure 1 は、三つの GPT-5.5-backed agents を SkillsBench の領域別 accuracy で比較する。MUSE-Autoskill は全体で 68.4% と最も高い。</li>
+        <li>Figure 2 は、スキル作成、記憶、管理、評価、改善が一つのライフサイクルとして回る構造を示す。ここがこの論文の中心図である。</li>
+        <li>agent flow の図は、retrieve-or-create、evaluate、refine、memory append の運用ループを見るために重要である。</li>
+        <li>skill anatomy の分析では、MUSE 生成スキルが人間スキルより長く、手順、失敗モード、検証方法を細かく書く傾向が示される。</li>
+        <li>cost / latency 図では、スキルがトークンを増やす一方で、探索や試行錯誤を減らし、遅延や turn 数を下げる場合があることが示される。</li>
+      </ul>
+    </section>
+
+    <section class="section list-section" id="next">
+      <h2>次に読むなら</h2>
+      <ul class="reading-list">
+        <li>SkillOpt とセットで読む。SkillOpt はスキル文書をどう最適化するか、MUSE-Autoskill はスキルバンクをどう運用するかを扱う。</li>
+        <li>From Raw Experience to Skill Consumption を読むと、生成スキルがいつ効き、いつ負の転移を起こすかの見取り図が作れる。</li>
+        <li>Dynamic Skill Lifecycle Management を読むと、retain / retire / expand のようなスキル退役・拡張管理へ進める。</li>
+        <li>Counterfactual Trace Auditing を読むと、スキルが成功率以外に agent trajectory をどう変えるかを監査する視点が得られる。</li>
+        <li>おい丸運用へ引き込むなら、`learn-from-logs` の出力を、全体 MEMORY、特定 skill の経験記憶、テスト、退役候補に分ける設計を試したい。</li>
+      </ul>
+    </section>
+
+    <section id="qa">
+      <h2>読後Q&A</h2>
+      <article class="qa">
+        <h3>この論文の中心問いは？</h3>
+        <p>エージェントのスキルを、作って終わりの文書ではなく、作成・記憶・管理・評価・改善を通じて育つ資産として扱えるか、という問いである。</p>
+      </article>
+      <article class="qa">
+        <h3>SkillOpt と何が違う？</h3>
+        <p>SkillOpt はスキル文書をどう編集して性能を上げるかに焦点がある。MUSE-Autoskill は、スキルをどう作り、保存し、選び、テストし、改善し、別エージェントへ移すかという運用基盤に焦点がある。</p>
+      </article>
+      <article class="qa">
+        <h3>スキル単位の記憶は何が嬉しい？</h3>
+        <p>全体の長期記憶だけだと、その学びがどのスキルに効くのかが埋もれやすい。スキル単位の記憶にすると、そのスキルを使う時だけ過去の注意点や失敗モードを読める。</p>
+      </article>
+      <article class="qa">
+        <h3>自動生成スキルが人間スキルを上回った理由は？</h3>
+        <p>論文の分析では、MUSE 生成スキルは人間スキルより長く、入力出力形式、失敗モード、検証方法、手順をより細かく書く傾向がある。その詳細さが、毎回の試行錯誤を減らす手順として効いた可能性がある。</p>
+      </article>
+      <article class="qa">
+        <h3>どこが危ない？</h3>
+        <p>単一の成功軌跡から作ったスキルは、その時だけ効いた前提を含むことがある。論文でも hvac-control のように、元 run に寄りすぎた手順が別 run で退行する例がある。</p>
+      </article>
+      <article class="qa">
+        <h3>おい丸の運用にどう効く？</h3>
+        <p>`SKILL.md` を直接太らせるのではなく、スキルごとの経験記憶、テスト、失敗ログ、採用・退役ルールを分けて持つ設計に繋がる。learn-from-logs の出力も、全体ルールと特定スキルの経験に分けるとよさそう。</p>
+      </article>
+      <article class="qa">
+        <h3>実務で読むならどこから？</h3>
+        <p>まず Figure 2 のライフサイクル図、次に skill-level memory、create-evaluate-register loop、generated skill transfer の実験を見るのがよい。</p>
+      </article>
+      <article class="qa">
+        <h3>次に何を読むべき？</h3>
+        <p>SkillOpt と From Raw Experience to Skill Consumption が自然な次読候補である。前者は最適化、後者は生成スキルの有効性と負の転移を見る地図になる。</p>
+      </article>
+    </section>
+      </div>
+    </div>
+
+  </main>
+  <footer>
+    <p>Source: <a href="https://arxiv.org/abs/2605.27366">arXiv:2605.27366 / MUSE-Autoskill: Self-Evolving Agents via Skill Creation, Memory, Management, and Evaluation</a>.</p>
+    <p>This page is a public reading artifact and does not include private workspace paths, logs, or internal metadata.</p>
+  </footer>
+
+</body>
+</html>
