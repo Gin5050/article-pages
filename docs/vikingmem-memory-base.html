@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>VikingMem: A Memory Base Management System for Stateful LLM-based Applications</title>
+  <link rel="stylesheet" href="./assets/article-content.css">
+  <link rel="stylesheet" href="./assets/article-pages.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./index.html">Article Pages</a>
+    <nav class="top-nav" aria-label="Site navigation">
+      <a href="./index.html">Home</a>
+      <a href="./unread-reading-inventory.html">未読一覧</a>
+    </nav>
+  </header>
+
+
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="kicker">Reading artifact</p>
+      <h1>VikingMem: A Memory Base Management System for Stateful LLM-based Applications</h1>
+      <p>この論文は、長期対話や agent アプリの記憶を、プロンプトに入れる過去メモではなく、永続状態を管理する Memory Base として設計する。event、entity、timeline compression、time-weighted recall を組み合わせ、stateful LLM application のデータ基盤として memory を扱う一本。</p>
+      <div class="paper-meta">
+        <span class="meta-chip">作成日: 2026-05-31</span>
+        <span class="meta-chip">arXiv:2605.29640</span>
+        <span class="meta-chip">agent memory</span>
+        <span class="meta-chip">Memory Base</span>
+        <span class="meta-chip">stateful LLM applications</span>
+        <span class="meta-chip">VikingDB</span>
+      </div>
+      <div class="hero-actions">
+        <a class="button" href="https://arxiv.org/abs/2605.29640">元資料を開く</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="reader-grid">
+      <nav aria-label="Reading navigation">
+        <strong>目次</strong>
+        <a href="#paper">どんな論文か</a>
+        <a href="#contributions">課題と貢献</a>
+        <a href="#method">手法のしくみ</a>
+        <a href="#results">検証結果</a>
+        <a href="#limits">限界と読みどころ</a>
+        <a href="#figures">読みながら見る図表や節</a>
+        <a href="#next">次に読むなら</a>
+        <a href="#qa">読後Q&A</a>
+      </nav>
+
+      <div>
+        <figure class="graphic-recording">
+          <a class="graphic-zoom-trigger" href="#graphic-recording-lightbox" aria-label="グラレコを拡大表示する"><img src="./assets/graphic-recordings/vikingmem-memory-base.png" alt="VikingMem の日本語グラレコ" loading="eager" decoding="async"></a>
+          <figcaption>Memory Base、Event-Entity paradigm、timeline compression、retrieval と latency の両立を1枚で把握するためのグラレコ。</figcaption>
+        </figure>
+        <div id="graphic-recording-lightbox" class="graphic-lightbox" aria-label="グラレコ拡大表示">
+          <a class="graphic-lightbox-backdrop" href="#" aria-label="拡大表示を閉じる"></a>
+          <a class="graphic-lightbox-content" href="#" aria-label="拡大表示を閉じる"><img src="./assets/graphic-recordings/vikingmem-memory-base.png" alt="VikingMem の日本語グラレコ"></a>
+        </div>
+
+    <section class="section" id="paper">
+      <h2>どんな論文か</h2>
+      <p>VikingMem の問題意識は、LLM アプリケーションが短い一問一答から、長期・多セッション・状態持ちのサービスへ移っていることにある。コンテキストウィンドウが伸びても、永続状態、更新、忘却、監査、低レイテンシをすべてプロンプト側で扱うのは難しい。</p>
+      <p>既存の memory 実装は、raw session を保存するだけ、単純に抽出して vector store に入れるだけ、特定用途のプロンプトに固定するだけ、あるいは重い knowledge graph を作る方向に寄りやすい。論文は、これらが教育、推薦、agent memory などを横断する汎用基盤になりにくいと見る。</p>
+      <p>そこで論文は Memory Base というデータ管理パラダイムを提案する。memory を検索補助ではなく、長期相互作用から選択抽出され、状態として進化し、時間に応じて圧縮・減衰し、多様なアプリへ転用できる persistent state として扱う。</p>
+      <p>VikingMem はこの考え方を VikingDB 上に実装した end-to-end system である。中心は event と entity で、event は interaction stream から抽出され、entity は event によって更新される。古い event は topic-wise timeline で高次の summary memory へ圧縮され、取り出し時には time-weighted recall と multi-vector reranking を使う。</p>
+      <p>評価では長期記憶ベンチマークで retrieval effectiveness を最大約30%改善し、対話アプリに必要な低レイテンシを維持すると報告する。ただし、実装基盤、ワークロード、privacy / policy、衝突解決は運用側で別途見る必要がある。</p>
+      <p>VikingMem は、stateful LLM-based applications のための Memory Base Management System である。中心の主張は、memory をコンテキスト外部の検索部品としてではなく、アプリケーションの永続状態を管理するデータ基盤として設計すべきだというもの。</p>
+      <p>論文は Memory Base を、raw information stream から高価値な memory を選択抽出し、時間とともに状態を更新し、古い情報を圧縮しながら、複数用途へ転用できる abstraction として定義する。</p>
+      <p>VikingMem はこの Memory Base を、event と entity の抽象で具体化する。event は発生した出来事、entity は人・対象・状態を表す。event が entity を更新することで、過去ログの袋ではなく、現在に効く状態表現を作る。</p>
+    </section>
+
+    <section class="section insights-section" id="contributions">
+      <h2>課題と貢献</h2>
+      <div class="insight-list">
+        <article class="insight-card">
+          <strong>第一の貢献は、Memory Base という管理パラダイムを明示したこと。</strong>
+          <p>長期 memory を、検索、圧縮、更新、忘却、転用の一体問題として扱う。</p>
+        </article>
+        <article class="insight-card">
+          <strong>第二の貢献は、Event-Entity paradigm である。</strong>
+          <p>複雑な interaction stream から event を抽出し、event が entity の状態を更新することで、stateful な memory を作る。</p>
+        </article>
+        <article class="insight-card"><p>第三の貢献は、topic-wise timeline と temporal compression である。古い記憶をそのまま残し続けるのではなく、話題ごとの時系列に沿って高次 summary へ圧縮し、最近の情報を優先する。</p></article>
+        <article class="insight-card"><p>第四の貢献は、retrieval 側の multi-vector reranking と time-weighted recall である。単純な semantic similarity だけではなく、時間や複数表現を使って取り出しを調整する。</p></article>
+        <article class="insight-card">
+          <strong>第五の貢献は、長期記憶ベンチマークでの end-to-end 評価である。</strong>
+          <p>retrieval effectiveness と interactive latency を同時に見ることで、研究用の精度だけではなくアプリ実装上の制約も扱う。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section steps-section" id="method">
+      <h2>手法のしくみ</h2>
+      <div class="route">
+        <article class="step">
+          <div class="num">1</div>
+          <p>入力は長期の interaction stream である。すべてをそのまま保存するのではなく、memory extract により高価値な event を選択的に取り出す。</p>
+        </article>
+        <article class="step">
+          <div class="num">2</div>
+          <p>抽出された event は entity と結びつく。entity は user、item、task、preference、agent state など、アプリケーションにとって状態として保持したい対象を表す。</p>
+        </article>
+        <article class="step">
+          <div class="num">3</div>
+          <p>event が蓄積すると、entity memory は更新される。これにより、古い事実を単に並べるのではなく、現在の状態に近い表現へ進化させる。</p>
+        </article>
+        <article class="step">
+          <div class="num">4</div>
+          <p>memory management では、topic-wise timeline を使って記憶を時間軸で整理する。古い情報は高次 summary へ圧縮され、重要度や新しさに応じて残り方が変わる。</p>
+        </article>
+        <article class="step">
+          <div class="num">5</div>
+          <p>retrieval では、query に対して関連 event や entity を取り出す。time-weighted recall で新しい情報を優先しつつ、multi-vector reranking で複数の表現から候補を並べ替える。</p>
+        </article>
+        <article class="step">
+          <div class="num">6</div>
+          <p>全体として、extract、manage、retrieve の3層が、Memory Base Management System として統合される。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section results-section" id="results">
+      <h2>検証結果</h2>
+      <div class="score-grid">
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>論文は、長期記憶ベンチマークで VikingMem が既存 baseline を上回り、memory retrieval effectiveness を最大約30%改善すると報告する。</p>
+        </article>
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>評価では、単に精度だけでなく interactive applications に必要な低レイテンシも重視される。長期 memory は正確でも遅すぎると、実サービスでは使いづらいからである。</p>
+        </article>
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>one-pass extraction、entity update、reranking、segmentation、keyword graph などの ablation を通じて、各部品が retrieval quality と efficiency にどう効くかを切り分けている。</p>
+        </article>
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>storage efficiency と retention analysis では、古い memory を残し続けるだけではなく、圧縮と減衰を通じて保持コストを管理する方向が示される。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section warning" id="limits">
+      <h2>限界と読みどころ</h2>
+      <div class="callout warning-item">VikingMem は VikingDB vector engine 上の実装であり、別の storage / retrieval stack に移した時に同じ latency や効率が出るとは限らない。</div>
+      <div class="callout warning-item">Memory Base の抽象は強いが、privacy、audit policy、ユーザー同意、消去要求などは実運用側で明示的に設計する必要がある。</div>
+      <div class="callout warning-item">event extraction と entity update は、抽出モデルや schema 設計に依存する。誤抽出や古い entity 状態の衝突をどう扱うかは、運用設計の重要論点になる。</div>
+      <div class="callout warning-item">評価ベンチマークは memory retrieval を中心にしている。実際の agent 行動、長期タスク成功率、ユーザー信頼、誤った記憶更新の被害までは追加検証が必要である。</div>
+    </section>
+
+    <section class="section list-section" id="figures">
+      <h2>読みながら見る図表や節</h2>
+      <ul class="reading-list">
+        <li>Memory Base の図は、raw logs から event を抽出し、entity を更新し、timeline で圧縮し、必要時に retrieval する流れとして読むとよい。</li>
+        <li>Event-Entity paradigm は、event が entity state を変える関係として見る。ログを保存するのではなく、状態遷移を管理する図として読むと分かりやすい。</li>
+        <li>system design の図は、extract、manage、retrieve の3層に分ける。どこが書き込み時処理で、どこが読み出し時処理かを分けると実装に引きやすい。</li>
+        <li>評価表は、retrieval effectiveness だけでなく latency、storage、ablation を一緒に見る。memory system は高精度だけではなく、運用可能な軽さが主張の一部である。</li>
+      </ul>
+    </section>
+
+    <section class="section list-section" id="next">
+      <h2>次に読むなら</h2>
+      <ul class="reading-list">
+        <li>StructMem と並べると、出来事の構造化と timeline compression の違いが見える。StructMem は会話記憶の構造、VikingMem はアプリ基盤寄りで読むとよい。</li>
+        <li>STALE と並べると、古い memory が現在も有効かをどう判定するかが次の論点になる。VikingMem の temporal weighting だけで stale state 問題が解けるわけではない。</li>
+        <li>MemCog と並べると、保存基盤と推論時 navigation の役割分担が見える。Memory Base を作ったあと、agent がいつ能動的に memory を探索するかが別の設計になる。</li>
+        <li>おい丸運用に引くなら、daily logs を event、ユーザーやプロジェクトを entity、週次整理を timeline compression、質問時探索を retrieval として切り分けてみるとよい。</li>
+      </ul>
+    </section>
+
+    <section id="qa">
+      <h2>読後Q&A</h2>
+      <article class="qa">
+        <h3>この論文の中心問いは？</h3>
+        <p>長期的に動く LLM アプリケーションの記憶を、単なる検索補助ではなく、永続状態を管理するデータ基盤としてどう設計するかである。</p>
+      </article>
+      <article class="qa">
+        <h3>Memory Base とは何？</h3>
+        <p>長期 interaction stream から価値の高い記憶を抽出し、状態として更新し、時間に沿って圧縮・減衰し、複数用途に使える形で管理する memory のデータ基盤である。</p>
+      </article>
+      <article class="qa">
+        <h3>VikingMem は何を提案している？</h3>
+        <p>Memory Base を VikingDB 上に実装した end-to-end system で、event extraction、entity update、timeline compression、time-weighted recall、multi-vector reranking を統合する。</p>
+      </article>
+      <article class="qa">
+        <h3>event と entity はどう違う？</h3>
+        <p>event は interaction stream から抽出される出来事で、entity はその出来事によって更新される人・対象・状態である。event が entity の状態を変える。</p>
+      </article>
+      <article class="qa">
+        <h3>なぜ raw logs を全部保存するだけでは足りない？</h3>
+        <p>ログを全部残しても、現在の状態、古い情報の減衰、衝突、取り出し効率、低レイテンシを扱えない。stateful application には lifecycle-aware な管理が必要になる。</p>
+      </article>
+      <article class="qa">
+        <h3>知識グラフ型 memory と何が違う？</h3>
+        <p>VikingMem は重い dynamic KG 構築に寄せすぎず、event と entity の抽象、timeline compression、vector retrieval を組み合わせて、汎用性と運用効率のバランスを取る。</p>
+      </article>
+      <article class="qa">
+        <h3>time-weighted recall は何のため？</h3>
+        <p>長期記憶では古い情報と新しい情報が混ざるため、最近の interaction を優先しながら関連記憶を取り出すために使う。</p>
+      </article>
+      <article class="qa">
+        <h3>topic-wise timeline は何をしている？</h3>
+        <p>記憶を話題ごとの時系列として整理し、古い情報を高次 summary へ圧縮する。保持コストを抑えつつ、過去の流れを失いにくくする。</p>
+      </article>
+      <article class="qa">
+        <h3>評価で何が良かった？</h3>
+        <p>長期記憶ベンチマークで retrieval effectiveness を最大約30%改善し、interactive applications に必要な低レイテンシを維持すると報告されている。</p>
+      </article>
+      <article class="qa">
+        <h3>一番の限界は？</h3>
+        <p>Memory Base の設計は強いが、抽出 schema、entity update、古い状態との衝突、privacy や audit policy は運用側で明示的に設計する必要がある。</p>
+      </article>
+      <article class="qa">
+        <h3>おい丸運用に持ち込むなら？</h3>
+        <p>wiki や memory を単発メモとして増やすだけでなく、event、entity state、timeline summary、active recall の層に分けると設計しやすい。</p>
+      </article>
+      <article class="qa">
+        <h3>一言でいうと？</h3>
+        <p>agent memory は検索箱ではなく、長期に動くアプリの状態管理基盤として設計する必要がある。</p>
+      </article>
+    </section>
+      </div>
+    </div>
+
+  </main>
+  <footer>
+    <p>Source: <a href="https://arxiv.org/abs/2605.29640">arXiv:2605.29640 / VikingMem: A Memory Base Management System for Stateful LLM-based Applications</a>.</p>
+    <p>This page is a public reading artifact and does not include private workspace paths, logs, or internal metadata.</p>
+  </footer>
+
+</body>
+</html>
