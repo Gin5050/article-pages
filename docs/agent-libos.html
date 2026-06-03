@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agent libOS: A Library-OS-Inspired Runtime for Long-Running, Capability-Controlled LLM Agents</title>
+  <link rel="stylesheet" href="./assets/article-content.css">
+  <link rel="stylesheet" href="./assets/article-pages.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./index.html">Article Pages</a>
+    <nav class="top-nav" aria-label="Site navigation">
+      <a href="./index.html">Home</a>
+      <a href="./unread-reading-inventory.html">未読一覧</a>
+    </nav>
+  </header>
+
+
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="kicker">Reading artifact</p>
+      <h1>Agent libOS: A Library-OS-Inspired Runtime for Long-Running, Capability-Controlled LLM Agents</h1>
+      <p>長時間動く LLM エージェントを、状態・権限・再開・監査を持つ実行主体として扱う runtime substrate の論文。tool dispatch ではなく runtime primitive を権限境界に置く見方が、agent harness 設計に効く。</p>
+      <div class="paper-meta">
+        <span class="meta-chip">作成日: 2026-06-03</span>
+        <span class="meta-chip">arXiv: 2606.03895</span>
+        <span class="meta-chip">Agent Runtime</span>
+        <span class="meta-chip">Capability Control</span>
+        <span class="meta-chip">Audit / Resume</span>
+      </div>
+      <div class="hero-actions">
+        <a class="button" href="https://arxiv.org/abs/2606.03895">元資料を開く</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="reader-grid">
+      <nav aria-label="Reading navigation">
+        <strong>目次</strong>
+        <a href="#paper">どんな論文か</a>
+        <a href="#contributions">課題と貢献</a>
+        <a href="#method">手法のしくみ</a>
+        <a href="#results">検証結果</a>
+        <a href="#limits">限界と読みどころ</a>
+        <a href="#figures">読みながら見る図表や節</a>
+        <a href="#next">次に読むなら</a>
+        <a href="#qa">読後Q&A</a>
+      </nav>
+
+      <div>
+        <figure class="graphic-recording">
+          <a class="graphic-zoom-trigger" href="#graphic-recording-lightbox" aria-label="グラレコを拡大表示する"><img src="./assets/graphic-recordings/agent-libos.png" alt="Agent libOS の日本語グラレコ" loading="eager" decoding="async"></a>
+          <figcaption>Agent libOS の問題設定、runtime primitive、capability boundary、prototype 評価を1枚で把握するためのグラレコ。</figcaption>
+        </figure>
+        <div id="graphic-recording-lightbox" class="graphic-lightbox" aria-label="グラレコ拡大表示">
+          <a class="graphic-lightbox-backdrop" href="#" aria-label="拡大表示を閉じる"></a>
+          <a class="graphic-lightbox-content" href="#" aria-label="拡大表示を閉じる"><img src="./assets/graphic-recordings/agent-libos.png" alt="Agent libOS の日本語グラレコ"></a>
+        </div>
+
+    <section class="section" id="paper">
+      <h2>どんな論文か</h2>
+      <p>この論文は、LLM エージェントを単発の request-response ではなく、長時間動く software actor として扱う。エージェントは状態を持ち、サブタスクを fork し、人間承認を待ち、外部副作用を起こし、あとから再開・監査される必要がある。</p>
+      <p>そこで著者は、agent を AgentProcess として扱う library-OS-inspired runtime substrate を提案する。AgentProcess は process identity、parent-child lineage、lifecycle state、tool table、typed Object Memory、explicit capabilities、human queues、checkpoints、events、audit records を持つ。</p>
+      <p>中心の設計原則は、tools are libc-like wrappers; runtime primitives are the authority boundary というもの。つまり、tool wrapper 側に権限境界を置くのではなく、filesystem access、object access、sleep、human approval、JIT tool registration、external side effects などを runtime primitive の境界でチェックする。</p>
+      <p>これは planner accuracy を上げる論文ではない。長時間エージェントを schedule、authorize、resume、audit するための基盤をどう置くか、という harness / runtime 設計の論文として読むと価値が高い。</p>
+      <p>Agent libOS は、LLM agent を conventional OS の中で動く library runtime 上の実行主体として扱う。kernel-mode isolation や POSIX-compatible OS を作るのではなく、agent 用の lifecycle、memory、tool、capability、audit の管理面を runtime substrate としてまとめる。</p>
+      <p>論文の焦点は、長時間動く agent が外部世界へ副作用を持つとき、どこを信頼境界にするべきかという点にある。著者は tool dispatch ではなく runtime primitive を境界にするべきだと主張する。</p>
+    </section>
+
+    <section class="section insights-section" id="contributions">
+      <h2>課題と貢献</h2>
+      <div class="insight-list">
+        <article class="insight-card"><p>主要な貢献は、AgentProcess、AgentImage、typed Object Memory、explicit capabilities、human queues、checkpoints、events、audit records を含む runtime model の提示。</p></article>
+        <article class="insight-card"><p>特に、tools を libc 的な薄い wrapper とみなし、実際の authority は runtime primitives 側に置く設計が読みどころ。これにより、filesystem/object access、sleep、human approval、tool registration、external side effects を一貫した policy で制御しやすくなる。</p></article>
+      </div>
+    </section>
+
+    <section class="section steps-section" id="method">
+      <h2>手法のしくみ</h2>
+      <div class="route">
+        <article class="step">
+          <div class="num">1</div>
+          <p>Agent libOS では、agent は process identity と lifecycle state を持つ。parent-child lineage によって fork された subtasks を辿れるようにし、tool table は AgentImage から導かれる。</p>
+        </article>
+        <article class="step">
+          <div class="num">2</div>
+          <p>Object Memory は namespace-local で typed に扱われ、filesystem と object access は primitive 境界で capability check を受ける。human approval や one-shot permission grants も runtime に統合され、監査可能な record として残る。</p>
+        </article>
+        <article class="step">
+          <div class="num">3</div>
+          <p>JIT tool registration では Deno / TypeScript tool を syscall broker 経由で扱い、tool を直接信頼境界にしない。外部副作用や shell 実行も runtime primitive に寄せて扱う。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section results-section" id="results">
+      <h2>検証結果</h2>
+      <div class="score-grid">
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>論文は Python prototype を実装し、async scheduling、namespace-local Object Memory、runtime-integrated human approval、one-shot permission grants、per-process working directories、filesystem/object bridge tools、injectable Resource Provider Substrate を示す。</p>
+        </article>
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>評価は safety-oriented な prototype evaluation と regression tests が中心で、執筆時点で 123 regression tests、deterministic demos、real-model smoke scripts があると報告されている。これは性能ベンチマークというより、runtime substrate と安全境界が一貫して動くかの確認に近い。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section warning" id="limits">
+      <h2>限界と読みどころ</h2>
+      <div class="callout warning-item">Agent libOS は kernel OS ではなく、library runtime として設計されている。そのため hardware drivers、kernel-mode isolation、POSIX-compatible OS は目的外。</div>
+      <div class="callout warning-item">また、幅広い実運用比較や planner accuracy の改善を示す論文ではない。読む時は、agent の性能向上ではなく、長時間 agent の権限境界、再開、監査の設計語彙を得る論文として位置づけるのがよい。</div>
+    </section>
+
+    <section class="section list-section" id="figures">
+      <h2>読みながら見る図表や節</h2>
+      <ul class="reading-list">
+        <li>読む時は、agent を process として扱う抽象と、tool wrapper ではなく runtime primitive に権限境界を置く抽象を中心に見る。</li>
+        <li>既存の agent harness、Codex skills、human approval、wiki memory、article-page-publisher のような長時間 workflow を、この AgentProcess / capability / checkpoint / audit の語彙で読み替えると実務への引き出しが作りやすい。</li>
+      </ul>
+    </section>
+
+    <section class="section list-section" id="next">
+      <h2>次に読むなら</h2>
+      <ul class="reading-list">
+        <li>次に読むなら、Agent libOS の design と threat model を精読し、Codex / Claude Code / personal assistant の harness に置き換えるとどの primitive が必要かを整理するとよい。</li>
+        <li>関連して読むなら、Code as Agent Harness、Harness-1、How to Interpret Agent Behavior、Counterfactual Trace Auditing など、agent runtime と evaluation を扱う論文とつなげると見通しがよくなる。</li>
+      </ul>
+    </section>
+
+    <section id="qa">
+      <h2>読後Q&A</h2>
+      <article class="qa">
+        <h3>この論文の中心問いは？</h3>
+        <p>長時間動き、副作用を持つ LLM agent を、安全に schedule、authorize、resume、audit する runtime substrate はどう設計できるか。</p>
+      </article>
+      <article class="qa">
+        <h3>何が新しい？</h3>
+        <p>agent を AgentProcess として扱い、tool dispatch ではなく runtime primitive を authority boundary にする設計を、Object Memory、capability、checkpoint、human approval、audit と一緒にまとめている点。</p>
+      </article>
+      <article class="qa">
+        <h3>これは OS を作る論文？</h3>
+        <p>kernel OS ではなく、conventional host OS 上で動く library runtime の提案。POSIX 互換 OS や hardware driver を作る話ではない。</p>
+      </article>
+      <article class="qa">
+        <h3>tools are libc-like wrappers とは？</h3>
+        <p>tool は便利な wrapper であり、権限判断そのものは tool 側ではなく runtime primitive 側で行う、という設計原則。</p>
+      </article>
+      <article class="qa">
+        <h3>実装では何を示している？</h3>
+        <p>Python prototype で async scheduling、Object Memory、human approval、one-shot permission grants、working directories、Deno / TypeScript JIT tools、syscall broker、regression tests などを示している。</p>
+      </article>
+      <article class="qa">
+        <h3>どんな限界がある？</h3>
+        <p>性能向上や広範な実運用比較が主眼ではない。評価は安全志向の prototype と regression tests が中心で、runtime 設計の提案として読むのがよい。</p>
+      </article>
+      <article class="qa">
+        <h3>実務では何に効く？</h3>
+        <p>agent skill、human approval、checkpoint / resume、audit log、外部副作用の権限管理を、個別 tool の責任ではなく runtime / harness の責任として整理できる。</p>
+      </article>
+      <article class="qa">
+        <h3>関連して読むなら？</h3>
+        <p>Code as Agent Harness、Harness-1、How to Interpret Agent Behavior、Counterfactual Trace Auditing など、agent harness と評価を扱う論文と相性がよい。</p>
+      </article>
+    </section>
+      </div>
+    </div>
+
+  </main>
+  <footer>
+    <p>Source: <a href="https://arxiv.org/abs/2606.03895">arXiv:2606.03895</a>.</p>
+    <p>This page is a public reading artifact and does not include private workspace paths, logs, or internal metadata.</p>
+  </footer>
+
+</body>
+</html>
