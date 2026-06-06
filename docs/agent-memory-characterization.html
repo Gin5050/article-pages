@@ -1,0 +1,194 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agent Memory: Characterization and System Implications of Stateful Long-Horizon Workloads</title>
+  <link rel="stylesheet" href="./assets/article-content.css">
+  <link rel="stylesheet" href="./assets/article-pages.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./index.html">Article Pages</a>
+    <nav class="top-nav" aria-label="Site navigation">
+      <a href="./index.html">Home</a>
+      <a href="./unread-reading-inventory.html">未読一覧</a>
+    </nav>
+  </header>
+
+
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="kicker">Reading artifact</p>
+      <h1>Agent Memory: Characterization and System Implications of Stateful Long-Horizon Workloads</h1>
+      <p>長期タスクの LLM エージェントで使われる memory system を、精度だけでなく construction、retrieval、generation、鮮度、ストレージのシステム負荷として測る論文。Agent memory は賢さだけでなく、更新頻度とクエリ量と SLO で選ぶべきだと整理している。</p>
+      <div class="paper-meta">
+        <span class="meta-chip">作成日: 2026-06-06</span>
+        <span class="meta-chip">arXiv: 2606.06448</span>
+        <span class="meta-chip">Agent Memory</span>
+        <span class="meta-chip">Systems Characterization</span>
+        <span class="meta-chip">Long-Horizon Agents</span>
+      </div>
+      <div class="hero-actions">
+        <a class="button" href="https://arxiv.org/abs/2606.06448">元資料を開く</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="reader-grid">
+      <nav aria-label="Reading navigation">
+        <strong>目次</strong>
+        <a href="#paper">どんな論文か</a>
+        <a href="#contributions">課題と貢献</a>
+        <a href="#method">手法のしくみ</a>
+        <a href="#results">検証結果</a>
+        <a href="#limits">限界と読みどころ</a>
+        <a href="#figures">読みながら見る図表や節</a>
+        <a href="#next">次に読むなら</a>
+        <a href="#qa">読後Q&A</a>
+      </nav>
+
+      <div>
+        <figure class="graphic-recording">
+          <a class="graphic-zoom-trigger" href="#graphic-recording-lightbox" aria-label="グラレコを拡大表示する"><img src="./assets/graphic-recordings/agent-memory-characterization.png" alt="Agent Memory の日本語グラレコ" loading="eager" decoding="async"></a>
+          <figcaption>Agent memory の4分類、構築・検索・生成のコスト分解、運用上のトレードオフを1枚で把握するためのグラレコ。</figcaption>
+        </figure>
+        <div id="graphic-recording-lightbox" class="graphic-lightbox" aria-label="グラレコ拡大表示">
+          <a class="graphic-lightbox-backdrop" href="#" aria-label="拡大表示を閉じる"></a>
+          <a class="graphic-lightbox-content" href="#" aria-label="拡大表示を閉じる"><img src="./assets/graphic-recordings/agent-memory-characterization.png" alt="Agent Memory の日本語グラレコ"></a>
+        </div>
+
+    <section class="section" id="paper">
+      <h2>どんな論文か</h2>
+      <p>この論文は、長期タスクをこなす LLM エージェントの memory system を、accuracy benchmark だけでなくシステム負荷として測る。対象は、会話履歴や tool trace を保存し、後続セッションで検索し、必要なら更新する agent memory である。</p>
+      <p>著者らは、agent memory を4つのパラダイムに分類する。長文コンテキスト、Flat RAG、構造化 RAG、Agentic control flow である。それぞれ、書き込み側の構築処理、保存構造、検索方法、更新可能性が異なる。</p>
+      <p>論文の強い点は、memory をただの検索精度の問題にしないところにある。construction、retrieval、prompt assembly、generation、maintenance に分け、どこで token、embedding、GPU energy、latency が発生するかを測っている。</p>
+      <p>結論はかなり実務寄りだ。高機能な agentic memory は柔軟だが、構築コストや tail latency が重い。逆に BM25 のような単純な方式が、 recall-heavy な workload では強いこともある。したがって memory system は、更新頻度、クエリ量、鮮度要件、許容遅延、fleet-scale の管理コストで選ぶ必要がある。</p>
+      <p>Agent Memory は、エージェント自身の interaction stream から作られる可変の外部状態を扱う。通常の RAG が静的な文書集合を検索するのに対し、agent memory はユーザーとの会話、tool output、環境からの feedback を継続的に保存・検索・更新する。</p>
+      <p>この論文は、agent memory の精度そのものを競うより、memory system が実運用でどんな負荷を生むかを調べる。長期エージェントを scale させるには、memory をモデルの外側にある状態管理基盤として見る必要がある、という立場で読むとよい。</p>
+    </section>
+
+    <section class="section insights-section" id="contributions">
+      <h2>課題と貢献</h2>
+      <div class="insight-list">
+        <article class="insight-card"><p>第一の貢献は、agent memory system を construction、storage、retrieval、mutability の観点で分類する taxonomy である。代表的な10システムを、長文コンテキスト、Flat RAG、構造化 RAG、Agentic control flow に整理している。</p></article>
+        <article class="insight-card">
+          <strong>第二の貢献は、phase-aware profiling harness である。</strong>
+          <p>memory construction、retrieval、generation にかかる token、model call、GPU utilization、latency を分解して測る。</p>
+        </article>
+        <article class="insight-card"><p>第三の貢献は、LongMemEval と MemoryAgentBench を使った system characterization である。construction cost、construction LLM の capability floor、query volume による amortization、freshness-latency tradeoff、storage growth、tail latency を横断して見ている。</p></article>
+      </div>
+    </section>
+
+    <section class="section steps-section" id="method">
+      <h2>手法のしくみ</h2>
+      <div class="route">
+        <article class="step">
+          <div class="num">1</div>
+          <p>論文は agent memory の実行を、ingestion、memory construction、storage、retrieval、prompt assembly、generation、maintenance に分ける。この分解により、精度だけでは見えない write path と read path の違いが見える。</p>
+        </article>
+        <article class="step">
+          <div class="num">2</div>
+          <p>比較対象には BM25、EmbedRAG、GraphRAG、HippoRAG v2、Mem0、SimpleMem、A-Mem、Letta、MIRIX、long-context baseline などが含まれる。単純な検索から、LLM が記憶の書き込みや検索を制御する agentic system までを同じ測定枠に置く。</p>
+        </article>
+        <article class="step">
+          <div class="num">3</div>
+          <p>評価では、construction を終えてから query する batch regime だけでなく、セッションが連続して届き、前の session の write が次の query に効く freshness-latency regime も見る。これにより、非同期に構築して latency を隠すと記憶が古くなる、という運用上の問題が浮かび上がる。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section results-section" id="results">
+      <h2>検証結果</h2>
+      <div class="score-grid">
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>長期 workload では full-history prefill が重く、agent memory は per-query serving latency を大きく下げる。ただし memory system 間にも2桁規模の latency 差があり、accuracy だけでは選べない。</p>
+        </article>
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>LLM-mediated な memory system では、construction energy が lifecycle の大部分を占める。論文では、300 query の QA phase よりも construction が支配的になるケースが多く、energy per correct answer でも大きな差が出ると報告している。</p>
+        </article>
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>construction は embedding と prefill に強く支配される。これは、通常の latency-sensitive QA traffic と同じ serving stack に載せると干渉しやすいことを意味する。</p>
+        </article>
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>MemoryAgentBench では、BM25 が aggregate で高い accuracy と軽い construction を示す一方、paraphrase、multi-hop、temporal inference のような難しい条件では構造化・agentic memory の意義が出る。単一の最良システムはなく、construction cost、per-query latency、accuracy の frontier 上で選ぶ必要がある。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section warning" id="limits">
+      <h2>限界と読みどころ</h2>
+      <div class="callout warning-item">評価は代表的な10システムと2つの benchmark suite に基づくため、すべての memory workload を代表するわけではない。特に multimodal memory や multi-agent / distributed memory の一貫性問題は今後の課題として残っている。</div>
+      <div class="callout warning-item">また、BM25 が強く見える結果は、MemoryAgentBench の aggregate が exact-match retrieval を報いる構成を含むためでもある。すべての実務 memory で BM25 が十分という意味ではない。</div>
+      <div class="callout warning-item">それでも、この論文は agent memory を選ぶ時の問いを変える。どれが一番賢いかではなく、この workload ではどの phase にコストを寄せるべきか、どの freshness と latency を許すかを考えるための土台になる。</div>
+    </section>
+
+    <section class="section list-section" id="figures">
+      <h2>読みながら見る図表や節</h2>
+      <ul class="reading-list">
+        <li>Figure 1 は、agent memory を write path と read path を持つ二層の記憶として見る入口になる。外部に保存された long-term memory から必要なものを working memory へ戻す、という見方が重要。</li>
+        <li>Table 1 は、10システムを construction、storage、retrieval、mutability で並べる taxonomy の中心。memory system の名前ではなく、どの型に属するかを見ると運用負荷を予測しやすい。</li>
+        <li>Figure 3 と Figure 4 は、construction が lifecycle cost を支配することを示す。query time だけ見ていると安く見える system でも、構築に大きな energy と時間を払っていることが分かる。</li>
+        <li>Figure 7 と Figure 8 は、construction、serve latency、accuracy、freshness の間に単純な勝者がないことを示す。実運用では query arrival pattern と update pattern を先に決める必要がある。</li>
+      </ul>
+    </section>
+
+    <section class="section list-section" id="next">
+      <h2>次に読むなら</h2>
+      <ul class="reading-list">
+        <li>次に読むなら、Is Agent Memory a Database? と VikingMem をつなげるとよい。この論文が system cost の地図を出し、前者が agent memory を data foundation として、後者が memory base として扱う。</li>
+        <li>おい丸の運用に引きつけるなら、brain / wiki / state / audit log / skill を単に保存場所としてではなく、construction cost、retrieval latency、freshness、maintenance policy を持つ memory system として棚卸しできる。</li>
+      </ul>
+    </section>
+
+    <section id="qa">
+      <h2>読後Q&A</h2>
+      <article class="qa">
+        <h3>この論文の中心問いは？</h3>
+        <p>長期エージェントの memory system は、精度だけでなくどんな construction cost、retrieval latency、generation cost、storage footprint、freshness tradeoff を持つのか、という問い。</p>
+      </article>
+      <article class="qa">
+        <h3>普通の RAG と何が違う？</h3>
+        <p>普通の RAG は静的な文書集合を検索することが多い。一方 agent memory は、エージェント自身の会話や tool trace から作られる可変の状態で、保存・検索・更新・忘却まで含む。</p>
+      </article>
+      <article class="qa">
+        <h3>なぜ accuracy だけではだめ？</h3>
+        <p>同じくらいの accuracy でも、構築に何時間もかかる system と、ほぼ即座に index できる system がある。query latency や energy、storage、tail latency も大きく違うため。</p>
+      </article>
+      <article class="qa">
+        <h3>一番よい memory system は何？</h3>
+        <p>論文の結論は、単一の勝者はないというもの。更新が少なく query が多い workload なら構築に寄せる方式が合い、継続的に ingestion され query が sparse なら軽い構築の方式が合う。</p>
+      </article>
+      <article class="qa">
+        <h3>BM25 が強いなら、それでいい？</h3>
+        <p>recall-heavy な aggregate では BM25 が強く見える。ただし paraphrase、multi-hop、temporal inference では弱点があり、構造化・agentic memory の価値が出る場面もある。</p>
+      </article>
+      <article class="qa">
+        <h3>運用で一番見落としやすい点は？</h3>
+        <p>construction cost。query time が速くても、記憶を作る write path が重いと、energy、GPU utilization、freshness、tail latency に効いてくる。</p>
+      </article>
+      <article class="qa">
+        <h3>おい丸の運用にどう効く？</h3>
+        <p>brain、wiki、state、audit log、skills を、単なる保存先ではなく memory system として見直せる。どこで構築し、どこで検索し、どこで古くなり、どのコストを払っているかを分けて考えられる。</p>
+      </article>
+      <article class="qa">
+        <h3>次に読むなら？</h3>
+        <p>Is Agent Memory a Database?、VikingMem、Mem0、Letta / MemGPT 系の論文と合わせると、memory を保存箱ではなく運用基盤として見る線が太くなる。</p>
+      </article>
+    </section>
+      </div>
+    </div>
+
+  </main>
+  <footer>
+    <p>Source: <a href="https://arxiv.org/abs/2606.06448">arXiv:2606.06448</a>.</p>
+    <p>This page is a public reading artifact and does not include private workspace paths, logs, or internal metadata.</p>
+  </footer>
+
+</body>
+</html>
