@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Socratic-SWE: Self-Evolving Coding Agents via Trace-Derived Agent Skills</title>
+  <link rel="stylesheet" href="./assets/article-content.css">
+  <link rel="stylesheet" href="./assets/article-pages.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./index.html">Article Pages</a>
+    <nav class="top-nav" aria-label="Site navigation">
+      <a href="./index.html">Home</a>
+      <a href="./unread-reading-inventory.html">未読一覧</a>
+    </nav>
+  </header>
+
+
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="kicker">Reading artifact</p>
+      <h1>Socratic-SWE: Self-Evolving Coding Agents via Trace-Derived Agent Skills</h1>
+      <p>コーディングエージェントの過去トレースを、次の skill と検証タスクを作る素材として使う論文。ログを読むだけで終えず、trace-derived skills、targeted repair tasks、execution validation、solver update の閉ループで自己進化させる。</p>
+      <div class="paper-meta">
+        <span class="meta-chip">作成日: 2026-06-08</span>
+        <span class="meta-chip">arXiv: 2606.07412</span>
+        <span class="meta-chip">Coding Agents</span>
+        <span class="meta-chip">Agent Skills</span>
+        <span class="meta-chip">Self-Evolving Agents</span>
+      </div>
+      <div class="hero-actions">
+        <a class="button" href="https://arxiv.org/abs/2606.07412">元資料を開く</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="reader-grid">
+      <nav aria-label="Reading navigation">
+        <strong>目次</strong>
+        <a href="#why-this-matters">この論文の何がいいか</a>
+        <a href="#paper">どんな論文か</a>
+        <a href="#contributions">課題と貢献</a>
+        <a href="#method">手法のしくみ</a>
+        <a href="#results">検証結果</a>
+        <a href="#discussion">課題と議論</a>
+        <a href="#next">次に読むなら</a>
+        <a href="#qa">読後Q&A</a>
+      </nav>
+
+      <div>
+        <figure class="graphic-recording">
+          <a class="graphic-zoom-trigger" href="#graphic-recording-lightbox" aria-label="グラレコを拡大表示する"><img src="./assets/graphic-recordings/socratic-swe.png" alt="Socratic-SWE の日本語グラレコ" loading="eager" decoding="async"></a>
+          <figcaption>トレースから skill を蒸留し、弱点に合う修復タスクを生成・検証して solver を更新する流れを 1 枚で把握するためのグラレコ。</figcaption>
+        </figure>
+        <div id="graphic-recording-lightbox" class="graphic-lightbox" aria-label="グラレコ拡大表示">
+          <a class="graphic-lightbox-backdrop" href="#" aria-label="拡大表示を閉じる"></a>
+          <a class="graphic-lightbox-content" href="#" aria-label="拡大表示を閉じる"><img src="./assets/graphic-recordings/socratic-swe.png" alt="Socratic-SWE の日本語グラレコ"></a>
+        </div>
+
+    <section class="section why-section" id="why-this-matters">
+      <h2>この論文の何がいいか</h2>
+      <p>この論文が良いのは、agent のログを「反省材料」で止めないところだ。失敗トレースを読んで運用ルールを足すだけだと、skill や MEMORY はすぐ厚くなる。しかし厚くなったルールが、次の行動で本当に効いたかは別問題になる。</p>
+      <p>Socratic-SWE は、トレースを skill にし、その skill から次のタスクを作り、実行で検証し、solver を更新する。つまり、ログ、スキル、テスト、改善を一本の循環にしている。Codex skill や learn-from-logs の運用を考える時、この見方はかなり直接使える。</p>
+      <p>特に重要なのは、skill が単に prompt に追記される知識ではなく、次のカリキュラムを作る材料になっている点だ。良い skill は、次に何を試すべきかを決める。ここまで含めて skill engineering と見ると、個人AIアシスタントの改善設計が一段具体になる。</p>
+    </section>
+
+    <section class="section" id="paper">
+      <h2>どんな論文か</h2>
+      <p>Socratic-SWE は、LLM-driven software engineering agent を自己進化させるために、過去の解決トレースを structured agent skills へ蒸留する論文である。コーディングエージェントの改善を、モデル単体の能力向上ではなく、トレース、スキル、タスク生成、検証、solver 更新のループとして扱う。</p>
+      <p>既存の synthetic task generation は、固定的な mutation や bug injection に寄りやすい。すると、今の agent が実際に苦手としている失敗パターンや、うまく直せた修復パターンから外れた課題が増える。Socratic-SWE は、agent が実際に残した成功・失敗トレースを読み、recurring failures と repair patterns を抽出する。</p>
+      <p>抽出された知識は、単なるログ要約ではなく、次に使える skill として構造化される。その skill は、実リポジトリ上で targeted repair tasks を作るために使われ、候補タスクは execution-based validation と solver-gradient alignment reward で選別される。</p>
+      <p>arXiv abstract によれば、SWE-bench Verified、SWE-bench Lite、SWE-bench Pro、Terminal-Bench 2.0 で、同等 compute の self-evolving baselines を一貫して上回り、SWE-bench Verified では 3 iteration 後に 50.40% に到達したと報告されている。</p>
+      <p>この論文は、software engineering agents の訓練と改善において、高品質なタスク供給がボトルネックになる問題を扱う。SWE agent は実用的な評価対象として重要だが、agent が学ぶべきタスクをどう作るかは難しい。</p>
+      <p>Socratic-SWE の発想は、agent がすでに解いた、または失敗したタスクのトレースに、次の学習タスクを作るヒントがあるというものだ。成功トレースには修復手順があり、失敗トレースには recurring failure がある。これらを捨てず、skill として再利用する。</p>
+    </section>
+
+    <section class="section insights-section" id="contributions">
+      <h2>課題と貢献</h2>
+      <div class="insight-list">
+        <article class="insight-card"><p>第一の貢献は、過去の agent-solving traces から structured agent skills を蒸留すること。これはログ要約ではなく、失敗パターンと修復パターンを次の行動に使える形へ変換する。</p></article>
+        <article class="insight-card"><p>第二の貢献は、得られた skill を使って targeted repair tasks を生成すること。汎用的な合成バグではなく、solver の弱点や学習進度に合うタスクを作る。</p></article>
+        <article class="insight-card"><p>第三の貢献は、候補タスクを実行ベースで検証し、solver-gradient alignment reward で学習に役立つものを選ぶこと。タスクを作っただけで採用せず、実際に改善方向と合っているかを見る。</p></article>
+        <article class="insight-card"><p>第四の貢献は、この process を反復する closed-loop self-evolution として設計していること。solver update 後に新しいトレースが生まれ、それが次の skill とタスク生成へ戻る。</p></article>
+      </div>
+    </section>
+
+    <section class="section steps-section" id="method">
+      <h2>手法のしくみ</h2>
+      <div class="route">
+        <article class="step">
+          <div class="num">1</div>
+          <p>まず solver agent が software engineering task を解く。ここで、成功、失敗、途中の tool use、修復の試行、検証結果を含む trajectory が残る。</p>
+        </article>
+        <article class="step">
+          <div class="num">2</div>
+          <p>次に、その trajectory から recurring failures と repair patterns を取り出す。どの種類の変更でつまずいたか、どの観察やテストが修復に効いたか、どの手順が再利用できるかを skill として構造化する。</p>
+        </article>
+        <article class="step">
+          <div class="num">3</div>
+          <p>構造化された skill は、次の targeted repair task generation に使われる。つまり skill は、agent に読ませる知識であるだけでなく、弱点に合う新しい訓練タスクを作る generator の材料になる。</p>
+        </article>
+        <article class="step">
+          <div class="num">4</div>
+          <p>生成された候補タスクは、実リポジトリ上で実行可能か、検証できるかを execution-based validation でふるいにかける。ここで、見た目だけ plausible なタスクや検証不能なタスクを落とす。</p>
+        </article>
+        <article class="step">
+          <div class="num">5</div>
+          <p>さらに、solver-gradient alignment reward により、そのタスクが solver の改善方向に合っているかを見る。単に難しいタスクではなく、今の solver が学ぶ価値のあるタスクを残す。</p>
+        </article>
+        <article class="step">
+          <div class="num">6</div>
+          <p>最後に、選別されたタスクで solver を更新し、新しい solver がまた SWE task を解く。この更新後のトレースが次の反復の材料になり、skill と curriculum が進化していく。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section results-section" id="results">
+      <h2>検証結果</h2>
+      <div class="score-grid">
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>arXiv abstract では、Socratic-SWE が SWE-bench Verified、SWE-bench Lite、SWE-bench Pro、Terminal-Bench 2.0 で、同等 compute の self-evolving baselines を一貫して上回ったと報告されている。</p>
+        </article>
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>特に SWE-bench Verified では、3 iteration 後に 50.40% に到達したとされる。これは、単発の合成タスク追加ではなく、トレースから skill とタスクを更新し続けることが効いたという読みになる。</p>
+        </article>
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>ただし、このページでは abstract と arXiv メタデータを中心に確認している。詳細な ablation、skill schema、評価設定の細部は、PDF 本文を精読してから扱うのがよい。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section warning" id="discussion">
+      <h2>課題と議論</h2>
+      <div class="callout warning-item">この論文を実務に移す時の核は、失敗ログをどの粒度で skill 化するかだ。抽象化しすぎると一般論になり、細かすぎると再利用できない。失敗パターン、修復パターン、検証方法、適用条件を分けて残す必要がある。</div>
+      <div class="callout warning-item">もう一つの論点は、skill からタスクを作る時の検証である。人間の反省メモなら『次から気をつける』で済むが、agent の改善ループでは、その skill が作ったタスクが本当に実行可能で、改善に効くかを gate する必要がある。</div>
+      <div class="callout warning-item">個人AIアシスタント運用に引き寄せるなら、learn-from-logs の出力を MEMORY 追記で終わらせず、次に失敗しやすい代表課題、回帰テスト、skill 更新候補、拒否した更新候補に分ける設計が考えられる。</div>
+    </section>
+
+    <section class="section list-section" id="next">
+      <h2>次に読むなら</h2>
+      <ul class="reading-list">
+        <li>次に読むなら、SkillOpt、MUSE-Autoskill、SkillEvolBench と並べるとよい。SkillOpt は skill を trainable external state として扱い、MUSE-Autoskill は skill の lifecycle、SkillEvolBench は経験から procedural skill へ変わるかの評価を見る。</li>
+        <li>実装に落とすなら、既存の skill 更新ログから、失敗トレース、修復パターン、適用条件、検証タスク、reject reason を分けた小さな台帳を作るのが第一歩になる。</li>
+        <li>深掘りするなら、PDF 本文で skill schema、task generator、validation、alignment reward、各ベンチマークの ablation を確認する。</li>
+      </ul>
+    </section>
+
+    <section id="qa">
+      <h2>読後Q&A</h2>
+      <article class="qa">
+        <h3>この論文の中心問いは？</h3>
+        <p>coding agent の過去トレースを、次の skill と訓練タスクを作る材料として使えるか、という問い。</p>
+      </article>
+      <article class="qa">
+        <h3>Socratic-SWE は何を自己進化させる？</h3>
+        <p>solver agent と、その solver に合わせた skill、targeted repair tasks、カリキュラムを閉ループで更新する。</p>
+      </article>
+      <article class="qa">
+        <h3>trace-derived agent skills とは？</h3>
+        <p>agent が過去に残した成功・失敗トレースから、繰り返す失敗や修復パターンを抽出し、次の行動やタスク生成に使える形へ構造化した skill。</p>
+      </article>
+      <article class="qa">
+        <h3>従来の synthetic task generation と何が違う？</h3>
+        <p>固定的な変異やバグ注入ではなく、solver の実際のトレースから弱点や修復手順を取り出し、それに合う targeted repair tasks を作る点が違う。</p>
+      </article>
+      <article class="qa">
+        <h3>なぜ execution-based validation が必要？</h3>
+        <p>生成されたタスクが見た目だけ plausible でも、実リポジトリ上で実行・検証できなければ訓練に使いにくい。実行で候補をふるいにかけるために必要。</p>
+      </article>
+      <article class="qa">
+        <h3>solver-gradient alignment reward は何のため？</h3>
+        <p>候補タスクが今の solver の改善方向に合っているかを評価するため。単に難しいタスクではなく、学習に効くタスクを残す。</p>
+      </article>
+      <article class="qa">
+        <h3>結果として何が示された？</h3>
+        <p>abstract では、SWE-bench Verified、SWE-bench Lite、SWE-bench Pro、Terminal-Bench 2.0 で同等 compute の self-evolving baselines を上回り、SWE-bench Verified では 3 iteration 後に 50.40% に到達したと報告されている。</p>
+      </article>
+      <article class="qa">
+        <h3>個人AIアシスタント運用にどう効く？</h3>
+        <p>ログから MEMORY や skill を追記するだけでなく、次の検証タスク、回帰テスト、reject buffer まで作る改善ループとして設計できる。</p>
+      </article>
+      <article class="qa">
+        <h3>読む時に注意することは？</h3>
+        <p>このページは abstract と arXiv メタデータを中心にした読書導線なので、skill schema、ablation、評価設定の詳細は PDF 本文で確認する必要がある。</p>
+      </article>
+      <article class="qa">
+        <h3>関連して読むなら？</h3>
+        <p>SkillOpt、MUSE-Autoskill、SkillEvolBench、Counterfactual Trace Auditing が近い。skill の生成、評価、更新、効果監査をそれぞれ補える。</p>
+      </article>
+    </section>
+      </div>
+    </div>
+
+  </main>
+  <footer>
+    <p>Source: <a href="https://arxiv.org/abs/2606.07412">arXiv:2606.07412 / Socratic-SWE: Self-Evolving Coding Agents via Trace-Derived Agent Skills</a>.</p>
+    <p>This page is a public reading artifact and does not include private workspace paths, logs, or internal metadata.</p>
+  </footer>
+
+</body>
+</html>
