@@ -94,14 +94,26 @@
         </article>
         <article class="step">
           <div class="num">2</div>
-          <p>MemGate は、この retrieval と context injection の間に置かれる。入力は current query と candidate memories。出力は、各記憶を現在の文脈へ通すかどうかの gate 判断である。</p>
+          <p>MemGate は、この retrieval と context injection の間に置かれる。まず従来どおり cosine similarity で候補記憶を取る。その後、現在の query embedding と候補 memory embedding を組にして、各候補を再スコアする。</p>
         </article>
         <article class="step">
           <div class="num">3</div>
-          <p>重要なのは、MemGate が LLM 本体の改造を必要としない点である。memory database を書き換えず、推論時に別の LLM judge を毎回呼ぶ必要もない。既存 memory framework に plug-in として差し込みやすい。</p>
+          <p>具体的には、query embedding、memory embedding、両者の要素ごとの積を連結した特徴を MLP に入れ、0〜1 の連続マスクを出す。このマスクを memory embedding に掛けることで、現在の文脈では危ない次元や余計な次元を弱める。</p>
         </article>
         <article class="step">
           <div class="num">4</div>
+          <p>最終スコアは、query embedding とマスク後の memory embedding の gated cosine similarity で計算する。つまり、MemGate は記憶全体を単純に捨てる binary classifier ではなく、記憶表現のどの部分を残すかを query ごとに変える representation-level filter である。</p>
+        </article>
+        <article class="step">
+          <div class="num">5</div>
+          <p>学習では、現在の query に対して使ってよい記憶と、意味的には近いが文脈的に危ない記憶の preference pair を使う。DPO で安全な記憶の選択確率を上げ、危ない記憶の選択確率を下げる一方、有用な記憶のマスクはなるべく崩さないよう preservation penalty を入れる。</p>
+        </article>
+        <article class="step">
+          <div class="num">6</div>
+          <p>重要なのは、MemGate が LLM 本体の改造を必要としない点である。memory database を書き換えず、推論時に別の LLM judge を毎回呼ぶ必要もない。既存 memory framework に plug-in として差し込みやすい。</p>
+        </article>
+        <article class="step">
+          <div class="num">7</div>
           <p>この設計により、semantic search は候補生成として残しつつ、context injection の直前で trust decision を追加する。つまり、検索を二段階に分け、似ている記憶を探す段階と、今使ってよい記憶を選ぶ段階を分離する。</p>
         </article>
       </div>
@@ -154,6 +166,18 @@
       <article class="qa">
         <h3>MemGate は何をする？</h3>
         <p>retrieval で得られた candidate memories が LLM context に入る前に、current query に対して通してよいかを判定する query-conditioned neural gate。</p>
+      </article>
+      <article class="qa">
+        <h3>信頼ゲートでは具体的に何を計算している？</h3>
+        <p>query embedding、memory embedding、両者の要素ごとの積を MLP に入れ、memory embedding に掛ける 0〜1 の連続マスクを出す。そのマスク後の memory embedding と query embedding で gated cosine similarity を計算し、候補記憶を再ランキングする。</p>
+      </article>
+      <article class="qa">
+        <h3>どうやって関連性が高いと判定している？</h3>
+        <p>最初の候補生成は通常の cosine similarity による semantic search。MemGate はその候補に対して、意味的に近いだけでなく現在の文脈で使ってよいかを反映した gated similarity を計算し、最終 top-k を選ぶ。</p>
+      </article>
+      <article class="qa">
+        <h3>これは結局、過去の対話履歴を検索して context に入れているだけ？</h3>
+        <p>土台は memory retrieval なので近い。ただし論文の主張は、検索結果をそのまま入れるのではなく、context injection の直前で admissibility を判定する点にある。似ている記憶を探す段階と、今使ってよい記憶を選ぶ段階を分ける。</p>
       </article>
       <article class="qa">
         <h3>LLM 本体を改造する必要はある？</h3>
