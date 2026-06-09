@@ -18,7 +18,7 @@
 
   <header class="hero">
     <div class="hero-inner">
-      <p class="kicker">Reading Queue / 2026-04-20 to 2026-05-11</p>
+      <p class="kicker">Reading Queue / 2026-04-20 to 2026-06-09</p>
       <h1>Unread Reading Inventory</h1>
       <p class="lead">AI エージェント、ハーネス、スキル、メモリ、context engineering 周辺で溜まった読書メモを、未読候補、読了済み、読んでよかったものに分けた公開用索引です。</p>
       <div class="hero-actions">
@@ -45,16 +45,16 @@
           <p>このページは、内部 wiki の週次・2週間インベントリから公開しやすい形に圧縮したものです。論文本文や X article 本文の転載ではなく、何を読み、何を後で読むべきかを探すための索引として置いています。</p>
           <div class="matrix" aria-label="Summary metrics">
             <div class="metric">
-              <strong>22日</strong>
-              <span>2026-04-20 から 2026-05-11 までの読書・候補整理。</span>
+              <strong>51日</strong>
+              <span>2026-04-20 から 2026-06-09 までの読書・候補整理。</span>
             </div>
             <div class="metric">
               <strong>5領域</strong>
               <span>Harness、Skills、Memory、Context、Agent-native artifacts。</span>
             </div>
             <div class="metric">
-              <strong>85件</strong>
-              <span>wiki に残っていた候補を、優先度順の未読キューとして統合。</span>
+              <strong>34件</strong>
+              <span>5/12 以降の paper-watch 本命と種火から、公開用キューとして再整理。</span>
             </div>
           </div>
         </section>
@@ -72,119 +72,40 @@
                 </tr>
               </thead>
               <tbody>
-                <tr class="priority-high"><td><a href="./20260512-paper-watch.html">Shepherd: A Runtime Substrate Empowering Meta-Agents</a></td><td>Runtime / Harness</td><td>今日の本命。実行トレース、fork/replay、runtime intervention を軸に、agent harness を「再実行できる基盤」として読む。</td></tr>
-                <tr class="priority-high"><td>Remember the Decision, Not the Description</td><td>Memory</td><td>memory を過去の説明ではなく、意思決定に必要な区別を保存できるかで見る。Storage Is Not Memory の次に読むと効く。</td></tr>
-                <tr class="priority-high"><td>NanoResearch</td><td>Research automation</td><td>skill bank、memory、policy learning を個人の研究自動化に寄せる。wiki / 読書履歴 / 投稿運用に接続しやすい。</td></tr>
-                <tr class="priority-high"><td><a href="./dynamic-skill-lifecycle-management.html">Dynamic Skill Lifecycle Management</a></td><td>Skills</td><td>skill を蓄積するだけでなく、retain / retire / expand する lifecycle として扱う。skill rot の理解に直結。</td></tr>
-                <tr class="priority-high"><td>Rethinking Agentic Search with Pi-Serini</td><td>Agentic search</td><td>BM25 が frontier LLM の agentic loop でどこまで戦えるかを見る。Direct Corpus Interaction の補助線。</td></tr>
-                <tr class="priority-high">
-                  <td>Tool Attention Is All You Need</td>
-                  <td>Tools / MCP</td>
-                  <td>MCP / tool schema の token tax を tool gating と lazy schema loading で抑える。skills / tools / context management に直結。</td>
-                </tr>
-                <tr class="priority-high">
-                  <td>In-Context Prompting Obsoletes Agent Orchestration</td>
-                  <td>Harness</td>
-                  <td>外部 orchestration と system prompt 内 self-orchestration の比較。harness 論への反論として重要。</td>
-                </tr>
-                <tr class="priority-high">
-                  <td>The Last Human-Written Paper</td>
-                  <td>Research artifacts</td>
-                  <td>論文を agent が再現・拡張できる machine-executable artifact にする提案。paper-watch の次段階。</td>
-                </tr>
-                <tr class="priority-high">
-                  <td>Cross-Session Threats in AI Agents</td>
-                  <td>Security / Memory</td>
-                  <td>複数セッションにまたがる攻撃は、memory / long-running agent / Discord 継続対話の安全性に効く。</td>
-                </tr>
-                <tr class="priority-high">
-                  <td>Model Spec Midtraining</td>
-                  <td>Alignment / Instructions</td>
-                  <td>ルールだけでなく rationale を教えると未知状況への alignment generalization が変わる。AGENTS.md / SKILL.md / SOUL に直結。</td>
-                </tr>
-                <tr class="priority-high">
-                  <td>Beyond Semantic Similarity</td>
-                  <td>Corpus / Retrieval</td>
-                  <td>agent が raw corpus に直接触る Direct Corpus Interaction。wiki / raw / catalog / grep 型探索を理論化できる。</td>
-                </tr>
-                <tr class="priority-high">
-                  <td>Storage Is Not Memory</td>
-                  <td>Memory</td>
-                  <td>raw 保存、catalog、retrieval、answer model の責務分離を考える足場。memory / wiki 運用へ返せる。</td>
-                </tr>
-                <tr class="priority-high"><td>Contextual Agentic Memory is a Memo, not True Memory</td><td>Memory</td><td>retrieval-only memory の限界と consolidation 欠如を切る。今の memory / wiki 運用の整理にそのまま効く。</td></tr>
-                <tr class="priority-high"><td>Rethinking Reasoning-Intensive Retrieval</td><td>Retrieval</td><td>retrieval を topical relevance ではなく evidence portfolio として評価する。調査・記事・論文読みの質に直結。</td></tr>
-                <tr class="priority-high"><td>SkillRet</td><td>Skills</td><td>大規模 skill library から必要な reusable skill を検索する benchmark。skill が増えた後の問題に刺さる。</td></tr>
-                <tr class="priority-high"><td>SkillOS</td><td>Skills</td><td>frozen executor と skill curator を分け、経験から SkillRepo を育てる RL recipe。</td></tr>
-                <tr class="priority-high"><td>SkillScope</td><td>Skills / Security</td><td>Agent Skills の least privilege enforcement。skill 実行権限と安全性の整理に必要。</td></tr>
-                <tr class="priority-high"><td>PAPERMIND</td><td>Paper agent</td><td>論文を要約するだけでなく、図表・証拠・主張批判まで agentic に理解できるかを見る。</td></tr>
-                <tr class="priority-high"><td>AgentSearchBench</td><td>Agent search</td><td>agent / skill / tool が増えた後の「どれを呼ぶべきか」問題に直結する。</td></tr>
-                <tr class="priority-high"><td>ObjectGraph</td><td>Agent-native artifacts</td><td>Markdown 集合ではなく、agent が traversal する typed graph として知識を持つ発想。</td></tr>
-                <tr class="priority-high"><td>STALE</td><td>Memory / Evaluation</td><td>古い memory / state を現在の真実として扱わない能力を見る。</td></tr>
-                <tr class="priority-high"><td>Cited but Not Verified</td><td>Evaluation</td><td>引用が「開ける」「関連している」「主張と一致する」を分けて評価する。</td></tr>
-                <tr class="priority-mid"><td>LongSeeker</td><td>Search agents</td><td>Skip / Compress / Rollback / Snippet / Delete で長期 search agent の文脈を動的に扱う。</td></tr>
-                <tr class="priority-mid"><td>OpenSeeker-v2</td><td>Search agents</td><td>deep search agent を高情報量・高難度 trajectories で強くする。</td></tr>
-                <tr class="priority-mid"><td>Superintelligent Retrieval Agent</td><td>Retrieval</td><td>corpus-discriminative な検索語を予測して 1 回の強い retrieval に圧縮する。</td></tr>
-                <tr class="priority-mid"><td>NuggetIndex</td><td>Retrieval</td><td>evidence link、temporal validity、lifecycle state を持つ atomic retrieval。</td></tr>
-                <tr class="priority-mid"><td>EviMem</td><td>Memory / Retrieval</td><td>証拠不足を診断して temporal / multi-hop evidence を反復検索する。</td></tr>
-                <tr class="priority-mid"><td>Learning Evidence Highlighting</td><td>Evidence</td><td>要約ではなく evidence highlight で長文理解を助ける。</td></tr>
-                <tr class="priority-mid"><td>Hierarchical Abstract Tree / Tree-RAG</td><td>Retrieval</td><td>cross-document multi-hop QA 向けの multi-granular retrieval。</td></tr>
-                <tr class="priority-mid"><td>AgenticRAG</td><td>Enterprise RAG</td><td>enterprise knowledge base に search / find / open / summarize tools を重ねる実用品。</td></tr>
-                <tr class="priority-mid"><td>Web2BigTable</td><td>Harness / Search</td><td>web-to-table search を bi-level multi-agent architecture で扱う。</td></tr>
-                <tr class="priority-mid"><td>RunAgent</td><td>Runtime</td><td>自然言語 plan を制御構文・制約・rubrics で実行する platform。</td></tr>
-                <tr class="priority-mid"><td>ClawGym</td><td>Personal agents</td><td>Claw-style personal agents の lifecycle framework と benchmark。</td></tr>
-                <tr class="priority-mid"><td>Synthetic Computers at Scale</td><td>Evaluation</td><td>user-specific な synthetic computer で長期 productivity work を評価・訓練する。</td></tr>
-                <tr class="priority-mid"><td>Claw-Eval-Live</td><td>Evaluation</td><td>evolving real-world workflows 向け live benchmark。</td></tr>
-                <tr class="priority-mid"><td>Crab</td><td>Runtime</td><td>agent sandbox の checkpoint / restore runtime。</td></tr>
-                <tr class="priority-mid"><td>Uno-Orchestra</td><td>Multi-agent</td><td>multi-agent systems の selective delegation policy。</td></tr>
-                <tr class="priority-mid"><td>Recursive Agent Optimization</td><td>Multi-agent</td><td>recursive delegation と通信を訓練する inference-time scaling。</td></tr>
-                <tr class="priority-mid"><td>Efficient Serving for Dynamic Agent Workflows</td><td>Serving</td><td>agent invocation 予測による KV-cache management。</td></tr>
-                <tr class="priority-mid"><td>モデルがアプリを飲み込む時代に、残るのはハーネスである</td><td>Harness</td><td>Prompt / Skill / Knowledge Base / Harness の切り分け。</td></tr>
-                <tr class="priority-mid"><td>Skill1</td><td>Skills</td><td>skill selection、utilization、distillation を task outcome signal で共進化させる。</td></tr>
-                <tr class="priority-mid"><td>From Skill Text to Skill Structure</td><td>Skills</td><td>自然言語 skill を Scheduling / Structural / Logical の三層表現へ正規化する。</td></tr>
-                <tr class="priority-mid"><td>Skill Neologisms</td><td>Skills</td><td>soft token / vocabulary に近い形で skill を追加する continual learning。</td></tr>
-                <tr class="priority-mid"><td>How Hermes Agent Solves Skill Drift and Context Rot</td><td>Skills</td><td>agent-created skills の stale / archive / patch / merge lifecycle。</td></tr>
-                <tr class="priority-mid"><td>Anatomy of Agent SKILLS</td><td>Skills</td><td>folder、frontmatter、progressive disclosure など skill 基礎の説明素材。</td></tr>
-                <tr class="priority-mid"><td>ARIS</td><td>Research agent</td><td>research harness、Markdown-defined skills、persistent wiki、claim ledger、evidence audit。</td></tr>
-                <tr class="priority-mid"><td>Auto Research with Specialist Agents</td><td>Research agent</td><td>hypothesis、code diff、external evaluation、failure label を持つ research loop。</td></tr>
-                <tr class="priority-mid"><td>Automated alignment is harder than you think</td><td>Research agent</td><td>fuzzy tasks で自動 alignment research が誤りを見逃す危険。</td></tr>
-                <tr class="priority-mid"><td>BUILD-AND-FIND</td><td>Coding agents</td><td>agent-managed codebase を、後続 agent が設計意図を回収しやすいかで評価する。</td></tr>
-                <tr class="priority-mid"><td>Workspace-Bench</td><td>Coding agents</td><td>大規模ファイル依存を持つ workspace tasks を測る。</td></tr>
-                <tr class="priority-mid"><td>SWE-chat</td><td>Coding agents</td><td>実ユーザーの coding agent 利用ログ。</td></tr>
-                <tr class="priority-mid"><td>SWE-WebDevBench</td><td>Coding agents</td><td>AI app builder / coding agent platform を production readiness まで含めて評価する。</td></tr>
-                <tr class="priority-mid"><td>To What Extent Does Agent-generated Code Require Maintenance?</td><td>Coding agents</td><td>AI-generated files と human-authored code の保守頻度比較。</td></tr>
-                <tr class="priority-mid"><td>MCP Pitfall Lab</td><td>Security</td><td>MCP server security を protocol-aware に検証する。</td></tr>
-                <tr class="priority-mid"><td>CI-Work</td><td>Security / Governance</td><td>enterprise LLM agents の contextual integrity と leakage / utility tradeoff。</td></tr>
-                <tr class="priority-mid"><td>Chasing the Public Score</td><td>Evaluation</td><td>public score pressure による evaluation exploitation。</td></tr>
-                <tr class="priority-mid"><td>CrossCommitVuln-Bench</td><td>Security / Coding agents</td><td>複数 commit で初めて exploit 可能になる vulnerability benchmark。</td></tr>
-                <tr class="priority-mid"><td>MOSAIC-Bench</td><td>Security / Coding agents</td><td>innocuous tickets の連鎖で vulnerability が生まれる構成的安全性評価。</td></tr>
-                <tr class="priority-mid"><td>Agent-Native Research Artifacts</td><td>Research artifacts</td><td>論文を machine-executable research package に置き換える提案。</td></tr>
-                <tr class="priority-mid"><td>Execution Lineage</td><td>Artifacts</td><td>AI-native work を conversational state ではなく artifact-producing DAG として扱う。</td></tr>
-                <tr class="priority-mid"><td>Operationalizing Ethics for AI Agents</td><td>Governance</td><td>repository context files に価値や倫理をどう自然言語ルールとして埋め込むか。</td></tr>
-                <tr class="priority-mid"><td>Mise en Place for Agentic Coding</td><td>Context engineering</td><td>着手前の準備工程として context engineering を扱う。</td></tr>
-                <tr class="priority-mid"><td>NeocorRAG</td><td>Retrieval</td><td>Recall Conversion Rate と evidence chains で retrieval を評価する。</td></tr>
-                <tr class="priority-mid"><td>Seeing the Whole Elephant</td><td>Multi-agent evaluation</td><td>multi-agent 失敗の原因を、完全 trace から特定する benchmark。</td></tr>
-                <tr class="priority-low"><td>BioMedArena</td><td>Research agent</td><td>biomedical deep research agents の toolkit / evaluation layer 分離。</td></tr>
-                <tr class="priority-low"><td>From Research Question to Scientific Workflow</td><td>Research workflow</td><td>研究質問を reproducible workflow DAG に変換する agentic architecture。</td></tr>
-                <tr class="priority-low"><td>D3-Gym</td><td>Research workflow</td><td>data-driven discovery の executable environments。</td></tr>
-                <tr class="priority-low"><td>Intern-Atlas</td><td>Research workflow</td><td>citation ではなく方法論の進化 graph を作る研究基盤。</td></tr>
-                <tr class="priority-low"><td>AutoResearchBench</td><td>Research evaluation</td><td>complex scientific literature discovery の benchmark。</td></tr>
-                <tr class="priority-low"><td>An Empirical Study of Proactive Coding Assistants</td><td>Coding agents</td><td>proactive coding assistants と simulated IDE traces の差を見る。</td></tr>
-                <tr class="priority-low"><td>What Makes a Good Terminal-Agent Benchmark Task</td><td>Coding agents</td><td>terminal-agent benchmark task の設計 guideline。</td></tr>
-                <tr class="priority-low"><td>Constraint Decay</td><td>Code generation</td><td>backend code generation で構造制約や非機能要件が崩れる問題。</td></tr>
-                <tr class="priority-low"><td>MANTRA</td><td>Tool compliance</td><td>natural-language manual と tool schema から trace-level compliance benchmark を合成する。</td></tr>
-                <tr class="priority-low"><td>DTap</td><td>Red teaming</td><td>Google Workspace / PayPal / Slack 風環境で agent 攻撃面を評価する red-teaming platform。</td></tr>
-                <tr class="priority-low"><td>Stable-GFlowNet / FlashRT / SnapGuard</td><td>Safety evaluation</td><td>red-teaming、prompt injection、screenshot-based web agents の安全性評価。</td></tr>
-                <tr class="priority-low"><td>Collaborative Agent Reasoning Engineering</td><td>Agent design</td><td>SME / developer / helper agent で scientific agent を設計する方法論。</td></tr>
-                <tr class="priority-low"><td>SimEval-IR</td><td>Search evaluation</td><td>user simulator と search sessions の評価 toolkit。</td></tr>
-                <tr class="priority-low"><td>Agentic World Modeling</td><td>World models</td><td>agent world models の能力レベルと法則領域を整理する大型サーベイ。</td></tr>
-                <tr class="priority-low"><td>Spatial Metaphors for LLM Memory</td><td>Memory</td><td>memory palace 型 memory system を批判的に検証する。</td></tr>
-                <tr class="priority-low"><td>The Conversations Beneath the Code</td><td>Coding agents</td><td>long-horizon SWE agents に必要な triadic data。</td></tr>
-                <tr class="priority-low"><td>What Happens Inside Agent Memory?</td><td>Memory</td><td>agent memory の write / manage / read に対応する内部 feature circuits。</td></tr>
-                <tr class="priority-low"><td>The Granularity Axis</td><td>Representation</td><td>social role の粒度を hidden state 上の軸として扱う研究。</td></tr>
-                <tr class="priority-low"><td>OpenSearch-VL</td><td>Multimodal search</td><td>multimodal deep search agent の open recipe。</td></tr>
-                <tr class="priority-low"><td>AcademiClaw / PhysicianBench / HiL-Bench</td><td>Benchmarks</td><td>academic / EHR / human-in-loop の長期 task benchmark。</td></tr>
-                <tr class="priority-low"><td>FutureWorld / DV-World / EnterpriseDocBench / Onchain operating-layer controls</td><td>Benchmarks / Controls</td><td>agent 評価領域を広げる実用品候補。</td></tr>
+                <tr class="priority-high"><td><a href="./socratic-swe.html">Socratic-SWE: Self-Evolving Coding Agents via Trace-Derived Agent Skills</a></td><td>Skills / Coding agents</td><td>過去トレースを skill に蒸留し、次の修復タスクと検証で solver を更新する。learn-from-logs と skill 運用の改善ループに直結。</td></tr>
+                <tr class="priority-high"><td><a href="./trustworthy-memory-search.html">Beyond Similarity: Trustworthy Memory Search for Personal AI Agents</a></td><td>Memory / Safety</td><td>長期記憶検索を semantic similarity ではなく trust boundary として扱う。個人AIアシスタントの memory gate 設計に効く。</td></tr>
+                <tr class="priority-high"><td><a href="./agent-memory-characterization.html">Agent Memory: Characterization and System Implications of Stateful Long-Horizon Workloads</a></td><td>Memory systems</td><td>memory を構築・検索・生成・鮮度・保存コストで測る。brain / wiki / state / audit log の棚卸し軸になる。</td></tr>
+                <tr class="priority-high"><td><a href="./agent-libos.html">Agent libOS: A Library-OS-Inspired Runtime for Long-Running, Capability-Controlled LLM Agents</a></td><td>Runtime / Harness</td><td>長時間 agent を capability、state、checkpoint、resource control の runtime として見る。おい丸の実行基盤設計に近い。</td></tr>
+                <tr class="priority-high"><td><a href="./harness-1.html">Harness-1: Reinforcement Learning for Search Agents with State-Externalizing Harnesses</a></td><td>Harness / Search agents</td><td>検索 agent の state を外部化して RL する。検索過程をプロンプト内部ではなく harness 側に出す発想が強い。</td></tr>
+                <tr class="priority-high"><td><a href="./is-agent-memory-a-database.html">Is Agent Memory a Database? Rethinking Data Foundations for Long-Term AI Agent Memory</a></td><td>Memory / Data foundations</td><td>agent memory を database / state lifecycle として読み替える。VikingMem と並べて読むと memory 基盤の地図になる。</td></tr>
+                <tr class="priority-high"><td><a href="./vikingmem-memory-base.html">VikingMem: A Memory Base Management System for Stateful LLM-based Applications</a></td><td>Memory base</td><td>event、entity、timeline compression、time-weighted recall で長期記憶を管理する。公開ページ化済みだが再読価値が高い。</td></tr>
+                <tr class="priority-high"><td>Physics Is All You Need? A Case Study in Physicist-Supervised AI Development of Scientific Software</td><td>Coding agents / Review</td><td>oracle tests を通るが根本原因を解けていない agent output をどう止めるか。coding agent 検証観に効く。</td></tr>
+                <tr class="priority-high"><td>WorldMemArena: Evaluating Multimodal Agent Memory Through Action-World Interaction</td><td>Memory / Multimodal agents</td><td>行動世界との相互作用を通じて multimodal memory を評価する。テキスト外の memory 評価に広げられる。</td></tr>
+                <tr class="priority-high"><td>Rethinking Memory as Continuously Evolving Connectivity</td><td>Memory</td><td>memory を保存済みメモではなく、時間と接続性が変化する構造として見る。memory rot / freshness と接続。</td></tr>
+                <tr class="priority-high"><td><a href="./muse-autoskill.html">MUSE-Autoskill: Self-Evolving Agents via Skill Creation, Memory, Management, and Evaluation</a></td><td>Skills</td><td>skill 作成、記憶、管理、評価、改善を lifecycle として扱う。SkillOpt / Socratic-SWE との比較軸。</td></tr>
+                <tr class="priority-high"><td>From Model Scaling to System Scaling: Scaling the Harness in Agentic AI</td><td>Harness</td><td>モデル単体ではなく harness を scale する話。agentic AI の性能を system design として見る補助線。</td></tr>
+                <tr class="priority-high"><td><a href="./skillopt.html">SkillOpt: Executive Strategy for Self-Evolving Agent Skills</a></td><td>Skills</td><td>agent skill を external trainable state として最適化する。読了済み扱いだが skill 更新運用の核なので参照枠に残す。</td></tr>
+                <tr class="priority-high"><td>Boiling the Frog: A Multi-Turn Benchmark for Agentic Safety</td><td>Safety / Agents</td><td>単発の安全性ではなく multi-turn で徐々に危険化する agent behavior を測る。長期対話運用に効く。</td></tr>
+                <tr class="priority-high"><td>Adapting the Interface, Not the Model: Runtime Harness Adaptation for Deterministic LLM Agents</td><td>Runtime / Harness</td><td>モデルを変えずに interface / runtime を適応させる。deterministic agent harness の実用品。</td></tr>
+                <tr class="priority-high"><td>SpecBench: Measuring Reward Hacking in Long-Horizon Coding Agents</td><td>Evaluation / Coding agents</td><td>長期 coding agent の reward hacking を測る。検証器・ベンチマークの穴を見るための候補。</td></tr>
+                <tr class="priority-mid"><td>A Methodology for Selecting and Composing Runtime Architecture Patterns for Production LLM Agents</td><td>Production agents</td><td>production LLM agent の runtime pattern を選択・合成する方法論。設計語彙として使える。</td></tr>
+                <tr class="priority-mid"><td><a href="./code-as-agent-harness.html">Code as Agent Harness</a></td><td>Harness / Code</td><td>コードを生成物ではなく、推論・状態・検証・協調を支える harness として扱う。公開ページ化済み。</td></tr>
+                <tr class="priority-mid"><td><a href="./argus-evidence-assembly.html">Argus: Evidence Assembly for Scalable Deep Research Agents</a></td><td>Deep research</td><td>deep research agent の証拠組み立てと不足探索。web-research / article-page-publisher の根拠整理に効く。</td></tr>
+                <tr class="priority-mid"><td><a href="./memlens-memory.html">MemLens: Benchmarking Multimodal Long-Term Memory in Large Vision-Language Models</a></td><td>Memory / Multimodal</td><td>multimodal 長期記憶の benchmark。画像・抽象化・時間差の記憶評価に広げる入口。</td></tr>
+                <tr class="priority-mid"><td><a href="./stale-memory.html">STALE: Can LLM Agents Know When Their Memories Are No Longer Valid?</a></td><td>Memory / Freshness</td><td>古くなった memory を見抜く評価。読了済みだが state 鮮度ルールの重要参照。</td></tr>
+                <tr class="priority-mid"><td><a href="./is-grep-all-you-need.html">Is Grep All You Need? How Agent Harnesses Reshape Agentic Search</a></td><td>Search / Harness</td><td>agentic search を grep / corpus 操作 / harness の形で読む。Direct Corpus Interaction と接続。</td></tr>
+                <tr class="priority-mid"><td><a href="./how-to-interpret-agent-behavior.html">How to Interpret Agent Behavior</a></td><td>Evaluation</td><td>agent 行動の解釈を、観測できる trace と推測を分けて扱う。レビュー・監査に効く。</td></tr>
+                <tr class="priority-mid"><td><a href="./counterfactual-trace-auditing.html">Counterfactual Trace Auditing of LLM Agent Skills</a></td><td>Skills / Audit</td><td>skill が効いたのか、偶然かを counterfactual trace で監査する。skill 評価の実用候補。</td></tr>
+                <tr class="priority-mid"><td><a href="./20260512-paper-watch.html">WildClawBench: A Benchmark for Real-World, Long-Horizon Agent Evaluation</a></td><td>Evaluation / Personal agents</td><td>実世界長期 agent 評価。公開済み paper-watch ページから読み直せる。</td></tr>
+                <tr class="priority-high"><td>MalSkillBench: A Runtime-Verified Benchmark of Malicious Agent Skills</td><td>Skill security</td><td>third-party skill の悪性挙動を runtime verification で見る。skill installer / plugin review の guardrail 候補。</td></tr>
+                <tr class="priority-mid"><td>Declarative Skills for AI Agents in Knowledge-Grounded Tool-Use Workflows</td><td>Declarative skills</td><td>自然言語 skill files と tool-use orchestration の接続。SKILL.md の粒度見直しに使える。</td></tr>
+                <tr class="priority-high"><td>From Failed Trajectories to Reliable LLM Agents: Diagnosing and Repairing Harness Flaws</td><td>Harness repair</td><td>失敗を model weakness ではなく harness flaw として診断・修復する。障害調査の分類軸。</td></tr>
+                <tr class="priority-mid"><td>Towards Retrieving Interaction Spaces for Agentic Search</td><td>Agentic search</td><td>文書ではなく agent が操作できる探索空間を retrieve する考え方。wiki / raw 探索設計に効く。</td></tr>
+                <tr class="priority-mid"><td>DuMate-DeepResearch: An Auditable Multi-Agent System with Recursive Search and Rubric-Grounded Reasoning</td><td>Deep research</td><td>recursive search、rubric、source verification を持つ auditable research system。調査成果の監査性に効く。</td></tr>
+                <tr class="priority-mid"><td>AdaMEM: Test-Time Adaptive Memory for Language Agents</td><td>Memory</td><td>長期 trajectory memory と実行中 strategy memory を分ける。長時間ジョブの state 設計に効く。</td></tr>
+                <tr class="priority-mid"><td>Search-Time Contamination in Deep Research Agents</td><td>Evaluation / Search</td><td>deep research agent が検索中に benchmark 答えを拾う性能水増しを測る。調査評価の注意点。</td></tr>
+                <tr class="priority-mid"><td>Multi-Agent Computer Use</td><td>Computer-use agents</td><td>manager が DAG 分解し複数 subagent が並列実行する computer-use agent。サブエージェント活用設計に効く。</td></tr>
+                <tr class="priority-high"><td>Channel Fracture: Architectural Blind Spots in Scheduled Cross-Agent Memory Injection for Multi-Agent Orchestration Systems</td><td>Memory / Scheduled ops</td><td>scheduled agent の memory injection が silent failure する問題。定期実行結果の反映監査にかなり近い。</td></tr>
               </tbody>
             </table>
           </div>
@@ -250,9 +171,9 @@
 
         <section id="source">
           <h2>Source Notes</h2>
-          <p>元にした内部メモは、`20260511_weekly-reading-inventory.md` と `20260511_biweekly-reading-inventory-20260420-20260503.md`。公開ページでは、内部パスや未公開 raw の詳細ではなく、読む順番と再利用価値が見える形に整えています。</p>
+          <p>元にした内部メモは、`20260511_weekly-reading-inventory.md`、`20260511_biweekly-reading-inventory-20260420-20260503.md`、および 2026-05-12〜2026-06-08 の `paper-watch` ページ群です。公開ページでは、内部パスや未公開 raw の詳細ではなく、読む順番と再利用価値が見える形に整えています。</p>
   <footer>
-    Last updated: 2026-05-11
+    Last updated: 2026-06-09
   </footer>
         </section>
       </div>
