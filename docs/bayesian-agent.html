@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bayesian-Agent: Posterior-Guided Skill Evolution for LLM Agent Harnesses</title>
+  <link rel="stylesheet" href="./assets/article-content.css">
+  <link rel="stylesheet" href="./assets/article-pages.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./index.html">Article Pages</a>
+    <nav class="top-nav" aria-label="Site navigation">
+      <a href="./index.html">Home</a>
+      <a href="./unread-reading-inventory.html">未読一覧</a>
+    </nav>
+  </header>
+
+
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="kicker">Reading artifact</p>
+      <h1>Bayesian-Agent: Posterior-Guided Skill Evolution for LLM Agent Harnesses</h1>
+      <p>LLM agent の skill / SOP 更新を、成功ログの足し算ではなく、検証済み軌跡から条件つき posterior を更新する問題として扱う論文。patch、split、compress、retire、explore などの更新アクションを監査可能に選べるようにする。</p>
+      <div class="paper-meta">
+        <span class="meta-chip">作成日: 2026-06-09</span>
+        <span class="meta-chip">arXiv:2606.08348</span>
+        <span class="meta-chip">Agent Skills</span>
+        <span class="meta-chip">Harness</span>
+        <span class="meta-chip">Bayesian Update</span>
+      </div>
+      <div class="hero-actions">
+        <a class="button" href="https://arxiv.org/abs/2606.08348">元資料を開く</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="reader-grid">
+      <nav aria-label="Reading navigation">
+        <strong>目次</strong>
+        <a href="#why-this-matters">この論文の何がいいか</a>
+        <a href="#paper">どんな論文か</a>
+        <a href="#contributions">課題と貢献</a>
+        <a href="#method">手法のしくみ</a>
+        <a href="#results">検証結果</a>
+        <a href="#discussion">課題と議論</a>
+        <a href="#next">次に読むなら</a>
+        <a href="#qa">読後Q&A</a>
+      </nav>
+
+      <div>
+        <figure class="graphic-recording">
+          <a class="graphic-zoom-trigger" href="#graphic-recording-lightbox" aria-label="グラレコを拡大表示する"><img src="./assets/graphic-recordings/bayesian-agent.png" alt="Bayesian-Agent の日本語グラレコ" loading="eager" decoding="async"></a>
+          <figcaption>agent skill / SOP を posterior-guided に更新する流れを、背景、課題、手法、結果、限界に分けて把握するためのグラレコ。</figcaption>
+        </figure>
+        <div id="graphic-recording-lightbox" class="graphic-lightbox" aria-label="グラレコ拡大表示">
+          <a class="graphic-lightbox-backdrop" href="#" aria-label="拡大表示を閉じる"></a>
+          <a class="graphic-lightbox-content" href="#" aria-label="拡大表示を閉じる"><img src="./assets/graphic-recordings/bayesian-agent.png" alt="Bayesian-Agent の日本語グラレコ"></a>
+        </div>
+
+    <section class="section why-section" id="why-this-matters">
+      <h2>この論文の何がいいか</h2>
+      <p>この論文が面白いのは、skill 更新の失敗パターンにかなり現実味があるところだ。agent を運用していると、失敗ログからルールを足すのは簡単だが、ルールはすぐ肥大化する。しかも、そのルールが次の状況で本当に効くのか、別の状況を壊さないのかは見えにくい。</p>
+      <p>Bayesian-Agent は、skill を信念として扱う。つまり「この手順は、どんな入力、どんな文脈、どんな harness 条件で成功しそうか」を更新していく。この考え方は、SKILL.md、MEMORY、scheduled-ops のような個人 assistant の運用にも合う。</p>
+      <p>特に効くのは、更新アクションを分けている点だ。全部を追記するのではなく、直す、分ける、圧縮する、退役させる、探索する、という選択肢を posterior に基づいて選ぶ。これは skill を長期運用する時の設計語彙になる。</p>
+      <p>おい丸のような assistant では、learn-from-logs が反省ログの置き場で終わると弱い。Bayesian-Agent 的に見ると、ログは skill の信念更新、失敗条件の分離、検証タスク、退役判断の材料になる。そこが実務に持ち帰りやすい。</p>
+    </section>
+
+    <section class="section" id="paper">
+      <h2>どんな論文か</h2>
+      <p>Bayesian-Agent は、LLM agent の skill や SOP をどう更新するかを扱う論文だ。中心にあるのは、skill を単なるプロンプト断片や手順書ではなく、ある条件下で agent が成功するかについての仮説として扱う見方である。</p>
+      <p>既存の self-improving agent は、成功/失敗の軌跡を集めて反省文を作ったり、prompt を足したり、ルールを増やしたりしがちだ。しかし、その更新がどの条件で効くのか、どの失敗を直すのか、いつ退役させるべきかは曖昧になりやすい。</p>
+      <p>この論文は、検証済みの実行軌跡から feature-conditioned categorical posterior を更新し、その posterior に基づいて skill / SOP への編集アクションを選ぶ。更新は patch、split、compress、retire、explore のような形で整理され、あとから監査しやすい audit summary として残せる。</p>
+      <p>読む価値は、agent の改善を「よさそうな反省の追記」から「条件つきで信じられる手順の更新」へ変えるところにある。個人 assistant、coding agent、長期運用 skill の設計にそのまま持ち込める視点だ。</p>
+      <p>この論文は、LLM agent の reusable skill / SOP を posterior-guided に進化させる枠組みを提案する。対象は、prompt、tools、memory、workflow、harness feedback を組み合わせて動く agent である。</p>
+      <p>各 skill / SOP は、成功率そのものではなく、条件つきで成功するという仮説として表現される。条件には、タスク特徴、モデル、コンテキスト、ツール、harness、過去の検証済み軌跡が関わる。</p>
+    </section>
+
+    <section class="section insights-section" id="contributions">
+      <h2>課題と貢献</h2>
+      <div class="insight-list">
+        <article class="insight-card"><p>主な貢献は、skill / SOP 更新を posterior update として定式化したこと、更新アクションを監査可能に整理したこと、複数の agent backend と benchmark で incremental repair を示したことにある。</p></article>
+        <article class="insight-card"><p>論文中では、SOP-Bench、Lifelong AgentBench、RealFin-Bench での改善が報告されている。特に RealFin-Bench のような現実寄りの金融タスクで、単なる prompt 追記ではなく検証済み更新が効く点が読みどころになる。</p></article>
+      </div>
+    </section>
+
+    <section class="section steps-section" id="method">
+      <h2>手法のしくみ</h2>
+      <div class="route">
+        <article class="step">
+          <div class="num">1</div>
+          <p>入力は、agent が実行した軌跡、成功/失敗の検証結果、タスクや環境の特徴、既存 skill / SOP の状態である。</p>
+        </article>
+        <article class="step">
+          <div class="num">2</div>
+          <p>まず、実行軌跡から skill がどの条件で効いたか、どの失敗モードで壊れたかを evidence として集める。</p>
+        </article>
+        <article class="step">
+          <div class="num">3</div>
+          <p>次に、その evidence を使って feature-conditioned categorical posterior を更新する。ここで skill は、単なるテキストではなく、条件つき信念の対象になる。</p>
+        </article>
+        <article class="step">
+          <div class="num">4</div>
+          <p>posterior の変化に応じて、patch、split、compress、retire、explore などの編集アクションを選ぶ。全部を足すのではなく、直すべきか、分けるべきか、圧縮すべきか、退役させるべきかを決める。</p>
+        </article>
+        <article class="step">
+          <div class="num">5</div>
+          <p>更新後の skill / SOP は executable guardrail や failure-mode patch として harness に戻され、次の実行でまた検証される。最後に audit summary が残るので、なぜその更新をしたか追いやすい。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section results-section" id="results">
+      <h2>検証結果</h2>
+      <div class="score-grid">
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>論文では、deepseek-v4-flash を使った incremental repair で、SOP-Bench が 80% から 95%、Lifelong AgentBench が 90% から 100%、RealFin-Bench が 45% から 65% に改善したと報告されている。</p>
+        </article>
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>backend は native backend、GenericAgent、mini-swe-agent、Claude Code などが扱われる。つまり、特定の agent 実装だけでなく、harness をまたいだ skill / SOP 更新として評価している点が重要だ。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section warning" id="discussion">
+      <h2>課題と議論</h2>
+      <div class="callout warning-item">この論文の魅力は、skill を足し続ける誘惑にブレーキをかける点にある。成功ログや失敗ログをそのまま規則化すると、手順は増えるが、どの条件で効くかが曖昧になる。</div>
+      <div class="callout warning-item">一方で、posterior-guided な方法にも限界はある。検証信号が弱い環境、成功/失敗のラベルが曖昧なタスク、長期的な副作用があとから出る skill では、posterior 自体が過信を生む可能性がある。</div>
+      <div class="callout warning-item">そのため実務では、posterior update と合わせて、退役条件、回帰テスト、手動レビュー、公開できない情報の扱いを設計する必要がある。</div>
+    </section>
+
+    <section class="section list-section" id="next">
+      <h2>次に読むなら</h2>
+      <ul class="reading-list">
+        <li>次に読むなら、SkillOpt、Socratic-SWE、MUSE-Autoskill と並べるとよい。SkillOpt は skill document の編集と validation gate、Socratic-SWE は trace-derived skill、MUSE-Autoskill は skill lifecycle を扱う。</li>
+        <li>実務に落とすなら、まず既存 skill に対して、patch / split / compress / retire / explore のどれが必要かをログごとに分類する小さな表から始めるのがよさそうだ。</li>
+      </ul>
+    </section>
+
+    <section id="qa">
+      <h2>読後Q&A</h2>
+      <article class="qa">
+        <h3>この論文の中心問いは？</h3>
+        <p>LLM agent の skill / SOP を、成功/失敗ログの単純な蓄積ではなく、検証済み軌跡に基づく条件つき posterior としてどう更新するか。</p>
+      </article>
+      <article class="qa">
+        <h3>skill を信念として扱うとはどういうこと？</h3>
+        <p>skill を固定の手順書ではなく、あるタスク特徴、文脈、harness 条件で成功しそうだという仮説として扱い、証拠に応じて確信度を更新するということ。</p>
+      </article>
+      <article class="qa">
+        <h3>既存の反省型 self-improvement と何が違う？</h3>
+        <p>反省文やルールを足すだけでなく、どの条件で効くか、どの失敗を直すか、退役させるべきかを posterior と編集アクションで分ける点が違う。</p>
+      </article>
+      <article class="qa">
+        <h3>更新アクションには何がある？</h3>
+        <p>論文では、patch、split、compress、retire、explore のようなアクションが扱われる。追記だけでなく、分割、圧縮、退役、探索も更新の選択肢になる。</p>
+      </article>
+      <article class="qa">
+        <h3>harness はどこで効く？</h3>
+        <p>skill / SOP は model 単体ではなく、prompt、tools、memory、workflow、verification を含む harness の中で実行される。更新もその実行条件と結びつけて扱われる。</p>
+      </article>
+      <article class="qa">
+        <h3>評価で何が示された？</h3>
+        <p>SOP-Bench、Lifelong AgentBench、RealFin-Bench で incremental repair による改善が報告されている。特に RealFin-Bench では 45% から 65% への改善が示されている。</p>
+      </article>
+      <article class="qa">
+        <h3>個人 assistant 運用にどう使える？</h3>
+        <p>失敗ログからルールを足す前に、どの条件で失敗したか、既存 skill の patch で足りるか、分割や退役が必要かを判断する枠組みとして使える。</p>
+      </article>
+      <article class="qa">
+        <h3>注意点は？</h3>
+        <p>posterior は証拠の質に依存する。検証信号が曖昧なタスクでは、数式っぽい更新に見えても過信になる可能性がある。</p>
+      </article>
+      <article class="qa">
+        <h3>読む順番は？</h3>
+        <p>まず abstract と method の posterior update、次に update action、最後に benchmark と audit summary を読むと、実務への接続がつかみやすい。</p>
+      </article>
+    </section>
+      </div>
+    </div>
+
+  </main>
+  <footer>
+    <p>Source: <a href="https://arxiv.org/abs/2606.08348">arXiv:2606.08348</a>.</p>
+    <p>This page is a public reading artifact and does not include private workspace paths, logs, or internal metadata.</p>
+  </footer>
+
+</body>
+</html>
