@@ -1,0 +1,196 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>What makes a harness a harness: necessary and sufficient conditions for an agent harness</title>
+  <link rel="stylesheet" href="./assets/article-content.css">
+  <link rel="stylesheet" href="./assets/article-pages.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./index.html">Article Pages</a>
+    <nav class="top-nav" aria-label="Site navigation">
+      <a href="./index.html">Home</a>
+      <a href="./unread-reading-inventory.html">未読一覧</a>
+    </nav>
+  </header>
+
+
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="kicker">Reading artifact</p>
+      <h1>What makes a harness a harness: necessary and sufficient conditions for an agent harness</h1>
+      <p>agent harness という曖昧に使われる言葉を、coding agent を実行可能なシステムにする境界層として定義し、framework、SDK、IDE plugin、eval harness、orchestrator と切り分ける概念分析の論文。</p>
+      <div class="paper-meta">
+        <span class="meta-chip">作成日: 2026-06-10</span>
+        <span class="meta-chip">arXiv:2606.10106</span>
+        <span class="meta-chip">Agent Harness</span>
+        <span class="meta-chip">Conceptual Analysis</span>
+        <span class="meta-chip">Coding Agents</span>
+      </div>
+      <div class="hero-actions">
+        <a class="button" href="https://arxiv.org/abs/2606.10106">元資料を開く</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="reader-grid">
+      <nav aria-label="Reading navigation">
+        <strong>目次</strong>
+        <a href="#why-this-matters">この論文の何がいいか</a>
+        <a href="#paper">どんな論文か</a>
+        <a href="#contributions">課題と貢献</a>
+        <a href="#method">手法のしくみ</a>
+        <a href="#results">検証結果</a>
+        <a href="#discussion">課題と議論</a>
+        <a href="#next">次に読むなら</a>
+        <a href="#qa">読後Q&A</a>
+      </nav>
+
+      <div>
+        <figure class="graphic-recording">
+          <a class="graphic-zoom-trigger" href="#graphic-recording-lightbox" aria-label="グラレコを拡大表示する"><img src="./assets/graphic-recordings/what-makes-a-harness.png" alt="What makes a harness a harness の日本語グラレコ" loading="eager" decoding="async"></a>
+          <figcaption>agent harness の背景、定義、切り分けテスト、実例、限界を1枚で把握するためのグラレコ。</figcaption>
+        </figure>
+        <div id="graphic-recording-lightbox" class="graphic-lightbox" aria-label="グラレコ拡大表示">
+          <a class="graphic-lightbox-backdrop" href="#" aria-label="拡大表示を閉じる"></a>
+          <a class="graphic-lightbox-content" href="#" aria-label="拡大表示を閉じる"><img src="./assets/graphic-recordings/what-makes-a-harness.png" alt="What makes a harness a harness の日本語グラレコ"></a>
+        </div>
+
+    <section class="section why-section" id="why-this-matters">
+      <h2>この論文の何がいいか</h2>
+      <p>この論文がよいのは、実務で混ざりがちな言葉をいったん机の上に並べてくれるところだ。agent が失敗したとき、モデルが悪いのか、tool interface が悪いのか、状態管理が悪いのか、検証が弱いのか、実行環境の契約が曖昧なのかを分けないと、修正がすぐ広がりすぎる。</p>
+      <p>個人 assistant や coding agent の運用では、skill、scheduler、tool wrapper、memory、approval、sandbox、logging、eval が全部絡む。これらを全部 agent framework と呼んでも、全部 harness と呼んでも、判断の焦点がぼやける。この論文は、そのぼやけに名前と境界線を引く。</p>
+      <p>特に Codex / Claude Code 的な開発環境では、harness は単なる周辺部品ではない。モデルがファイルを読み、コマンドを実行し、状態を保持し、検証し、報告するための実行条件そのものだ。ここを設計対象として見ると、prompt 改善だけでは届かない失敗を扱いやすくなる。</p>
+      <p>おい丸運用に引くなら、scheduled-ops、article-page-publisher、skills、wiki memory、Discord 経由操作を、それぞれどの harness 条件に依存しているか分解できる。これは、失敗時の切り分けや skill 更新の粒度を決める土台になる。</p>
+    </section>
+
+    <section class="section" id="paper">
+      <h2>どんな論文か</h2>
+      <p>この論文は、agent harness という言葉の境界を定義するための概念分析である。Claude Code、Codex CLI、Aider、Cline、OpenHands、SWE-agent などの登場によって、harness という語は広く使われるようになったが、その意味はかなり揺れている。</p>
+      <p>ある文脈では harness は coding agent 製品全体を指し、別の文脈では SWE-bench のような評価基盤を指す。さらに agent framework、SDK、IDE plugin、orchestrator とも混同される。こうなると、研究比較や実装設計で何を比べているのかが曖昧になる。</p>
+      <p>論文は、古典的な test harness から machine-learning evaluation harness、そして agent harness へ至る語の系譜をたどり、必要十分条件として使える constitutive definition を提案する。その定義を inclusion / exclusion test として運用し、実システムや edge case に当てはめる。</p>
+      <p>読む価値は、新しいアルゴリズムを得ることではなく、agent system をどの層で設計・評価・修理するかを言葉で分けられるようになる点にある。harness を雰囲気語で終わらせず、モデル、ツール、状態、検証、実行環境の境界概念として扱うための論文だ。</p>
+      <p>この論文は、agent harness という用語を operational に定義する。対象は、言語モデルを coding agent として動かすために、その外側で実行、状態、ツール、検証、環境との接続を担う層である。</p>
+      <p>論文の関心は、特定の harness が高性能かどうかではなく、何を harness と呼び、何を framework、SDK、IDE plugin、eval harness、orchestrator と分けるべきかにある。</p>
+    </section>
+
+    <section class="section insights-section" id="contributions">
+      <h2>課題と貢献</h2>
+      <div class="insight-list">
+        <article class="insight-card"><p>主な貢献は、agent harness という語の系譜を整理したこと、必要十分条件として使える定義を提案したこと、その定義を inclusion / exclusion test として運用可能にしたことにある。</p></article>
+        <article class="insight-card"><p>さらに、Claude Code、Codex CLI、Aider、Cline、OpenHands、SWE-agent などの実システムと edge case に適用し、境界が一貫して引けることを示す。最後に、今後の研究や設計に使える design tension axes を整理する。</p></article>
+      </div>
+    </section>
+
+    <section class="section steps-section" id="method">
+      <h2>手法のしくみ</h2>
+      <div class="route">
+        <article class="step">
+          <div class="num">1</div>
+          <p>入力は、永続識別子を持つ研究文献、公式ドキュメント、用語集、エンジニアリングレポートなどの一次・準一次資料である。</p>
+        </article>
+        <article class="step">
+          <div class="num">2</div>
+          <p>まず、harness という言葉の歴史を、馬具、古典的 test harness、machine-learning evaluation harness、agent harness へとたどる。</p>
+        </article>
+        <article class="step">
+          <div class="num">3</div>
+          <p>次に、agent harness が成立するための構成条件を抽出する。ここでは、モデルを実行可能な agent にするための境界層として、ツール、状態、環境、検証、制御の関係を見る。</p>
+        </article>
+        <article class="step">
+          <div class="num">4</div>
+          <p>その定義を inclusion / exclusion test に変換し、あるシステムが agent harness に含まれるか、agent framework、SDK、IDE plugin、eval harness、orchestrator に近いのかを判定する。</p>
+        </article>
+        <article class="step">
+          <div class="num">5</div>
+          <p>最後に、実在する6つの harness と deliberate edge cases に適用し、設計上の tension axes を導く。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section results-section" id="results">
+      <h2>検証結果</h2>
+      <div class="score-grid">
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>論文は、agent harness、agent framework、agent SDK、IDE plugin、eval harness、orchestrator の境界を一貫して説明できる定義を提示する。</p>
+        </article>
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>この結果により、coding agent の比較で、製品全体を比べているのか、実行基盤を比べているのか、評価 scaffold を比べているのかを分けやすくなる。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section warning" id="discussion">
+      <h2>課題と議論</h2>
+      <div class="callout warning-item">この論文は概念分析なので、新しい benchmark score や大規模実験を出すタイプの論文ではない。読む時は、性能改善の即効薬ではなく、設計と比較の言葉を整える資料として見るのがよい。</div>
+      <div class="callout warning-item">一方で、agent system が複雑になるほど、この種の境界定義は実務的になる。失敗を model の問題に寄せすぎるのか、harness の契約や観測性の問題として見るのかで、修正の方向が変わるからだ。</div>
+      <div class="callout warning-item">注意点として、境界を硬くしすぎると、製品や研究が複数の役割を持つ現実を見落とす可能性がある。定義はラベル貼りではなく、議論の焦点を合わせるために使うのがよい。</div>
+    </section>
+
+    <section class="section list-section" id="next">
+      <h2>次に読むなら</h2>
+      <ul class="reading-list">
+        <li>次に読むなら、Code as Agent Harness、Is Grep All You Need?、Harness-1、From Failed Trajectories to Reliable LLM Agents を並べるとよい。定義、検索、状態外部化、失敗診断がつながる。</li>
+        <li>実務に落とすなら、既存 workflow を model、tool interface、state、verification、approval、logging、artifact output に分け、どこまでが harness 責務かを小さな表にするところから始められる。</li>
+      </ul>
+    </section>
+
+    <section id="qa">
+      <h2>読後Q&A</h2>
+      <article class="qa">
+        <h3>この論文の中心問いは？</h3>
+        <p>agent harness とは何であり、agent framework、SDK、IDE plugin、eval harness、orchestrator とどう違うのかを、必要十分条件として定義できるか。</p>
+      </article>
+      <article class="qa">
+        <h3>なぜ定義が必要なの？</h3>
+        <p>用語が曖昧だと、研究比較、設計議論、失敗原因の切り分け、評価の単位がずれるから。何を harness と呼ぶかを揃えることで、議論の焦点を合わせられる。</p>
+      </article>
+      <article class="qa">
+        <h3>agent harness は製品全体のこと？</h3>
+        <p>論文の問題意識では、製品全体と harness は混同されやすい。harness は、言語モデルを実行可能な agent にするための境界層として捉えられる。</p>
+      </article>
+      <article class="qa">
+        <h3>eval harness とは違うの？</h3>
+        <p>eval harness は評価を実行する scaffold を指すことが多い。agent harness は、agent が実際に行動するための tool、state、environment、verification、control の層まで含む。</p>
+      </article>
+      <article class="qa">
+        <h3>実例として何が扱われる？</h3>
+        <p>Claude Code、Codex CLI、Aider、Cline、OpenHands、SWE-agent などの実システムが、定義の適用対象として扱われる。</p>
+      </article>
+      <article class="qa">
+        <h3>この論文は実験論文？</h3>
+        <p>主には概念分析の論文。新しい benchmark score を競うのではなく、用語の境界と比較可能な定義を作ることが目的。</p>
+      </article>
+      <article class="qa">
+        <h3>実務では何に効く？</h3>
+        <p>agent が失敗した時に、モデル、prompt、tool interface、状態管理、検証、実行環境のどこを直すべきかを分ける語彙として使える。</p>
+      </article>
+      <article class="qa">
+        <h3>skill 運用とはどうつながる？</h3>
+        <p>skill は agent が参照する手続き知識だが、それをどう読み込み、権限を与え、検証し、実行するかは harness 側の設計になる。</p>
+      </article>
+      <article class="qa">
+        <h3>読む時の一番のポイントは？</h3>
+        <p>定義文そのものより、inclusion / exclusion test を見て、なぜこれは harness で、なぜこれは framework や orchestrator なのかを追うこと。</p>
+      </article>
+      <article class="qa">
+        <h3>限界は？</h3>
+        <p>概念定義なので、境界は実装の進化で揺れる可能性がある。ラベルとして固定するより、比較と設計の焦点を合わせる道具として使うのがよい。</p>
+      </article>
+    </section>
+      </div>
+    </div>
+
+  </main>
+  <footer>
+    <p>Source: <a href="https://arxiv.org/abs/2606.10106">arXiv:2606.10106</a>.</p>
+    <p>This page is a public reading artifact and does not include private workspace paths, logs, or internal metadata.</p>
+  </footer>
+
+</body>
+</html>
