@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Recursive Agent Harnesses</title>
+  <link rel="stylesheet" href="./assets/article-content.css">
+  <link rel="stylesheet" href="./assets/article-pages.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./index.html">Article Pages</a>
+    <nav class="top-nav" aria-label="Site navigation">
+      <a href="./index.html">Home</a>
+      <a href="./unread-reading-inventory.html">未読一覧</a>
+    </nav>
+  </header>
+
+
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="kicker">Reading artifact</p>
+      <h1>Recursive Agent Harnesses</h1>
+      <p>Recursive Agent Harnesses は、長大コーパスを扱う agent の再帰単位を、裸の model call ではなく、ファイル操作・コード実行・計画・サブエージェント生成を持つ full harness にする論文。サブエージェント活用を設計論として捉えるための語彙がある。</p>
+      <div class="paper-meta">
+        <span class="meta-chip">作成日: 2026-06-13</span>
+        <span class="meta-chip">arXiv:2606.13643</span>
+        <span class="meta-chip">Agent Harness</span>
+        <span class="meta-chip">Subagents</span>
+        <span class="meta-chip">Long-Context Reasoning</span>
+        <span class="meta-chip">Oolong</span>
+      </div>
+      <div class="hero-actions">
+        <a class="button" href="https://arxiv.org/abs/2606.13643">元資料を開く</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="reader-grid">
+      <nav aria-label="Reading navigation">
+        <strong>目次</strong>
+        <a href="#why-this-matters">この論文の何がいいか</a>
+        <a href="#paper">どんな論文か</a>
+        <a href="#contributions">課題と貢献</a>
+        <a href="#method">手法のしくみ</a>
+        <a href="#results">検証結果</a>
+        <a href="#discussion">課題と議論</a>
+        <a href="#next">次に読むなら</a>
+        <a href="#qa">読後Q&A</a>
+      </nav>
+
+      <div>
+        <figure class="graphic-recording">
+          <a class="graphic-zoom-trigger" href="#graphic-recording-lightbox" aria-label="グラレコを拡大表示する"><img src="./assets/graphic-recordings/recursive-agent-harnesses.png" alt="Recursive Agent Harnesses の日本語グラレコ" loading="eager" decoding="async"></a>
+          <figcaption>親エージェントが作業量を見て JSON tool-call と code-execution spawning を選び、full harness を持つ子・孫エージェントへ分解する流れを1枚で把握するためのグラレコ。</figcaption>
+        </figure>
+        <div id="graphic-recording-lightbox" class="graphic-lightbox" aria-label="グラレコ拡大表示">
+          <a class="graphic-lightbox-backdrop" href="#" aria-label="拡大表示を閉じる"></a>
+          <a class="graphic-lightbox-content" href="#" aria-label="拡大表示を閉じる"><img src="./assets/graphic-recordings/recursive-agent-harnesses.png" alt="Recursive Agent Harnesses の日本語グラレコ"></a>
+        </div>
+
+    <section class="section why-section" id="why-this-matters">
+      <h2>この論文の何がいいか</h2>
+      <p>この論文は、サブエージェントを『便利な並列実行』ではなく、harness architecture の再帰として扱う。これは Codex、Claude Code、scheduled-ops、article-page-publisher のような実運用にかなり近い。</p>
+      <p>個人 AI assistant の運用では、単にモデルに長い文脈を渡すだけではなく、wiki、raw、画像、公開 repo、scheduler、skill、外部検索をまたいで作業する。RAH の見方を使うと、仕事を model call に分けるのか、full harness を持った subagent に分けるのかを判断しやすくなる。</p>
+      <p>また、RAH は『モデル能力の差』ではなく『同じ model backbone で harness を変えた差』を測ろうとしている。これは、agent 改善を prompt や model choice だけに寄せず、実行環境・道具・状態・集約の設計として扱うための足場になる。</p>
+    </section>
+
+    <section class="section" id="paper">
+      <h2>どんな論文か</h2>
+      <p>この論文の問いは、長大な文書や大量の独立エントリを処理する時、再帰する単位を何にすべきかである。従来の recursive language models は model call を再帰させるが、そこにはファイル操作、コード実行、外部ツール、計画、実行環境がない。</p>
+      <p>一方で coding agent は full harness を持つが、何千ものエントリを一つの context で扱おうとすると、個別エントリごとの LLM reasoning を諦め、正規表現や単純なスクリプト処理へ寄りやすい。つまり、モデル再帰は道具が弱く、単一 harness は分解が弱い。</p>
+      <p>Recursive Agent Harness (RAH) は、この間をつなぐ。親エージェントが作業量を見て、少数なら JSON tool-call、多数なら自分で実行スクリプトを書き、そのスクリプトから多数の subagent harness を並列生成する。各子は独立 workspace、read/write/grep/execute/web search、計画、さらに孫エージェント生成能力を持つ。</p>
+      <p>評価は Oolong-Synthetic の 199 samples、1K から 4M tokens の 13 context-length buckets で行われる。GPT-5 backbone を固定した比較で、Codex-style coding-agent baseline 71.75% に対し、RAH は 81.36% に到達する。同じ設計を Claude Sonnet 4.5 に載せると 89.77% まで伸びる。</p>
+      <p>読む価値は、単に subagent を増やせばよいという話ではない点にある。どの粒度を recursive unit にするか、どこで tool-call ではなく executable orchestration にするか、どう隔離し、どう集約し、どこで depth / cost / latency を制御するかを考えるための論文だ。</p>
+      <p>Recursive Agent Harnesses は、Recursive Agent Harness (RAH) と harness recursion を命名し、long-context reasoning で評価する論文である。</p>
+      <p>RAH の中心は、再帰単位を model call ではなく full agent harness にすること。full harness とは、filesystem tools、code execution、planning、subagent spawning を持つ実行単位を指す。</p>
+      <p>論文は、Oolong-Synthetic という長文集約 benchmark を使い、coding agent、recursive language model、RAH を比較する。狙いは、新しい primitive を発明することではなく、既に現れつつある code-first subagent spawning pattern に名前を与え、制御された比較で測ることにある。</p>
+    </section>
+
+    <section class="section insights-section" id="contributions">
+      <h2>課題と貢献</h2>
+      <div class="insight-list">
+        <article class="insight-card"><p>第一の貢献は、Recursive Agent Harness と harness recursion の定義である。model call ではなく full harness を recursive unit にする、という設計軸を明示する。</p></article>
+        <article class="insight-card"><p>第二の貢献は、同じ GPT-5 backbone を使って Codex-style coding-agent baseline と比較し、差を model ではなく harness architecture に帰属させようとした点である。</p></article>
+        <article class="insight-card"><p>第三の貢献は、Oolong-Synthetic の answer type と context length ごとの結果を出し、どこで効き、どこで弱いかを見せた点である。</p></article>
+        <article class="insight-card"><p>第四の貢献は、Anthropic の dynamic workflows のような production pattern と研究上の recursive language models をつなぎ、harness recursion を実務と研究の共通語にした点である。</p></article>
+      </div>
+    </section>
+
+    <section class="section steps-section" id="method">
+      <h2>手法のしくみ</h2>
+      <div class="route">
+        <article class="step">
+          <div class="num">1</div>
+          <p>入力は、長大な文書と、そこに散らばる多数の独立エントリから答えを集約するタスクである。親エージェントはまず文書と作業量を見て、どの粒度で分解するかを決める。</p>
+        </article>
+        <article class="step">
+          <div class="num">2</div>
+          <p>少数の subtasks なら、親は Task tool を JSON structured call として直接呼ぶ。これは 1 から 5 entries 程度の軽い仕事向けで、script generation overhead を避ける。</p>
+        </article>
+        <article class="step">
+          <div class="num">3</div>
+          <p>多数の entries なら、親は executable script を書く。script 内で Task(description, prompt) を多数作り、asyncio.gather のような並列実行で subagent harness 群を起動する。</p>
+        </article>
+        <article class="step">
+          <div class="num">4</div>
+          <p>各 subagent は、独立 workspace、read_file、write_file、ls、glob、grep、execute、web search、planning step を持つ。兄弟 subagents とは context や memory を共有せず、結果を structured JSON record として出す。</p>
+        </article>
+        <article class="step">
+          <div class="num">5</div>
+          <p>必要なら subagent 自身も同じ spawning capability を使って孫エージェントを作れる。recursion depth は configurable limit で制限され、論文では default 3 とされる。</p>
+        </article>
+        <article class="step">
+          <div class="num">6</div>
+          <p>親は shared output file や aggregated stdout から結果を集め、最終回答へ整形する。これにより、個別エントリごとの reasoning と tool access を保ちながら、長大 corpus を分解できる。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section results-section" id="results">
+      <h2>検証結果</h2>
+      <div class="score-grid">
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>Oolong-Synthetic 199 samples、13 context-length buckets、1K から 4M tokens で評価される。</p>
+        </article>
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>GPT-5 backbone 固定で、Codex-style coding-agent baseline は 71.75%、RAH は 81.36%。同じ model backbone なので、差は harness architecture によるものとして読める。</p>
+        </article>
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>Claude Sonnet 4.5 を backbone にすると、同じ RAH design で 89.77% に到達する。論文は、harness recursion が model quality と競合するのではなく、組み合わさって伸びる可能性を示す。</p>
+        </article>
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>answer type ごとには、USER、COMPARISON、LABEL が 86% 超で強い。一方、NUMERIC は 69.33%、DATE は n=5 で 60.00% と不安定で、数値カウントや小サンプルの影響が出る。</p>
+        </article>
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>context length ごとの結果では、Sonnet 4.5 は 524K tokens まで 86% 超、4M tokens でも 76.7%。ただし bucket ごとの sample 数は 14 から 16 なので、精密な順位ではなく傾向として読むべき。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section warning" id="discussion">
+      <h2>課題と議論</h2>
+      <div class="callout warning-item">RAH は、subagent を増やす万能薬ではない。親が spawning script を書かず直接答えてしまうと、単一 coding agent に戻ってしまう。</div>
+      <div class="callout warning-item">コストは subagent 数に依存する。論文は prompt caching が効く可能性に触れるが、GPT-5 configuration の exact token / latency profile は未計測である。</div>
+      <div class="callout warning-item">評価は Oolong-Synthetic に限られる。Oolong-Real や、証拠が曖昧で per-entry extraction が単純でない領域にそのまま一般化できるかは未確認である。</div>
+      <div class="callout warning-item">code-execution spawning と JSON tool-call spawning、recursion depth、entries per subagent などの設計要素の ablation はまだない。どの部品がどれだけ効いたかは、今後の検証が必要である。</div>
+    </section>
+
+    <section class="section list-section" id="next">
+      <h2>次に読むなら</h2>
+      <ul class="reading-list">
+        <li>今読むなら、§3 の Code-Execution Spawning と Subagent Architecture を先に読む。ここが実務設計に一番近い。</li>
+        <li>次に、§4.7 の Choosing a Recursion Strategy を読む。coding agent、model recursion、dynamic workflows、harness recursion の使い分けが短くまとまっている。</li>
+        <li>関連して読むなら、Code as Agent Harness、What makes a harness a harness、SkillJuror、HyperTool を並べると、harness、skill、tool granularity、subagent recursion がつながる。</li>
+        <li>実装へ引くなら、日次 job や article-page-publisher のような作業を、model call でよい部分、JSON tool-call でよい部分、full subagent harness に分けるべき部分へ分類するのが第一歩になる。</li>
+      </ul>
+    </section>
+
+    <section id="qa">
+      <h2>読後Q&A</h2>
+      <article class="qa">
+        <h3>この論文の中心問いは？</h3>
+        <p>長大な corpus を分解して推論する時、再帰単位は bare model call でよいのか、それとも tools と workspace を持つ full agent harness にすべきか、という問い。</p>
+      </article>
+      <article class="qa">
+        <h3>Recursive Agent Harness とは何？</h3>
+        <p>親エージェントが、ファイル操作・コード実行・計画・サブエージェント生成を持つ full harness を子として起動し、その子も必要に応じて同じ能力を再帰できる設計。</p>
+      </article>
+      <article class="qa">
+        <h3>普通の multi-agent と何が違う？</h3>
+        <p>会話する複数 agent というより、full harness を recursive unit にして、実行スクリプトから多数の独立 subagent harness を並列起動し、結果を構造化して集約する点が中心。</p>
+      </article>
+      <article class="qa">
+        <h3>なぜ JSON tool-call だけでは足りない？</h3>
+        <p>API の per-turn tool-call limit があり、大量の独立エントリを処理するには足りない。RAH は親が executable script を書くことで、subagent spawning の規模を作業量に合わせる。</p>
+      </article>
+      <article class="qa">
+        <h3>評価では何が改善した？</h3>
+        <p>Oolong-Synthetic 199 samples で、GPT-5 backbone 固定の Codex-style coding-agent baseline 71.75% に対し、RAH は 81.36% になった。Claude Sonnet 4.5 では 89.77%。</p>
+      </article>
+      <article class="qa">
+        <h3>改善はモデル差ではないと言える？</h3>
+        <p>少なくとも GPT-5 backbone 固定の比較では、Codex baseline と RAH が同じ backbone を使っているため、差は harness architecture によるものとして設計されている。</p>
+      </article>
+      <article class="qa">
+        <h3>どこが弱い？</h3>
+        <p>NUMERIC answer type は 69.33% と低めで、カウント誤差がスコアに響く。DATE は n=5 で小さすぎる。親が spawning script を書かず直接答える失敗もある。</p>
+      </article>
+      <article class="qa">
+        <h3>実運用に引くなら何が大事？</h3>
+        <p>サブエージェントを増やすこと自体ではなく、どの仕事を full harness に分解するか、どこで script orchestration にするか、結果をどう隔離・集約・検証するか。</p>
+      </article>
+      <article class="qa">
+        <h3>この論文の限界は？</h3>
+        <p>評価は Oolong-Synthetic 限定で、Oolong-Real や曖昧な証拠が多い領域への一般化は未確認。コストと latency の詳細計測、設計要素の ablation も残っている。</p>
+      </article>
+      <article class="qa">
+        <h3>次に読むなら何？</h3>
+        <p>HyperTool、SkillJuror、What makes a harness a harness、Code as Agent Harness を並べると、tool granularity、skill organization、harness boundary、harness recursion がつながる。</p>
+      </article>
+    </section>
+      </div>
+    </div>
+
+  </main>
+  <footer>
+    <p>Source: <a href="https://arxiv.org/abs/2606.13643">arXiv:2606.13643 / Recursive Agent Harnesses</a>.</p>
+    <p>This page is a public reading artifact and does not include private workspace paths, logs, or internal metadata.</p>
+  </footer>
+
+</body>
+</html>
