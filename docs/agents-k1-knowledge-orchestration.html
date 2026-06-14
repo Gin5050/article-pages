@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Agents-K1: Towards Agent-native Knowledge Orchestration</title>
+  <link rel="stylesheet" href="./assets/article-content.css">
+  <link rel="stylesheet" href="./assets/article-pages.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./index.html">Article Pages</a>
+    <nav class="top-nav" aria-label="Site navigation">
+      <a href="./index.html">Home</a>
+      <a href="./unread-reading-inventory.html">未読一覧</a>
+    </nav>
+  </header>
+
+
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="kicker">Reading artifact</p>
+      <h1>Agents-K1: Towards Agent-native Knowledge Orchestration</h1>
+      <p>Agents-K1 は、研究エージェントに渡す知識を、論文リストや要約ではなく、主張・証拠・手法系譜をたどれる agent-native knowledge graph として構築する論文。KG、抽出モデル、CLI をつなぎ、研究エージェントが実行可能な知識基盤として使える形にする。</p>
+      <div class="paper-meta">
+        <span class="meta-chip">作成日: 2026-06-14</span>
+        <span class="meta-chip">arXiv:2606.13669</span>
+        <span class="meta-chip">Research Agents</span>
+        <span class="meta-chip">Knowledge Graph</span>
+        <span class="meta-chip">Scientific Knowledge</span>
+        <span class="meta-chip">GraphAnything CLI</span>
+      </div>
+      <div class="hero-actions">
+        <a class="button" href="https://arxiv.org/abs/2606.13669">元資料を開く</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="reader-grid">
+      <nav aria-label="Reading navigation">
+        <strong>目次</strong>
+        <a href="#why-this-matters">この論文の何がいいか</a>
+        <a href="#paper">どんな論文か</a>
+        <a href="#contributions">課題と貢献</a>
+        <a href="#method">手法のしくみ</a>
+        <a href="#results">検証結果</a>
+        <a href="#discussion">課題と議論</a>
+        <a href="#next">次に読むなら</a>
+        <a href="#qa">読後Q&A</a>
+      </nav>
+
+      <div>
+        <figure class="graphic-recording">
+          <a class="graphic-zoom-trigger" href="#graphic-recording-lightbox" aria-label="グラレコを拡大表示する"><img src="./assets/graphic-recordings/agents-k1-knowledge-orchestration.png" alt="Agents-K1 の日本語グラレコ" loading="eager" decoding="async"></a>
+          <figcaption>論文全文から主張・証拠・手法・引用関係を構造化し、知識グラフ、抽出モデル、CLI をつなぐ流れを1枚で把握するためのグラレコ。</figcaption>
+        </figure>
+        <div id="graphic-recording-lightbox" class="graphic-lightbox" aria-label="グラレコ拡大表示">
+          <a class="graphic-lightbox-backdrop" href="#" aria-label="拡大表示を閉じる"></a>
+          <a class="graphic-lightbox-content" href="#" aria-label="拡大表示を閉じる"><img src="./assets/graphic-recordings/agents-k1-knowledge-orchestration.png" alt="Agents-K1 の日本語グラレコ"></a>
+        </div>
+
+    <section class="section why-section" id="why-this-matters">
+      <h2>この論文の何がいいか</h2>
+      <p>この論文は、paper-watch や論文要約の次の形を考える材料になる。論文を Markdown に要約して終わるのではなく、claim、evidence、method lineage、citation intent、gap を後で agent が使える構造として残す発想がある。</p>
+      <p>個人 AI assistant の wiki 運用にも近い。日次の候補選定、raw PDF、抽出テキスト、グラレコ、公開ページが増えるほど、単純な全文検索だけでは『どの主張がどの証拠に支えられているか』を辿りにくくなる。Agents-K1 はそこを knowledge orchestration として切り出す。</p>
+      <p>また、GraphAnything CLI のように、知識グラフを静的データではなく agent-facing interface にする視点がよい。読む、検索する、比較する、欠落を見つける、アイデアを grounded にする、という研究作業を tool surface として設計できる。</p>
+    </section>
+
+    <section class="section" id="paper">
+      <h2>どんな論文か</h2>
+      <p>研究エージェントは、文献検索、実験計画、コード実行、論文作成まで一つの loop で扱う方向へ進んでいる。しかし、そこに渡される知識基盤は、まだ abstracts、表層的な citation edge、単純な retrieval に寄りやすい。</p>
+      <p>Agents-K1 の問題意識は、研究エージェントに必要なのは関連論文リストではなく、各論文が何を主張し、その証拠がどこにあり、どの手法や先行研究の系譜につながるかを辿れる構造だという点にある。</p>
+      <p>この論文は、KG layer、LLM layer、CLI layer を統合する。論文全文から entity、claim、evidence、mechanism、method lineage、citation intent を抽出し、Scholar-KG を作り、4B extraction model を訓練し、GraphAnything CLI から agent が graph traversal や gap detection を実行できるようにする。</p>
+      <p>規模も大きい。2.46 million scientific papers から Scholar-KG を構築し、one-million-paper subset を公開すると説明している。単なる論文メタデータではなく、full paper を対象に multimodal evidence や typed relations を扱う点が特徴である。</p>
+      <p>読む価値は、agent orchestration だけでなく knowledge orchestration を設計対象に置くところにある。研究エージェントの性能を、どのモデルが考えるかだけでなく、どんな知識をどう構造化し、どう検証可能にたどれるかから見直せる。</p>
+      <p>Agents-K1 は、LLM-based research agents に必要な scientific knowledge infrastructure を作る論文である。対象は、単なる paper recommendation や abstract-level RAG ではない。</p>
+      <p>中心の主張は、研究エージェントには agent orchestration と同じくらい knowledge orchestration が必要だというもの。つまり、どの agent がどう動くかだけでなく、何を知識として渡し、どう構造化し、どう辿らせるかが性能を左右する。</p>
+      <p>そのために、Agents-K1 は Scholar-KG、4B information extraction model、GraphAnything CLI を統合する。raw papers を agent-native scientific knowledge graph に変換し、研究 agent がその graph を直接使える interface を提供する。</p>
+    </section>
+
+    <section class="section insights-section" id="contributions">
+      <h2>課題と貢献</h2>
+      <div class="insight-list">
+        <article class="insight-card">
+          <strong>統合された研究知識基盤。</strong>
+          <p>Agents-K1 は KG、LLM、CLI を一つの framework として扱い、論文 parsing、structured knowledge extraction、graph construction、agent-facing interface をつなぐ。</p>
+        </article>
+        <article class="insight-card"><p>Million-scale full-paper multimodal knowledge graph。2.46 million scientific papers から Scholar-KG を構築し、one-million-paper subset を公開すると説明している。対象は abstracts だけではなく full paper である。</p></article>
+        <article class="insight-card">
+          <strong>Reinforcement-learned extraction backbone。</strong>
+          <p>4B parameter の information extraction model を GRPO と rule-based reward で訓練し、JSON validity、format compliance、task-conditioned F1 を見る。</p>
+        </article>
+        <article class="insight-card">
+          <strong>GraphAnything CLI。</strong>
+          <p>web search、multimodal graph retrieval、cross-document traversal、gap detection、idea grounding、novelty judging などを agent が使える tool surface として提供する。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section steps-section" id="method">
+      <h2>手法のしくみ</h2>
+      <div class="route">
+        <article class="step">
+          <div class="num">1</div>
+          <p>入力は scientific papers である。multimodal parser が論文本文、図表由来の evidence、citation context、metadata を読み、複数の view に分けて構造化する。</p>
+        </article>
+        <article class="step">
+          <div class="num">2</div>
+          <p>KG layer では、meta / factual entities、textually mentioned entities、implicit / abstracted entities、citation relationships、knowledge relations between entities を抽出し、scientific knowledge network を作る。</p>
+        </article>
+        <article class="step">
+          <div class="num">3</div>
+          <p>LLM layer では、4B extraction backbone を訓練する。GRPO と rule-based reward を使い、形式の正しさ、JSON validity、NER、relation extraction、long-form structured extraction の品質を押し上げる。</p>
+        </article>
+        <article class="step">
+          <div class="num">4</div>
+          <p>CLI layer では、GraphAnything CLI が graph を agent-facing interface に変える。web search、multimodal graph retrieval、knowledge network traversal を融合し、research agent が evidence trail を辿れるようにする。</p>
+        </article>
+        <article class="step">
+          <div class="num">5</div>
+          <p>Graph operators は、seed resolution、citation lineage reconstruction、comparative baseline retrieval、multimodal anchor retrieval、gap detection、idea grounding and novelty judging などを含む。</p>
+        </article>
+        <article class="step">
+          <div class="num">6</div>
+          <p>最終的には、idea-to-experiment pipeline に接続される。研究アイデアを既存知識に照らして refine し、method specification や code generation に進めるための基盤として設計されている。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section results-section" id="results">
+      <h2>検証結果</h2>
+      <div class="score-grid">
+        <article class="result-card">
+          <strong>Scientific information extraction。</strong>
+          <p>論文は、Agents-K1 が scientific information extraction、knowledge graph construction、multi-hop scientific reasoning で強い性能を示すと報告している。</p>
+        </article>
+        <article class="result-card">
+          <strong>Scholar-KG の規模。</strong>
+          <p>2.46 million scientific papers across six subjects を処理し、one-million-paper subset を community research 向けに公開すると説明している。</p>
+        </article>
+        <article class="result-card">
+          <strong>4B extractor。</strong>
+          <p>情報抽出 backbone は、より大きい Qwen3-32B との scaling gap を大きく縮め、NER では Qwen3-32B を上回ると報告している。</p>
+        </article>
+        <article class="result-card">
+          <strong>Knowledgeable and research questions。</strong>
+          <p>GraphAnything CLI と graph traversal によって、関連論文の検索だけでなく、multi-hop scientific reasoning や verifiable knowledge tracing に接続する。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section warning" id="discussion">
+      <h2>課題と議論</h2>
+      <div class="callout warning-item">大規模 knowledge graph 構築にはコストがかかる。計算資源、ストレージ、更新頻度、品質管理の設計が必要になる。</div>
+      <div class="callout warning-item">Schema design は難しい。claim、evidence、mechanism、method lineage、citation intent をどう切るかは、分野や用途によって変わる。</div>
+      <div class="callout warning-item">Extraction quality が downstream に効く。誤った entity merge、relation extraction、citation intent が混ざると、agent の推論も汚れる。</div>
+      <div class="callout warning-item">公開 subset と full graph の扱い、ライセンス、再現性、更新差分の追跡は、実運用では重要な論点になる。</div>
+    </section>
+
+    <section class="section list-section" id="next">
+      <h2>次に読むなら</h2>
+      <ul class="reading-list">
+        <li>今読むなら、まず Introduction と contributions を読む。agent orchestration と knowledge orchestration の切り分けが一番大事な入口になる。</li>
+        <li>次に §4 の KG layer を読む。どの種類の entity、claim、evidence、relation を graph にするのかを確認する。</li>
+        <li>実装目線では §6 の GraphAnything CLI を読む。静的な knowledge graph を agent-facing tool surface にする設計が見える。</li>
+        <li>関連して読むなら、Argus、Direct Corpus Interaction、Recursive Agent Harnesses、EurekAgent を並べると、evidence assembly、corpus interaction、harness recursion、environment engineering がつながる。</li>
+      </ul>
+    </section>
+
+    <section id="qa">
+      <h2>読後Q&A</h2>
+      <article class="qa">
+        <h3>この論文の中心問いは？</h3>
+        <p>研究エージェントに必要な知識を、関連論文リストや抽象的な RAG ではなく、主張・証拠・手法系譜を辿れる agent-native knowledge graph としてどう構築するか。</p>
+      </article>
+      <article class="qa">
+        <h3>agent orchestration と knowledge orchestration は何が違う？</h3>
+        <p>agent orchestration は agent がどう計画し行動するか。knowledge orchestration は agent が使う知識をどう構造化し、検索し、検証可能に辿れるようにするか。</p>
+      </article>
+      <article class="qa">
+        <h3>Agents-K1 の三層は何？</h3>
+        <p>KG layer は論文から scientific knowledge graph を作る。LLM layer は情報抽出 backbone を訓練する。CLI layer は GraphAnything CLI で agent が graph を使えるようにする。</p>
+      </article>
+      <article class="qa">
+        <h3>Scholar-KG は何が特徴？</h3>
+        <p>abstract や citation metadata だけでなく、full paper から entity、claim、evidence、mechanism、method lineage、citation intent を構造化する点が特徴。</p>
+      </article>
+      <article class="qa">
+        <h3>GraphAnything CLI は何をする？</h3>
+        <p>web search、multimodal graph retrieval、cross-document traversal を統合し、seed resolution、citation lineage、baseline retrieval、gap detection、novelty judging などを agent-facing operation として提供する。</p>
+      </article>
+      <article class="qa">
+        <h3>なぜ普通の RAG では足りない？</h3>
+        <p>普通の RAG は関連文書や chunk を返しがちだが、研究エージェントには、どの claim がどの evidence に支えられ、どの method lineage につながるかを辿る必要がある。</p>
+      </article>
+      <article class="qa">
+        <h3>実験で何を示している？</h3>
+        <p>scientific information extraction、knowledge graph construction、multi-hop scientific reasoning で性能を示し、4B extractor がより大きいモデルとの gap を縮めると報告している。</p>
+      </article>
+      <article class="qa">
+        <h3>個人 assistant 運用にどう効く？</h3>
+        <p>論文メモを単なる要約ではなく、claim、evidence、method lineage、citation intent、gap として残す wiki schema を考える材料になる。</p>
+      </article>
+      <article class="qa">
+        <h3>注意点は？</h3>
+        <p>大規模 graph 構築のコスト、schema 設計、抽出品質、更新差分、分野ごとの差、ライセンスや再現性の扱いが実運用では課題になる。</p>
+      </article>
+      <article class="qa">
+        <h3>次に読むなら何？</h3>
+        <p>Argus、Direct Corpus Interaction、Recursive Agent Harnesses、EurekAgent を並べると、研究 agent の evidence、corpus、harness、environment の設計がつながる。</p>
+      </article>
+    </section>
+      </div>
+    </div>
+
+  </main>
+  <footer>
+    <p>Source: <a href="https://arxiv.org/abs/2606.13669">arXiv:2606.13669 / Agents-K1: Towards Agent-native Knowledge Orchestration</a>.</p>
+    <p>This page is a public reading artifact and does not include private workspace paths, logs, or internal metadata.</p>
+  </footer>
+
+</body>
+</html>
