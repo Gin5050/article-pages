@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>HarnessX: A Composable, Adaptive, and Evolvable Agent Harness Foundry</title>
+  <link rel="stylesheet" href="./assets/article-content.css">
+  <link rel="stylesheet" href="./assets/article-pages.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./index.html">Article Pages</a>
+    <nav class="top-nav" aria-label="Site navigation">
+      <a href="./index.html">Home</a>
+      <a href="./unread-reading-inventory.html">未読一覧</a>
+    </nav>
+  </header>
+
+
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="kicker">Reading artifact</p>
+      <h1>HarnessX: A Composable, Adaptive, and Evolvable Agent Harness Foundry</h1>
+      <p>HarnessX は、AI agent の性能を model 単体ではなく、prompt、tools、memory、control flow からなる runtime harness の設計・適応・進化問題として扱う論文。実行 trace を使って harness を組み替え、検証し、改善する foundry を提案する。</p>
+      <div class="paper-meta">
+        <span class="meta-chip">作成日: 2026-06-15</span>
+        <span class="meta-chip">arXiv:2606.14249</span>
+        <span class="meta-chip">Agent Harness</span>
+        <span class="meta-chip">Trace-driven Evolution</span>
+        <span class="meta-chip">AEGIS</span>
+        <span class="meta-chip">SWE-bench Verified</span>
+      </div>
+      <div class="hero-actions">
+        <a class="button" href="https://arxiv.org/abs/2606.14249">元資料を開く</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="reader-grid">
+      <nav aria-label="Reading navigation">
+        <strong>目次</strong>
+        <a href="#why-this-matters">この論文の何がいいか</a>
+        <a href="#paper">どんな論文か</a>
+        <a href="#contributions">課題と貢献</a>
+        <a href="#method">手法のしくみ</a>
+        <a href="#results">検証結果</a>
+        <a href="#discussion">課題と議論</a>
+        <a href="#next">次に読むなら</a>
+        <a href="#qa">読後Q&A</a>
+      </nav>
+
+      <div>
+        <figure class="graphic-recording">
+          <a class="graphic-zoom-trigger" href="#graphic-recording-lightbox" aria-label="グラレコを拡大表示する"><img src="./assets/graphic-recordings/harnessx-agent-harness-foundry.png" alt="HarnessX の日本語グラレコ" loading="eager" decoding="async"></a>
+          <figcaption>HarnessX の問題設定、typed primitives、AEGIS loop、実験結果、限界を1枚で把握するためのグラレコ。</figcaption>
+        </figure>
+        <div id="graphic-recording-lightbox" class="graphic-lightbox" aria-label="グラレコ拡大表示">
+          <a class="graphic-lightbox-backdrop" href="#" aria-label="拡大表示を閉じる"></a>
+          <a class="graphic-lightbox-content" href="#" aria-label="拡大表示を閉じる"><img src="./assets/graphic-recordings/harnessx-agent-harness-foundry.png" alt="HarnessX の日本語グラレコ"></a>
+        </div>
+
+    <section class="section why-section" id="why-this-matters">
+      <h2>この論文の何がいいか</h2>
+      <p>この論文は、個人 AI assistant や coding agent の改善を、モデル選びではなく harness design として捉え直す材料になる。prompt、tools、memory、approval、logging、verification、workflow を、ばらばらの設定ではなく一つの実行環境として評価できる。</p>
+      <p>特に、実行 trace を改善に戻す設計が重要である。日次 job、skill、wiki、article-page-publisher のような運用も、失敗ログを読んで手順を追記するだけではなく、候補 edit を作り、検証し、採用または却下する loop として扱える。</p>
+      <p>ゆうきさんの関心に引きつけるなら、HarnessX は『agent harness をどう育てるか』の概念モデルとして強い。skill の更新、memory の参照順、tool surface の切り方、サブエージェントの役割分担を、trace-driven に変えていく足場になる。</p>
+    </section>
+
+    <section class="section" id="paper">
+      <h2>どんな論文か</h2>
+      <p>AI agent の性能は、モデルそのものだけでは決まらない。モデルが何を観測し、どんな道具を使い、どの記憶を参照し、どの制御フローで行動するかを決める runtime harness が、実際の振る舞いを大きく左右する。</p>
+      <p>HarnessX の問題意識は、現在の harness が手作りで静的になりがちな点にある。新しい model や task ごとに scaffolding を組み直す必要があり、実行中に生まれる rich traces が系統的な改善へ戻りにくい。</p>
+      <p>この論文は、harness を composable primitives の集合として扱う。prompt、tool、memory、controller などの typed harness primitives を substitution algebra で組み替え、trace-driven multi-agent evolution engine の AEGIS で候補 harness を生成・評価する。</p>
+      <p>読みどころは、harness configuration を状態、typed edit を行動、execution traces と verifier scores を feedback とみなす対応づけである。これは、agent harness の改善を reinforcement learning 的な閉ループとして見るための言葉になる。</p>
+      <p>結果として、ALFWorld、GAIA、WebShop、tau^3-Bench、SWE-bench Verified の5ベンチで平均 +14.5%、最大 +44.0% の改善を報告している。低い baseline ほど伸びが大きいという観察も、harness 側の改善余地を示す。</p>
+      <p>HarnessX は、AI agent の runtime harness を composable、adaptive、evolvable にするための foundry を提案する論文である。</p>
+      <p>ここでいう harness は、prompt、tools、memory、control flow など、モデルが観測・推論・行動するための外部構造を指す。モデルの能力をどう引き出すかを決める実行環境に近い。</p>
+      <p>論文の中心主張は、agent progress は model scaling だけでなく、execution feedback から runtime interface を組み替えることでも進む、というもの。</p>
+    </section>
+
+    <section class="section insights-section" id="contributions">
+      <h2>課題と貢献</h2>
+      <div class="insight-list">
+        <article class="insight-card">
+          <strong>Typed harness primitives。</strong>
+          <p>prompt、tool、memory、controller などを、型つきの構成要素として扱い、組み替え可能な harness vocabulary にする。</p>
+        </article>
+        <article class="insight-card">
+          <strong>Substitution algebra。</strong>
+          <p>既存 harness の一部を、安全に差し替えたり、組み合わせたりするための形式的な編集操作を導入する。</p>
+        </article>
+        <article class="insight-card">
+          <strong>AEGIS。</strong>
+          <p>実行 trace を読み、改善計画を立て、候補 harness edit を生成し、critic が評価する trace-driven multi-agent evolution engine を提示する。</p>
+        </article>
+        <article class="insight-card">
+          <strong>Harness-model loop。</strong>
+          <p>trajectory を harness updates と model training signal の両方へ戻し、runtime interface と model 側の改善をつなぐ。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section steps-section" id="method">
+      <h2>手法のしくみ</h2>
+      <div class="route">
+        <article class="step">
+          <div class="num">1</div>
+          <p>入力は、既存の agent harness、実行 trajectories、task feedback、verifier scores である。HarnessX はまず実行ログから失敗や改善余地を読む。</p>
+        </article>
+        <article class="step">
+          <div class="num">2</div>
+          <p>Harness configuration は状態として扱われる。つまり、prompt、tool set、memory access、control flow の組み合わせが、今の agent が動く環境の状態になる。</p>
+        </article>
+        <article class="step">
+          <div class="num">3</div>
+          <p>Typed edit は行動として扱われる。たとえば memory の使い方を変える、tool 呼び出しの順序を変える、verification step を追加する、といった編集が候補 action になる。</p>
+        </article>
+        <article class="step">
+          <div class="num">4</div>
+          <p>AEGIS は複数の役割に分かれる。Digester が trace を圧縮し、Planner が改善方針を立て、Evolver が harness edit を作り、Critic が verifier signal や制約に照らして評価する。</p>
+        </article>
+        <article class="step">
+          <div class="num">5</div>
+          <p>採用された edit は次の harness に反映される。これにより、harness は一度作って終わりではなく、実行 feedback を受けて更新される runtime interface になる。</p>
+        </article>
+        <article class="step">
+          <div class="num">6</div>
+          <p>さらに、trajectory は model training signal としても使われる。harness update と model update を切り離さず、相互に補完する loop として設計している。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section results-section" id="results">
+      <h2>検証結果</h2>
+      <div class="score-grid">
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>論文は、ALFWorld、GAIA、WebShop、tau^3-Bench、SWE-bench Verified の5つの benchmark で評価している。</p>
+        </article>
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>報告値では、HarnessX は平均 +14.5% の改善を示し、最大では +44.0% の改善が出ている。</p>
+        </article>
+        <article class="result-card">
+          <strong>改善幅は baseline が低い環境で特に大きいとされる。</strong>
+          <p>これは、モデルそのものより、観測、道具、記憶、検証、制御の組み方に改善余地が残っていることを示唆する。</p>
+        </article>
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>この結果は、agent 改善を model scaling だけに寄せず、runtime interface を合成・適応・進化させる方向にも実用的なレバーがあることを示している。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section warning" id="discussion">
+      <h2>課題と議論</h2>
+      <div class="callout warning-item">論文ページでは code が future release とされているため、現時点では実装の詳細再現性や運用コストは追加確認が必要である。</div>
+      <div class="callout warning-item">harness を自動更新する場合、安全な採用条件、rollback、監査ログ、変更差分の説明可能性が重要になる。</div>
+      <div class="callout warning-item">trace-driven evolution は強力だが、trace に含まれる private skill、secret、手順知識の保護も同時に設計する必要がある。</div>
+      <div class="callout warning-item">すべての task で harness を大きく変えればよいわけではない。更新対象、検証粒度、固定しておくべき境界を決める運用設計が必要になる。</div>
+    </section>
+
+    <section class="section list-section" id="next">
+      <h2>次に読むなら</h2>
+      <ul class="reading-list">
+        <li>まず Abstract と Introduction を読む。model scaling ではなく runtime interface を進化させるという問題設定を押さえる。</li>
+        <li>次に HarnessX overview と AEGIS の節を読む。Digester、Planner、Evolver、Critic が trace をどう harness edit に変えるかを見る。</li>
+        <li>実務に引くなら、Codex skill や scheduled-ops の実行ログを、どの typed edit に変換できるか考えながら読む。</li>
+        <li>関連して読むなら、Recursive Agent Harnesses、Code as Agent Harness、SkillOpt、RedAct を並べると、harness の再帰、実行基盤、skill 更新、trace protection がつながる。</li>
+      </ul>
+    </section>
+
+    <section id="qa">
+      <h2>読後Q&A</h2>
+      <article class="qa">
+        <h3>この論文の中心問いは？</h3>
+        <p>AI agent の性能を、モデル単体ではなく runtime harness の構成・適応・進化によってどう改善するか。</p>
+      </article>
+      <article class="qa">
+        <h3>runtime harness とは何？</h3>
+        <p>prompt、tools、memory、control flow など、モデルが観測し、考え、行動するための外部構造のこと。</p>
+      </article>
+      <article class="qa">
+        <h3>HarnessX は何を新しくする？</h3>
+        <p>harness を typed primitives として組み替え可能にし、実行 trace から候補 edit を生成・評価・採用する foundry として扱う。</p>
+      </article>
+      <article class="qa">
+        <h3>AEGIS は何をする？</h3>
+        <p>trace を読み、改善計画を作り、harness edit を生成し、critic が検証 signal に照らして評価する trace-driven multi-agent evolution engine。</p>
+      </article>
+      <article class="qa">
+        <h3>substitution algebra は何に効く？</h3>
+        <p>prompt、tool、memory、controller などの harness 部品を、場当たり的ではなく型つきの編集操作として差し替えるために効く。</p>
+      </article>
+      <article class="qa">
+        <h3>実験では何を示している？</h3>
+        <p>ALFWorld、GAIA、WebShop、tau^3-Bench、SWE-bench Verified で平均 +14.5%、最大 +44.0% の改善を報告している。</p>
+      </article>
+      <article class="qa">
+        <h3>なぜ baseline が低い環境で伸びる？</h3>
+        <p>モデル能力だけでなく、観測、道具、記憶、検証、制御の組み方に未回収の改善余地が大きい可能性があるため。</p>
+      </article>
+      <article class="qa">
+        <h3>個人 assistant 運用にどう効く？</h3>
+        <p>skill、wiki、scheduled job、article publisher を、固定手順ではなく trace から改善される harness として見直せる。</p>
+      </article>
+      <article class="qa">
+        <h3>注意点は？</h3>
+        <p>自動 harness 更新には、安全な採用条件、rollback、監査、変更差分の説明可能性、trace 内の private skill 保護が必要になる。</p>
+      </article>
+      <article class="qa">
+        <h3>次に読むなら何？</h3>
+        <p>Recursive Agent Harnesses、Code as Agent Harness、SkillOpt、RedAct を並べると、harness の再帰、実行基盤、skill 更新、trace protection がつながる。</p>
+      </article>
+    </section>
+      </div>
+    </div>
+
+  </main>
+  <footer>
+    <p>Source: <a href="https://arxiv.org/abs/2606.14249">arXiv:2606.14249 / HarnessX: A Composable, Adaptive, and Evolvable Agent Harness Foundry</a>.</p>
+    <p>This page is a public reading artifact and does not include private workspace paths, logs, or internal metadata.</p>
+  </footer>
+
+</body>
+</html>
