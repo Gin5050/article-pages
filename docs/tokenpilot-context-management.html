@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TokenPilot: Cache-Efficient Context Management for LLM Agents</title>
+  <link rel="stylesheet" href="./assets/article-content.css">
+  <link rel="stylesheet" href="./assets/article-pages.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./index.html">Article Pages</a>
+    <nav class="top-nav" aria-label="Site navigation">
+      <a href="./index.html">Home</a>
+      <a href="./unread-reading-inventory.html">未読一覧</a>
+    </nav>
+  </header>
+
+
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="kicker">Reading artifact</p>
+      <h1>TokenPilot: Cache-Efficient Context Management for LLM Agents</h1>
+      <p>TokenPilot は、長期 LLM agent の文脈管理を「削る」だけでなく、prompt cache が効く形で入力レイアウトを安定させる問題として扱う論文。入口で文脈を整え、残存価値が切れたものだけを保守的に捨てる二層設計を提案する。</p>
+      <div class="paper-meta">
+        <span class="meta-chip">作成日: 2026-06-16</span>
+        <span class="meta-chip">arXiv:2606.17016</span>
+        <span class="meta-chip">Context Management</span>
+        <span class="meta-chip">Prompt Cache</span>
+        <span class="meta-chip">Long-Horizon Agents</span>
+        <span class="meta-chip">LightMem2</span>
+      </div>
+      <div class="hero-actions">
+        <a class="button" href="https://arxiv.org/abs/2606.17016">元資料を開く</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="reader-grid">
+      <nav aria-label="Reading navigation">
+        <strong>目次</strong>
+        <a href="#why-this-matters">この論文の何がいいか</a>
+        <a href="#paper">どんな論文か</a>
+        <a href="#contributions">課題と貢献</a>
+        <a href="#method">手法のしくみ</a>
+        <a href="#results">検証結果</a>
+        <a href="#discussion">課題と議論</a>
+        <a href="#next">次に読むなら</a>
+        <a href="#qa">読後Q&A</a>
+      </nav>
+
+      <div>
+        <figure class="graphic-recording">
+          <a class="graphic-zoom-trigger" href="#graphic-recording-lightbox" aria-label="グラレコを拡大表示する"><img src="./assets/graphic-recordings/tokenpilot-context-management.png" alt="TokenPilot の日本語グラレコ" loading="eager" decoding="async"></a>
+          <figcaption>TokenPilot の問題設定、Ingestion-Aware Compaction、Lifecycle-Aware Eviction、評価結果、限界を1枚で把握するためのグラレコ。</figcaption>
+        </figure>
+        <div id="graphic-recording-lightbox" class="graphic-lightbox" aria-label="グラレコ拡大表示">
+          <a class="graphic-lightbox-backdrop" href="#" aria-label="拡大表示を閉じる"></a>
+          <a class="graphic-lightbox-content" href="#" aria-label="拡大表示を閉じる"><img src="./assets/graphic-recordings/tokenpilot-context-management.png" alt="TokenPilot の日本語グラレコ"></a>
+        </div>
+
+    <section class="section why-section" id="why-this-matters">
+      <h2>この論文の何がいいか</h2>
+      <p>この論文の良さは、agent のコスト削減を単なる token 節約ではなく、cache continuity と recovery を含む runtime design として見せているところにある。文脈を雑に削ると、あとで同じファイルを読み直したり、cache miss を増やしたりして、結局高くつく。</p>
+      <p>個人 AI assistant や coding agent の運用では、長い作業、複数 tool、wiki や repo の再読、公開ページ生成のようなワークフローが普通に起きる。TokenPilot は、tool 出力を preview + recovery にする、重複 read を抑える、completed だがまだ使う context をすぐ捨てない、という設計判断の言葉をくれる。</p>
+      <p>ゆうきさんの関心に引きつけるなら、scheduled-ops や paper-watch の長時間実行を、単に文脈を短くする方向ではなく、再利用できる prefix と戻れる artifact registry を持つ harness として見直す材料になる。</p>
+    </section>
+
+    <section class="section" id="paper">
+      <h2>どんな論文か</h2>
+      <p>長期に動く LLM agent は、対話履歴、tool trace、file read、実行ログ、検索結果を抱え続ける。文脈が増えると推論コストが上がるため、従来は pruning、summarization、eviction のような文脈削減が中心になっていた。</p>
+      <p>TokenPilot の面白い点は、文脈削減が常に得ではないと正面から言うところにある。入力の一部を削ったり、順序や境界を変えたりすると、prompt prefix がずれて KV cache が効かなくなり、安い cache read ではなく高い cache miss / prefill が増える。</p>
+      <p>この論文は、text-level sparsity と hardware-level cache alignment を同時に見る。入口では volatile な path、timestamp、tool schema、重い tool output を整えて prefix を安定させ、局所履歴では task utility が切れるまで context segment を保守的に保持する。</p>
+      <p>評価は PinchBench と Claw-Eval を使い、isolated mode と continuous mode の両方で行っている。論文は、TokenPilot が競争的な task performance を維持しながら、費用を大きく下げたと報告している。</p>
+      <p>TokenPilot は、LLM agent の長期セッションで増え続ける context を、cache 効率を壊さずに管理するための framework を提案する論文である。</p>
+      <p>中心課題は、text pruning や dynamic eviction が token 数を減らす一方で、入力レイアウトを変えて prompt prefix continuity を壊し、KV cache miss を増やしてしまうこと。</p>
+      <p>論文は、文脈管理を global ingestion boundary と local context sequence の二層に分け、それぞれ Ingestion-Aware Compaction と Lifecycle-Aware Eviction を置く。</p>
+    </section>
+
+    <section class="section insights-section" id="contributions">
+      <h2>課題と貢献</h2>
+      <div class="insight-list">
+        <article class="insight-card">
+          <strong>Ingestion-Aware Compaction。</strong>
+          <p>入口で volatile な runtime marker を static placeholder に置き換え、tool definitions の位置や tool output の構造ノイズを整えて、byte-identical な prefix を作りやすくする。</p>
+        </article>
+        <article class="insight-card">
+          <strong>Observation Reduction with Recovery。</strong>
+          <p>重い tool output は compact preview として working memory に入れ、元 payload は artifact registry に残す。必要になったら recovery tool で戻せるため、削減と安全な再アクセスを両立する。</p>
+        </article>
+        <article class="insight-card">
+          <strong>Lifecycle-Aware Eviction。</strong>
+          <p>context segment を active、completed、evictable の状態で管理し、completed になっても residual utility が残る間はすぐ捨てない。</p>
+        </article>
+        <article class="insight-card">
+          <strong>Cache-aware evaluation。</strong>
+          <p>PinchBench と Claw-Eval で、task accuracy だけでなく cache hit / miss token と実際の費用を測る。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section steps-section" id="method">
+      <h2>手法のしくみ</h2>
+      <div class="route">
+        <article class="step">
+          <div class="num">1</div>
+          <p>入力は、agent の task prompt、thinking trace、tool call、final response、tool feedback などの混在した message stream である。</p>
+        </article>
+        <article class="step">
+          <div class="num">2</div>
+          <p>まず message を internal intentional messages と open-world environmental feedback に分ける。前者は高密度の情報として扱い、後者は HTML、terminal log、重複 read などのノイズを含みやすいものとして扱う。</p>
+        </article>
+        <article class="step">
+          <div class="num">3</div>
+          <p>global 側では、path や timestamp のような volatile fields を stable placeholder に置き換え、tool definitions を primary system prompt から動かして prefix mismatch を減らす。</p>
+        </article>
+        <article class="step">
+          <div class="num">4</div>
+          <p>environmental feedback は、HTML slimming、execution output truncation、deduplication、frequency limit などの reduction pass で compact preview にする。元の full payload は content hash で artifact registry に残す。</p>
+        </article>
+        <article class="step">
+          <div class="num">5</div>
+          <p>local 側では、context segment ごとに active、completed、evictable の状態を持たせる。sub-task が終わっても、後続作業で必要な可能性があれば completed として残す。</p>
+        </article>
+        <article class="step">
+          <div class="num">6</div>
+          <p>状態推定は毎 turn ではなく、batch size B ごとに保守的に行う。論文では、過剰に頻繁な eviction は layout consistency を壊し cache miss を増やすため、batch scheduling が重要だと示している。</p>
+        </article>
+        <article class="step">
+          <div class="num">7</div>
+          <p>evictable と判定された segment だけを構造的に purge し、context window を作り直す。必要なら recovery tool が full payload を戻し、削りすぎによる再読ループを防ぐ。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section results-section" id="results">
+      <h2>検証結果</h2>
+      <div class="score-grid">
+        <article class="result-card">
+          <strong>Isolated mode。</strong>
+          <p>TokenPilot は PinchBench で $3.22、Claw-Eval で $2.27 の総推論費用を示し、競争的な task accuracy を維持したと報告されている。</p>
+        </article>
+        <article class="result-card">
+          <strong>Continuous mode。</strong>
+          <p>PinchBench では score 81.3、費用 $2.79、cache miss 1.549M tokens と報告されている。Claw-Eval では Vanilla の $81.52 に対し TokenPilot は $10.58 まで下げたとされる。</p>
+        </article>
+        <article class="result-card">
+          <strong>全体の費用削減。</strong>
+          <p>abstract では isolated mode で 61% と 56%、continuous mode で 61% と 87% の費用削減を報告している。</p>
+        </article>
+        <article class="result-card">
+          <strong>Ablation。</strong>
+          <p>Ingestion-Aware Compaction により費用が $7.24 から $4.22 へ下がり、Lifecycle-Aware Eviction を重ねると $2.79 まで下がる。stable placeholders は cache hit rate を PinchBench で 38.7% から 79.2%、Claw-Eval で 67.2% から 83.1% へ改善したと報告されている。</p>
+        </article>
+        <article class="result-card">
+          <strong>Recovery の役割。</strong>
+          <p>full content access を無効にすると score が 80.9 から 77.1 に落ち、費用も $4.03 へ増える。削るだけでなく、戻れることが性能と費用の両方に効いている。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section warning" id="discussion">
+      <h2>課題と議論</h2>
+      <div class="callout warning-item">model-based estimator は、曖昧または情報が少ない interaction pattern では context segment を誤分類する可能性がある。</div>
+      <div class="callout warning-item">frequency threshold や batch size B は、deployment environment や task distribution に合わせた調整が必要になる。</div>
+      <div class="callout warning-item">prefix stabilization は provider 側の prefix caching support に依存する。prefix cache がない provider では主要な利点が出にくい。</div>
+      <div class="callout warning-item">continuous mode の評価は同カテゴリタスクが連続する環境を前提にしている。カテゴリが激しく混ざる stream では tool schema の変化により prefix reuse が下がる可能性がある。</div>
+    </section>
+
+    <section class="section list-section" id="next">
+      <h2>次に読むなら</h2>
+      <ul class="reading-list">
+        <li>まず Introduction を読み、文脈削減が cache miss を増やすという問題設定を押さえる。</li>
+        <li>次に 3.2 と 3.3 を読む。入口で整えるものと、局所履歴として残すものの分担を見る。</li>
+        <li>実装感をつかむなら Appendix A.4 を読む。execution output truncation、deduplication、frequency limit、recovery tool の具体値が出ている。</li>
+        <li>関連して読むなら、HarnessX、Is Grep All You Need?、Agent Memory、STALE を並べると、harness、検索、記憶、鮮度管理がつながる。</li>
+      </ul>
+    </section>
+
+    <section id="qa">
+      <h2>読後Q&A</h2>
+      <article class="qa">
+        <h3>この論文の中心問いは？</h3>
+        <p>LLM agent の長期文脈を、task performance を落とさず、prompt cache を壊さず、低コストで管理するにはどうすればよいか。</p>
+      </article>
+      <article class="qa">
+        <h3>なぜ単純な context pruning では足りない？</h3>
+        <p>token 数は減っても、入力境界や prefix が変わると KV cache が効かなくなり、高い cache miss / prefill が増えるため。</p>
+      </article>
+      <article class="qa">
+        <h3>Ingestion-Aware Compaction は何をする？</h3>
+        <p>path、timestamp、tool schema、重い tool output などを入口で整え、prompt prefix を安定させ、必要なら full payload に戻れる preview を作る。</p>
+      </article>
+      <article class="qa">
+        <h3>Lifecycle-Aware Eviction は何をする？</h3>
+        <p>context segment を active、completed、evictable として管理し、sub-task が終わっても残存価値がある間はすぐ捨てない。</p>
+      </article>
+      <article class="qa">
+        <h3>preview + recovery はなぜ重要？</h3>
+        <p>重い tool output を短く保ちつつ、必要な時に元 payload を戻せるため、削りすぎによる性能低下や再読ループを避けられる。</p>
+      </article>
+      <article class="qa">
+        <h3>どんな benchmark で評価している？</h3>
+        <p>PinchBench と Claw-Eval を使い、isolated mode と continuous mode の両方で task performance、cache hit / miss、費用を測っている。</p>
+      </article>
+      <article class="qa">
+        <h3>主な結果は？</h3>
+        <p>abstract では、isolated mode で 61% と 56%、continuous mode で 61% と 87% の費用削減を報告し、競争的な性能を維持したとしている。</p>
+      </article>
+      <article class="qa">
+        <h3>おい丸運用にどう効く？</h3>
+        <p>tool 出力を全部積むのではなく、preview、artifact registry、recovery、重複 read の置換、completed context の保守的保持として設計できる。</p>
+      </article>
+      <article class="qa">
+        <h3>注意点は？</h3>
+        <p>prefix caching を持つ provider が前提で、task が激しく混在すると prefix reuse が下がる可能性がある。状態推定の誤分類にも注意が必要。</p>
+      </article>
+      <article class="qa">
+        <h3>次に見るならどこ？</h3>
+        <p>Introduction、3.2、3.3、Appendix A.4 を読むと、問題設定、二層設計、実装パラメータまでつながる。</p>
+      </article>
+    </section>
+      </div>
+    </div>
+
+  </main>
+  <footer>
+    <p>Source: <a href="https://arxiv.org/abs/2606.17016">arXiv:2606.17016 / TokenPilot: Cache-Efficient Context Management for LLM Agents</a>.</p>
+    <p>This page is a public reading artifact and does not include private workspace paths, logs, or internal metadata.</p>
+  </footer>
+
+</body>
+</html>
