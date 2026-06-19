@@ -40,6 +40,12 @@
     <div class="reader-grid">
       <nav aria-label="Reading navigation">
         <strong>目次</strong>
+        <a href="#explain-30s">30秒で言うと</a>
+        <a href="#explanation-path">人に説明する順番</a>
+        <a href="#claim-map">主張マップ</a>
+        <a href="#three-minute-script">3分で紹介するなら</a>
+        <a href="#misunderstandings">誤解しやすい点</a>
+        <a href="#self-check">理解チェック</a>
         <a href="#why-this-matters">この論文の何がいいか</a>
         <a href="#paper">どんな論文か</a>
         <a href="#contributions">課題と貢献</a>
@@ -59,6 +65,84 @@
           <a class="graphic-lightbox-backdrop" href="#" aria-label="拡大表示を閉じる"></a>
           <a class="graphic-lightbox-content" href="#" aria-label="拡大表示を閉じる"><img src="./assets/graphic-recordings/tokenpilot-context-management.png" alt="TokenPilot の日本語グラレコ"></a>
         </div>
+
+    <section class="section why-section" id="explain-30s">
+      <h2>30秒で言うと</h2>
+      <div class="callout">TokenPilot は、長時間動く LLM エージェントの文脈管理を「どれだけ削るか」ではなく、「prompt cache が効くように、何を安定させ、何を後から戻せる形で外に出すか」として設計し直す論文。</div>
+    </section>
+
+    <section class="section steps-section" id="explanation-path">
+      <h2>人に説明する順番</h2>
+      <div class="route">
+        <article class="step">
+          <div class="num">1</div>
+          <p>まず、長時間動く agent は tool 出力、実行ログ、ファイル内容、過去の判断を抱え込み、context が太るほど費用が増える、という普通の問題から入る。</p>
+        </article>
+        <article class="step">
+          <div class="num">2</div>
+          <p>次に、単純に context を削ると token は減るが、prompt prefix の並びや境界が変わって cache が効かなくなり、かえって高い prefill が増える、というこの論文のひねりを説明する。</p>
+        </article>
+        <article class="step">
+          <div class="num">3</div>
+          <p>そのうえで、TokenPilot は入口で文脈を安定化する Ingestion-Aware Compaction と、作業単位の残存価値を見て捨てる Lifecycle-Aware Eviction の二層に分ける、と説明する。</p>
+        </article>
+        <article class="step">
+          <div class="num">4</div>
+          <p>最後に、重い tool output は preview だけ入れ、元データは artifact registry に残して recovery できるので、削ることと戻れることを両立している、とまとめる。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section insights-section" id="claim-map">
+      <h2>主張マップ</h2>
+      <div class="insight-list">
+        <article class="insight-card">
+          <strong>文脈削減は token 数だけで評価してはいけない。</strong>
+          <p>論文は cache hit / miss token と実費用を測り、prefix が崩れると cache miss が増える問題を示している。 agent 運用では、短くしたつもりの context が再読や cache miss で高くつくことがある。</p>
+        </article>
+        <article class="insight-card">
+          <strong>入口の安定化と局所履歴の eviction は別問題。</strong>
+          <p>TokenPilot は Ingestion-Aware Compaction と Lifecycle-Aware Eviction を分けて設計する。 tool schema、timestamp、path のような揺れと、sub-task が終わった履歴を捨てる判断を同じ仕組みに混ぜないで済む。</p>
+        </article>
+        <article class="insight-card">
+          <strong>削るなら recovery できることが重要。</strong>
+          <p>重い tool output は compact preview にし、full payload は artifact registry に残す。Recovery を無効化すると score が落ち、費用も増えると報告されている。 ただ短くするのではなく、必要な時に戻れる設計が、性能と費用の両方を守る。</p>
+        </article>
+        <article class="insight-card">
+          <strong>completed な context はすぐ捨てない。</strong>
+          <p>Lifecycle-Aware Eviction は active / completed / evictable を分け、残存価値がある間は completed segment を保持する。 作業が終わったように見える情報でも、後続の検証や報告で必要になることがある。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" id="three-minute-script">
+      <h2>3分で紹介するなら</h2>
+      <p>この論文は、長時間動く LLM エージェントの context が膨らみ続ける問題を扱っています。普通に考えると、古い履歴や長い tool 出力を削れば安くなる、となりがちです。</p>
+      <p>でも TokenPilot が面白いのは、削るだけでは不十分だと言っている点です。LLM API では prompt prefix が安定していると cache が効きますが、context を途中で削ったり並びを変えたりすると、その cache が壊れて高い prefill が増えることがあります。つまり token 数だけ見ていると、実際の費用を読み間違える。</p>
+      <p>そこで TokenPilot は、文脈管理を二層に分けます。入口では path、timestamp、tool schema、重い tool output のような揺れを整えて、prefix を安定させます。作業中の履歴については、active、completed、evictable のように状態を分け、終わったから即捨てるのではなく、残存価値が切れてから捨てます。</p>
+      <p>さらに、重い tool output は全部 context に入れず preview だけを置き、元データは artifact registry に残します。必要になったら recovery tool で戻せるので、短くすることと、あとで確認できることを両立できます。</p>
+      <p>結論として、この論文は agent の context management を、単なる要約や pruning ではなく、cache、artifact、recovery、lifecycle を含む runtime design として捉え直すものです。おい丸の運用に引きつけるなら、audit log や tool 出力を全文読むのではなく、preview と再取得経路を持つ設計にする、という判断に直結します。</p>
+    </section>
+
+    <section class="section warning" id="misunderstandings">
+      <h2>誤解しやすい点</h2>
+      <div class="callout warning-item">TokenPilot は単に context を短くする手法である -&gt; 短くするだけでなく、prefix cache が効くように入力レイアウトを安定させ、必要な情報へ戻れる recovery 経路を持たせる手法である。</div>
+      <div class="callout warning-item">古い履歴は completed になったら捨てればよい -&gt; completed でも残存価値がある間は保持し、evictable と判定されてから捨てる。</div>
+      <div class="callout warning-item">preview にすれば性能は必ず落ちる -&gt; preview だけでなく full payload を registry に残し、必要時に recovery できるため、性能低下を抑えながら context を軽くできる。</div>
+      <div class="callout warning-item">どの provider でも同じ効果が出る -&gt; 主要な利点は prefix caching support に依存するため、provider や実行環境によって効き方は変わる。</div>
+    </section>
+
+    <section class="section list-section" id="self-check">
+      <h2>理解チェック</h2>
+      <ul class="reading-list">
+        <li>この論文の中心問いを「token を減らす」以外の言葉で説明できるか。</li>
+        <li>なぜ単純な pruning が cache miss を増やしうるのかを説明できるか。</li>
+        <li>Ingestion-Aware Compaction と Lifecycle-Aware Eviction の役割分担を説明できるか。</li>
+        <li>preview + artifact registry + recovery の3点セットを、自分の運用例に置き換えて説明できるか。</li>
+        <li>TokenPilot の結果で、性能・費用・cache hit / miss のどれを見ているかを区別できるか。</li>
+        <li>この手法が効きにくい条件を1つ以上挙げられるか。</li>
+      </ul>
+    </section>
 
     <section class="section why-section" id="why-this-matters">
       <h2>この論文の何がいいか</h2>
