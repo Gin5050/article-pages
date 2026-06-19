@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Multi-Agent Transactive Memory</title>
+  <link rel="stylesheet" href="./assets/article-content.css">
+  <link rel="stylesheet" href="./assets/article-pages.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./index.html">Article Pages</a>
+    <nav class="top-nav" aria-label="Site navigation">
+      <a href="./index.html">Home</a>
+      <a href="./unread-reading-inventory.html">未読一覧</a>
+    </nav>
+  </header>
+
+
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="kicker">Reading artifact</p>
+      <h1>Multi-Agent Transactive Memory</h1>
+      <p>この論文は、LLM エージェントが実行中に生んだ行動軌跡を、個別 agent の一時ログではなく、異種 agent population が検索・再利用できる共有メモリとして扱う。</p>
+      <div class="paper-meta">
+        <span class="meta-chip">作成日: 2026-06-19</span>
+        <span class="meta-chip">arXiv:2606.19911</span>
+        <span class="meta-chip">Agent Memory</span>
+        <span class="meta-chip">Trajectory Retrieval</span>
+        <span class="meta-chip">Learning to Rank</span>
+        <span class="meta-chip">ALFWorld / WebArena</span>
+      </div>
+      <div class="hero-actions">
+        <a class="button" href="https://arxiv.org/abs/2606.19911">元資料を開く</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="reader-grid">
+      <nav aria-label="Reading navigation">
+        <strong>目次</strong>
+        <a href="#explain-30s">30秒で言うと</a>
+        <a href="#explanation-path">人に説明する順番</a>
+        <a href="#claim-map">主張マップ</a>
+        <a href="#three-minute-script">3分で紹介するなら</a>
+        <a href="#misunderstandings">誤解しやすい点</a>
+        <a href="#self-check">理解チェック</a>
+        <a href="#why-this-matters">この論文の何がいいか</a>
+        <a href="#paper">どんな論文か</a>
+        <a href="#contributions">課題と貢献</a>
+        <a href="#method">手法のしくみ</a>
+        <a href="#results">検証結果</a>
+        <a href="#discussion">課題と議論</a>
+        <a href="#next">次に読むなら</a>
+        <a href="#qa">読後Q&A</a>
+      </nav>
+
+      <div>
+        <figure class="graphic-recording">
+          <a class="graphic-zoom-trigger" href="#graphic-recording-lightbox" aria-label="グラレコを拡大表示する"><img src="./assets/graphic-recordings/multi-agent-transactive-memory.png" alt="Multi-Agent Transactive Memory の日本語グラレコ" loading="eager" decoding="async"></a>
+          <figcaption>agent 軌跡の共有リポジトリ、状態に応じた検索、LTR reranking、実験結果、限界を、元論文の図表を写さずに抽象化した日本語グラレコ。</figcaption>
+        </figure>
+        <div id="graphic-recording-lightbox" class="graphic-lightbox" aria-label="グラレコ拡大表示">
+          <a class="graphic-lightbox-backdrop" href="#" aria-label="拡大表示を閉じる"></a>
+          <a class="graphic-lightbox-content" href="#" aria-label="拡大表示を閉じる"><img src="./assets/graphic-recordings/multi-agent-transactive-memory.png" alt="Multi-Agent Transactive Memory の日本語グラレコ"></a>
+        </div>
+
+    <section class="section why-section" id="explain-30s">
+      <h2>30秒で言うと</h2>
+      <div class="callout">agent が解いた手順を毎回捨てず、共有リポジトリに入れて、別の agent が今の状態に近い軌跡を取り出して再利用する論文。</div>
+    </section>
+
+    <section class="section steps-section" id="explanation-path">
+      <h2>人に説明する順番</h2>
+      <div class="route">
+        <article class="step">
+          <div class="num">1</div>
+          <p>まず、LLM agent は行動・観察・失敗・修正の軌跡を大量に作るが、多くは一回で捨てられると説明する。</p>
+        </article>
+        <article class="step">
+          <div class="num">2</div>
+          <p>次に、RAG は人間が書いた文書を agent に読ませるが、MATM は agent が作った手続き的 artifact を別の agent に読ませる点が違うと置く。</p>
+        </article>
+        <article class="step">
+          <div class="num">3</div>
+          <p>その上で、producer agent、共有リポジトリ、consumer agent、状態に応じた検索、reranking の順に仕組みを説明する。</p>
+        </article>
+        <article class="step">
+          <div class="num">4</div>
+          <p>最後に、ALFWorld と WebArena で成功率とステップ効率が改善し、cross-task retrieval やメモリサイズの効果も見た、と結果をまとめる。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section insights-section" id="claim-map">
+      <h2>主張マップ</h2>
+      <div class="insight-list">
+        <article class="insight-card"><p>agent-generated trajectories は、後続 agent が使える手続き知識になりうる。。MATM retrieval は ALFWorld と WebArena の両方で no-retrieval より成功率と効率を改善した。 ログを監査用に残すだけでなく、将来の agent 行動を改善する shared memory として扱える。</p></article>
+        <article class="insight-card"><p>単純な類似検索だけでなく、trajectory の下流効用を予測する reranking が効く。。ALFWorld では single-stage retrieval の成功率 55.1% に対し、SVMRank reranking は 64.3% まで上がった。 agent memory 検索では、意味的に近いかだけでなく、その consumer agent に本当に役立つかを見る必要がある。</p></article>
+        <article class="insight-card"><p>共有メモリの価値は、同じ task type や強い producer だけに閉じない。。cross-task retrieval でも no-retrieval baseline を上回り、capability gap だけでは retrieval benefit を説明しきれないと論じている。 異種 agent / 異種 task の経験を共有する設計に意味がある。</p></article>
+      </div>
+    </section>
+
+    <section class="section" id="three-minute-script">
+      <h2>3分で紹介するなら</h2>
+      <p>この論文は、エージェントの実行ログを『終わったら捨てるもの』ではなく『次のエージェントが使える手続き知識』として見る論文です。</p>
+      <p>普通の RAG は、人間が書いた文書を検索して agent に読ませます。MATM は一歩進めて、agent が環境とやり取りして生んだ trajectory、つまり行動と観察の列を共有リポジトリに入れます。</p>
+      <p>新しい agent は、自分のタスク説明と直近の状態を検索キーにして、似た状況の軌跡チャンクを取り出します。さらに producer の信頼度、consumer の特性、検索スコア、軌跡長、query と軌跡の類似度などを使って rerank します。</p>
+      <p>結果として、ALFWorld では成功率が 47.1% から 55.1%、SVMRank reranking で 64.3% まで上がり、平均ステップも減っています。WebArena でも改善は控えめながら出ています。</p>
+      <p>実務的には、agent のログを単なる監査ログで終わらせず、再利用できる trajectory chunk、skill seed、失敗回避例として保存する設計に使えます。</p>
+    </section>
+
+    <section class="section warning" id="misunderstandings">
+      <h2>誤解しやすい点</h2>
+      <div class="callout warning-item">これは普通の RAG を agent ログに適用しただけである。 -&gt; 単なる文書検索ではなく、現在状態に条件づけた action-observation trajectory の検索と、下流効用に基づく reranking を扱う。</div>
+      <div class="callout warning-item">強い agent のログを弱い agent に渡すだけの話である。 -&gt; 論文は capability gap だけでは効果が説明できず、benefit が population に広く分布すると論じている。</div>
+      <div class="callout warning-item">メモリを大きくすれば常に単調に良くなる。 -&gt; ALFWorld では単調改善が見えるが、WebArena の成功率は中間サイズで一度落ちる。ノイズ候補や環境差への注意が必要。</div>
+    </section>
+
+    <section class="section list-section" id="self-check">
+      <h2>理解チェック</h2>
+      <ul class="reading-list">
+        <li>MATM は RAG と何が違うか説明できるか。</li>
+        <li>producer agent と consumer agent の役割を説明できるか。</li>
+        <li>state-conditioned key-value indexing が何を key / value にするか説明できるか。</li>
+        <li>LTR reranking がなぜ必要か説明できるか。</li>
+        <li>ALFWorld と WebArena で結果の強さが違う理由を説明できるか。</li>
+      </ul>
+    </section>
+
+    <section class="section why-section" id="why-this-matters">
+      <h2>この論文の何がいいか</h2>
+      <p>この論文の良さは、agent の実行軌跡をログ保管や反省材料に閉じず、他の agent が直接使える手続き知識として扱う点にある。長時間タスクを何度も走らせる運用では、同じ探索や同じ失敗を何度も繰り返すことがコストになる。</p>
+      <p>ゆうきの文脈では、paper-watch、article-page-publisher、GitHub 作業、wiki query、scheduled-ops の実行ログがすでに大量の trajectory を生んでいる。MATM は、それらを『あとで読むログ』ではなく、『別の実行が途中で検索して使う経験チャンク』として見るための地図になる。</p>
+      <p>特に刺さるのは、producer trust modeling と consumer personalization である。同じ trajectory でも、どの agent が作ったか、どの consumer agent が使うか、どのタスク状態で取り出すかによって価値は変わる。これは skill や wiki メモの検索にもそのまま戻せる。</p>
+    </section>
+
+    <section class="section" id="paper">
+      <h2>どんな論文か</h2>
+      <p>Multi-Agent Transactive Memory は、LLM エージェントの経験を個別 agent 内の記憶ではなく、集団で共有される手続き知識として扱う論文である。agent はタスクを解く過程で、行動、観察、失敗、修正、次の一手のような rich な軌跡を生む。しかし多くのシステムでは、その軌跡は一回の実行で捨てられるか、作った agent だけに閉じる。</p>
+      <p>著者らは、人間の集団が『誰が何を知っているか』を手がかりに知識を分散利用する transactive memory の発想を、LLM agent population に持ち込む。producer agent は自分が作った trajectory を共有リポジトリへ投稿し、consumer agent は現在のタスクと状態に近い trajectory chunk を取り出して、次の行動を決める。</p>
+      <p>ここで重要なのは、検索対象が人間の文書ではなく agent-generated artifacts であることだ。RAG は人間が書いた文章を agent に渡すが、MATM は agent が実際に環境とやり取りした action-observation history を再利用する。これは、説明文ではなく手続き知識を検索する設計に近い。</p>
+      <p>論文は、ALFWorld と WebArena という interactive environment で MATM を評価する。単純な single-stage retrieval でも成功率とステップ効率が改善し、さらに learning-to-rank reranking を入れると、特に ALFWorld で効果が大きくなる。</p>
+      <p>読む価値は、agent memory を『個体の長期記憶』から『集団の経験リポジトリ』へ広げる点にある。これは、おい丸の scheduled-ops、subagent、paper-watch、wiki、skill 更新ログを、単なる記録ではなく次の agent が使える reusable trajectory として扱う見方につながる。</p>
+      <p>この論文は、異種 LLM agent population のための共有メモリ基盤 MATM を提案する。対象は、自然言語のメモだけではなく、環境との interaction trajectory、つまり action-observation の列である。</p>
+      <p>従来の memory や thought reuse は、作った agent 自身の再利用に閉じがちだった。MATM は、agent が自由に参加する open ecosystem を想定し、producer が作った軌跡を consumer が取り出せる shared repository として設計する。</p>
+      <p>論文の主張は、agent-generated artifacts は人間文書とは違う種類の検索対象であり、agent が消費しやすい procedural knowledge を含むという点にある。</p>
+    </section>
+
+    <section class="section insights-section" id="contributions">
+      <h2>課題と貢献</h2>
+      <div class="insight-list">
+        <article class="insight-card"><p>第一の貢献は、agent trajectory を population-level memory として蓄積・検索する MATM の枠組みを定義したこと。</p></article>
+        <article class="insight-card"><p>第二の貢献は、タスク説明と直近の action-observation history を key にし、次の interaction segment を value として保存する state-conditioned key-value indexing を使ったこと。</p></article>
+        <article class="insight-card"><p>第三の貢献は、producer metadata、consumer metadata、検索スコア、query feature、trajectory feature、query-trajectory interaction feature を使う Learning To Rank Trajectories を導入したこと。</p></article>
+        <article class="insight-card"><p>第四の貢献は、ALFWorld と WebArena で、shared trajectory retrieval が成功率と効率を改善し、cross-task retrieval や memory scaling でも有用性を示したこと。</p></article>
+      </div>
+    </section>
+
+    <section class="section steps-section" id="method">
+      <h2>手法のしくみ</h2>
+      <div class="route">
+        <article class="step">
+          <div class="num">1</div>
+          <p>まず、各 agent は interactive environment でタスクを解く。その過程で、観察、行動、次の観察という系列が trajectory として記録される。</p>
+        </article>
+        <article class="step">
+          <div class="num">2</div>
+          <p>次に、その trajectory を共有リポジトリに入れる。producer agent は経験を投稿する側、consumer agent は検索して使う側であり、同じ agent が状況によって両方の役割を持つ。</p>
+        </article>
+        <article class="step">
+          <div class="num">3</div>
+          <p>検索では、タスク記述と直近の interaction history を query / key として使う。取り出される value は、その状態から先の数ステップの trajectory chunk である。これにより、consumer は単なる似たタスクではなく、現在状態に近い手順を参照できる。</p>
+        </article>
+        <article class="step">
+          <div class="num">4</div>
+          <p>初段検索は dense retriever などで候補を出す。その後、learning-to-rank reranker が候補を並べ替える。特徴量には、producer agent の能力情報、consumer agent の ID、検索スコア、query 長、trajectory 長、query と trajectory の類似度などが含まれる。</p>
+        </article>
+        <article class="step">
+          <div class="num">5</div>
+          <p>reranker の教師信号は、意味的に似ているかではなく、その trajectory chunk を注入した時に consumer agent の成果が no-retrieval よりどれだけ良くなるかという marginal utility に基づく。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section results-section" id="results">
+      <h2>検証結果</h2>
+      <div class="score-grid">
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>ALFWorld では、no retrieval の success rate 47.1% に対し、single-stage retrieval は 55.1% へ改善した。SVMRank reranking を入れると 64.3% まで上がり、平均ステップも 11.77 から 10.35 へ減少した。</p>
+        </article>
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>WebArena では、no retrieval の success rate 18.2% に対し、single-stage retrieval と一部 reranker が 20.5% へ改善した。効果は ALFWorld より控えめで、長い horizon と初期ステップのエラー感度が影響している可能性がある。</p>
+        </article>
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>capability gap の分析では、retrieval benefit は単に強い producer から弱い consumer への移転だけでは説明できない。効果は population 全体に広く分布する。</p>
+        </article>
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>retrieval scope の実験では、full retrieval が最も強い一方、cross-task retrieval でも no-retrieval を上回る。これは、trajectory がタスク境界を越えて再利用できる手続きパターンを含むことを示す。</p>
+        </article>
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>memory size の実験では、ALFWorld はメモリが大きくなるほど単調に改善する。WebArena は中間サイズで一度落ちるが、full scale で回復し、ノイズ候補と coverage のバランスが重要だと分かる。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section warning" id="discussion">
+      <h2>課題と議論</h2>
+      <div class="callout warning-item">MATM は、agent memory を個別 agent の私的状態ではなく、shared artifact storage として見る。そのため、検索だけでなく、誰が良い trajectory を投稿するのか、どう信頼するのか、どう報酬づけるのかが課題になる。</div>
+      <div class="callout warning-item">producer metadata が reranking に効くことは、trajectory 選択が producer trust modeling の問題でもあることを示す。ただし、環境ごとに重要特徴量は違い、固定の ranking policy では足りない。</div>
+      <div class="callout warning-item">WebArena のような複雑な環境では、もっともらしいが役に立たない候補が混ざりやすい。shared memory は大きければよいだけではなく、検索・reranking・consumer personalization の設計が必要になる。</div>
+      <div class="callout warning-item">おい丸運用へ引くなら、実行ログを丸ごと積むのではなく、再利用しやすい trajectory chunk、成功条件、失敗条件、producer context、使える場面を一緒に保存する必要がある。</div>
+    </section>
+
+    <section class="section list-section" id="next">
+      <h2>次に読むなら</h2>
+      <ul class="reading-list">
+        <li>SkillEvolBench や MUSE-Autoskill と並べると、trajectory から skill へ抽象化する前段の shared memory として MATM を読める。</li>
+        <li>Agent Memory: Characterization and System Implications と並べると、個別 agent memory workload と population-level memory infrastructure の違いが見える。</li>
+        <li>TokenPilot や PACMS と並べると、長い agent workflow で何を context に残し、何を外部 memory から引くかという設計に接続できる。</li>
+        <li>paper-watch の後処理では、良い候補を選んだ理由だけでなく、次の agent が使える trajectory / evidence / retrieval clue として何を残すかを見るとよい。</li>
+      </ul>
+    </section>
+
+    <section id="qa">
+      <h2>読後Q&A</h2>
+      <article class="qa">
+        <h3>この論文の中心問いは？</h3>
+        <p>LLM agent が作った行動軌跡を、個別 agent の一時ログではなく、異種 agent population が共有・検索・再利用できる memory infrastructure にできるか、という問い。</p>
+      </article>
+      <article class="qa">
+        <h3>MATM は普通の RAG と何が違う？</h3>
+        <p>普通の RAG は主に人間が書いた文書を検索する。MATM は agent が環境とやり取りして作った action-observation trajectory を検索し、次の行動に使う。</p>
+      </article>
+      <article class="qa">
+        <h3>producer agent と consumer agent とは？</h3>
+        <p>producer agent は自分の task execution でできた trajectory を共有リポジトリへ投稿する agent。consumer agent は現在のタスクや状態に合う trajectory を検索して使う agent。</p>
+      </article>
+      <article class="qa">
+        <h3>state-conditioned retrieval とは？</h3>
+        <p>元のタスク説明だけでなく、直近の行動・観察履歴を検索キーにして、今の状態から参考になる次の trajectory segment を取り出す方法。</p>
+      </article>
+      <article class="qa">
+        <h3>なぜ reranking が必要？</h3>
+        <p>意味的に近い trajectory が必ず役に立つとは限らないため。producer の信頼度、consumer の特性、trajectory の長さ、query との関係などを使い、下流で役に立つ候補を上げる必要がある。</p>
+      </article>
+      <article class="qa">
+        <h3>実験では何が良くなった？</h3>
+        <p>ALFWorld と WebArena で、no-retrieval より success rate と step efficiency が改善した。ALFWorld では SVMRank reranking により成功率が 64.3% まで上がった。</p>
+      </article>
+      <article class="qa">
+        <h3>cross-task retrieval に意味はある？</h3>
+        <p>ある。full retrieval が最も良いが、cross-task retrieval でも no-retrieval baseline を上回り、異なる task type の trajectory にも転用可能な手続きパターンが含まれることを示している。</p>
+      </article>
+      <article class="qa">
+        <h3>一番の限界は？</h3>
+        <p>環境によって効果や最適 reranker が違い、WebArena のような複雑な環境では改善が控えめになる。メモリが増えるとノイズ候補も増えるため、検索と reranking の設計が重要。</p>
+      </article>
+      <article class="qa">
+        <h3>おい丸運用にはどう効く？</h3>
+        <p>scheduled-ops や subagent の実行ログを、単なる記録ではなく、別の作業が検索して再利用できる trajectory chunk や skill seed として保存する発想に使える。</p>
+      </article>
+      <article class="qa">
+        <h3>この論文を一言でいうと？</h3>
+        <p>agent の経験は捨てるログではなく、集団で検索・再利用できる手続き知識にできる、という論文。</p>
+      </article>
+    </section>
+      </div>
+    </div>
+
+  </main>
+  <footer>
+    <p>Source: <a href="https://arxiv.org/abs/2606.19911">arXiv:2606.19911 / Multi-Agent Transactive Memory</a>.</p>
+    <p>This page is a public reading artifact and does not include private workspace paths, logs, or internal metadata.</p>
+  </footer>
+
+</body>
+</html>
