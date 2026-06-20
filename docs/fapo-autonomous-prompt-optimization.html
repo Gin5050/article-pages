@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FAPO: Fully Autonomous Prompt Optimization of Multi-Step LLM Pipelines</title>
+  <link rel="stylesheet" href="./assets/article-content.css">
+  <link rel="stylesheet" href="./assets/article-pages.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="./index.html">Article Pages</a>
+    <nav class="top-nav" aria-label="Site navigation">
+      <a href="./index.html">Home</a>
+      <a href="./unread-reading-inventory.html">未読一覧</a>
+    </nav>
+  </header>
+
+
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="kicker">Reading artifact</p>
+      <h1>FAPO: Fully Autonomous Prompt Optimization of Multi-Step LLM Pipelines</h1>
+      <p>この論文は、multi-step LLM pipeline の改善を、prompt 文言探しではなく、評価、失敗帰属、スコープ内変更、独立レビュー、再評価を回す自律的な改善 workflow として扱う。</p>
+      <div class="paper-meta">
+        <span class="meta-chip">作成日: 2026-06-20</span>
+        <span class="meta-chip">arXiv:2606.19605</span>
+        <span class="meta-chip">Prompt Optimization</span>
+        <span class="meta-chip">Claude Code</span>
+        <span class="meta-chip">Pipeline Harness</span>
+        <span class="meta-chip">GEPA comparison</span>
+      </div>
+      <div class="hero-actions">
+        <a class="button" href="https://arxiv.org/abs/2606.19605">元資料を開く</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="reader-grid">
+      <nav aria-label="Reading navigation">
+        <strong>目次</strong>
+        <a href="#explain-30s">30秒で言うと</a>
+        <a href="#explanation-path">人に説明する順番</a>
+        <a href="#claim-map">主張マップ</a>
+        <a href="#three-minute-script">3分で紹介するなら</a>
+        <a href="#misunderstandings">誤解しやすい点</a>
+        <a href="#self-check">理解チェック</a>
+        <a href="#why-this-matters">この論文の何がいいか</a>
+        <a href="#paper">どんな論文か</a>
+        <a href="#contributions">課題と貢献</a>
+        <a href="#method">手法のしくみ</a>
+        <a href="#results">検証結果</a>
+        <a href="#discussion">課題と議論</a>
+        <a href="#next">次に読むなら</a>
+        <a href="#qa">読後Q&A</a>
+      </nav>
+
+      <div>
+        <figure class="graphic-recording">
+          <a class="graphic-zoom-trigger" href="#graphic-recording-lightbox" aria-label="グラレコを拡大表示する"><img src="./assets/graphic-recordings/fapo-autonomous-prompt-optimization.png" alt="FAPO の日本語グラレコ" loading="eager" decoding="async"></a>
+          <figcaption>FAPO の問題設定、prompt-first な改善ループ、tenant workspace、variant review、実験結果を、元論文の図表を写さずに抽象化した日本語グラレコ。</figcaption>
+        </figure>
+        <div id="graphic-recording-lightbox" class="graphic-lightbox" aria-label="グラレコ拡大表示">
+          <a class="graphic-lightbox-backdrop" href="#" aria-label="拡大表示を閉じる"></a>
+          <a class="graphic-lightbox-content" href="#" aria-label="拡大表示を閉じる"><img src="./assets/graphic-recordings/fapo-autonomous-prompt-optimization.png" alt="FAPO の日本語グラレコ"></a>
+        </div>
+
+    <section class="section why-section" id="explain-30s">
+      <h2>30秒で言うと</h2>
+      <div class="callout">FAPO は、Claude Code に pipeline の中間証拠を見せ、失敗の原因に応じて prompt から構造変更まで段階的に改善させる仕組み。</div>
+    </section>
+
+    <section class="section steps-section" id="explanation-path">
+      <h2>人に説明する順番</h2>
+      <div class="route">
+        <article class="step">
+          <div class="num">1</div>
+          <p>まず、multi-step LLM pipeline は検索、推論、整形、制約遵守など複数箇所で壊れると置く。</p>
+        </article>
+        <article class="step">
+          <div class="num">2</div>
+          <p>次に、最終スコアだけでは原因が分からないため、中間出力とログを artifact として保存する必要があると説明する。</p>
+        </article>
+        <article class="step">
+          <div class="num">3</div>
+          <p>その上で、Claude Code が failure attribution、scoped variant 作成、variant reviewer、再評価を回す FAPO の loop を説明する。</p>
+        </article>
+        <article class="step">
+          <div class="num">4</div>
+          <p>最後に、FAPO は prompt-first だが、証拠が構造ボトルネックを示す時だけ chain parameter や chain structure へ進む、とまとめる。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section insights-section" id="claim-map">
+      <h2>主張マップ</h2>
+      <div class="insight-list">
+        <article class="insight-card"><p>multi-step pipeline の改善には、prompt だけでなく step-level failure attribution が必要である。FAPO は intermediate step outputs、final outputs、configs、variant history を記録し、失敗を prompt-addressable か structural かに分類する。 改善対象を間違えると、文言を磨いても retrieval や chain 構造のボトルネックが残る。</p></article>
+        <article class="insight-card"><p>構造変更は強力だが、scope contract と reviewer で境界を切る必要がある。FAPO は tenant playbook から許可範囲を決め、variant reviewer が leakage、scorer compatibility、placeholder integrity、scope compliance を確認する。 自律最適化は、評価データ漏洩や scorer 改変を防いで初めて信用できる。</p></article>
+        <article class="insight-card"><p>prompt-first escalation は、prompt optimization と pipeline optimization の橋渡しになる。FAPO は GEPA に 15/18 比較で勝ち、HoVer と IFBench で構造変更に進んだ 6 比較すべてで勝ったと報告している。 最初から大改造せず、証拠に応じて改善レベルを上げる設計判断に使える。</p></article>
+      </div>
+    </section>
+
+    <section class="section" id="three-minute-script">
+      <h2>3分で紹介するなら</h2>
+      <p>FAPO は、LLM pipeline の prompt を自動でよくする論文に見えますが、実際の面白さは prompt tuning を超えているところにあります。</p>
+      <p>multi-step pipeline は、検索で証拠を落とす、推論で飛躍する、最後の整形で形式を壊す、制約を読み違えるなど、複数の場所で失敗します。最終スコアだけを見ても、どこを直すべきか分かりません。</p>
+      <p>FAPO はここを、Claude Code が動く標準コードベースとして整えます。tenant workspace に prompt、chain、scorer、eval config、history を分離し、評価を走らせ、中間出力を保存し、失敗を分類し、1つだけ scoped change を提案します。</p>
+      <p>提案はすぐ採用されません。variant reviewer が、許可範囲、データ漏洩、scorer 変更、placeholder 破壊などを確認してから再評価します。改善した variant だけ残し、prompt で足りないと証拠が出た時だけ chain parameter や chain structure に進みます。</p>
+      <p>結果として、6 benchmark と 3 task model の 18 比較で GEPA に 15 回勝ち、構造変更が効いた HoVer と IFBench では平均 +33.8pp の改善を報告しています。実務的には、prompt 改善を手作業の文章修正ではなく、評価とレビュー付きの harness として設計するための論文です。</p>
+    </section>
+
+    <section class="section warning" id="misunderstandings">
+      <h2>誤解しやすい点</h2>
+      <div class="callout warning-item">FAPO は単なる自動 prompt 書き換えである。 -&gt; prompt edit から始めるが、失敗帰属に基づいて chain parameter や chain structure の変更へ進むこともある。</div>
+      <div class="callout warning-item">Claude Code が自由にコードを変えて高スコアを探す仕組みである。 -&gt; tenant playbook と scope contract が許可範囲を定め、variant reviewer が漏洩や scorer 変更を防ぐ。</div>
+      <div class="callout warning-item">ベンチマークの勝利だけを示す論文である。 -&gt; 評価 artifact、variant history、tenant isolation、review gate など、再現可能な改善手順そのものが重要な貢献になっている。</div>
+    </section>
+
+    <section class="section list-section" id="self-check">
+      <h2>理解チェック</h2>
+      <ul class="reading-list">
+        <li>FAPO が prompt-only optimizer と違う点を説明できるか。</li>
+        <li>tenant workspace と shared runtime の分離を説明できるか。</li>
+        <li>scope contract がなぜ必要か説明できるか。</li>
+        <li>variant reviewer が何を確認するか説明できるか。</li>
+        <li>prompt-first escalation がどんな時に構造変更へ進むか説明できるか。</li>
+      </ul>
+    </section>
+
+    <section class="section why-section" id="why-this-matters">
+      <h2>この論文の何がいいか</h2>
+      <p>この論文の良さは、prompt 改善を文章表現の調整ではなく、失敗帰属とレビュー付きの改善ループとして扱う点にある。多くの LLM workflow は、失敗した時に prompt を足す、注意書きを増やす、例を増やす、という方向へ流れがちだ。しかし失敗原因が retrieval、scorer、chain state、formatting contract にあるなら、prompt だけを磨いても効きにくい。</p>
+      <p>実務では、agent や skill の改善も同じ問題を持つ。うまくいかなかった実行のあと、手順書をいきなり書き換えるのではなく、どのステップで壊れたか、何を変更してよいか、変更が評価データや scorer を汚していないか、改善が validation で再現するかを見る必要がある。</p>
+      <p>FAPO は、LLM を使った自律改善を信用するための境界も示している。scope contract、variant reviewer、tenant isolation、run artifacts があるから、Claude Code に改善を任せても、何を変えたか、なぜ変えたか、どこまで許されていたかを後から検査できる。</p>
+    </section>
+
+    <section class="section" id="paper">
+      <h2>どんな論文か</h2>
+      <p>FAPO は、multi-step LLM pipeline の最適化を、単発の prompt 改善ではなく、検証可能な software workflow として扱う論文である。対象になる pipeline は、検索、推論、フォーマット、分類、制約遵守など複数ステップを含む。こうした pipeline では、最終出力が間違っていても、その原因が prompt 文言なのか、上流の証拠不足なのか、chain の構造なのかが分かりにくい。</p>
+      <p>著者らは、FAPO を標準化された codebase と tenant workspace の上に構成する。shared runtime は evaluation、provider adapter、LangGraph chain、scorer、artifact recording を担う。一方、tenant workspace は task-local な prompts、chain variants、dataset conversion、scorers、eval configs、tests、optimization history を持つ。</p>
+      <p>FAPO の optimizer は Claude Code である。Claude Code は tenant playbook と scope contract を読み、評価を走らせ、中間出力を見て失敗を分類し、許可された範囲で改善案を作り、variant reviewer の確認を通してから再評価する。</p>
+      <p>この設計の核は prompt-first escalation である。FAPO はまず prompt edit を試す。しかし failure attribution が prompt では解けない構造ボトルネックを示し、scope contract が許す場合だけ、chain parameter や chain structure へ進む。</p>
+      <p>結果として、FAPO は 6 benchmark と 3 task model の比較で GEPA を多く上回る。特に HoVer と IFBench のように構造変更が必要なケースで大きな差が出ており、prompt optimization と pipeline optimization の境界を実験的に示している。</p>
+      <p>この論文は、FAPO という fully autonomous prompt optimization framework を提案する。名前には prompt optimization とあるが、実際には prompt text、chain parameters、chain structure までを段階的に扱う pipeline optimizer である。</p>
+      <p>FAPO は Claude Code を orchestrator として使う。task model は GPT-4.1-mini、GPT-5.4-mini、Gemma 3-12B など別に存在し、Claude Code は pipeline を改善する外側の optimization layer として動く。</p>
+      <p>比較対象は GEPA であり、FAPO は同じ baseline prompts と pipeline から出発して、評価、失敗分析、改善案、レビュー、再評価を繰り返す。</p>
+    </section>
+
+    <section class="section insights-section" id="contributions">
+      <h2>課題と貢献</h2>
+      <div class="insight-list">
+        <article class="insight-card"><p>第一の貢献は、Claude Code-based pipeline optimization technique である。FAPO は prompt edit から始め、失敗証拠が示す場合だけ pipeline structure edit へ進む。</p></article>
+        <article class="insight-card"><p>第二の貢献は、reproducible workspace procedure である。final outputs、intermediate step outputs、configs、variant history を tenant-level directory に記録する。</p></article>
+        <article class="insight-card"><p>第三の貢献は、QA、fact verification、instruction following、math、security classification を含む評価で、GEPA に対する性能上の優位を示したこと。</p></article>
+        <article class="insight-card"><p>第四の貢献は、scope contract と variant reviewer により、自律的な改善とデータ衛生・評価整合性を両立させる設計を具体化したこと。</p></article>
+      </div>
+    </section>
+
+    <section class="section steps-section" id="method">
+      <h2>手法のしくみ</h2>
+      <div class="route">
+        <article class="step">
+          <div class="num">1</div>
+          <p>FAPO はまず tenant playbook を読む。tenant playbook は、タスクの目的、コードとデータの配置、最適化で守るべき制約を定義する。</p>
+        </article>
+        <article class="step">
+          <div class="num">2</div>
+          <p>次に scope contract を作る。ここでは、変更してよいレベルを prompt text、chain parameters、chain structure のどこまでにするかを決める。</p>
+        </article>
+        <article class="step">
+          <div class="num">3</div>
+          <p>評価では shared runner が current variant を train split に対して実行し、final answer、score、intermediate step outputs、logs を保存する。</p>
+        </article>
+        <article class="step">
+          <div class="num">4</div>
+          <p>step-attribution subagent が失敗を分析する。missing evidence、unsupported abstention、verbose answer、malformed output、weak final instruction など、どのステップと fix type に近いかを分類する。</p>
+        </article>
+        <article class="step">
+          <div class="num">5</div>
+          <p>optimization agent は dominant failure cluster に対して、許可された範囲で 1 つの scoped variant を作る。最初は prompt edit を優先し、prompt が足りないと証拠がある時だけ設定や chain 構造へ進む。</p>
+        </article>
+        <article class="step">
+          <div class="num">6</div>
+          <p>variant reviewer は、scope compliance、placeholder integrity、data leakage、scorer compatibility、state protocol compliance、import safety を確認する。通過した variant だけ評価され、改善したものが保持される。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section results-section" id="results">
+      <h2>検証結果</h2>
+      <div class="score-grid">
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>FAPO は 6 benchmark と 3 task model の 18 model-benchmark comparisons で評価され、GEPA に 15/18 で勝ったと報告されている。</p>
+        </article>
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>11 comparisons では mean ± trial standard deviation の範囲が重ならない形で FAPO が勝ち、平均 FAPO-GEPA gain は +14.1pp だった。</p>
+        </article>
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>HoVer と IFBench では prompt-first search が structural changes へエスカレーションし、この 6 comparisons すべてで FAPO が勝ち、平均 gain は +33.8pp だった。</p>
+        </article>
+        <article class="result-card">
+          <strong>CTIBench-RCM では prompt-only 制約下でも改善した。</strong>
+          <p>GPT-5 で +4.0pp、Foundation-Sec-8B-Instruct で +7.1pp、Foundation-Sec-8B-Reasoning で +2.0pp の test accuracy 改善が報告されている。</p>
+        </article>
+        <article class="result-card">
+          <strong>検証結果</strong>
+          <p>Case study では、HotpotQA で答え生成の振る舞いが改善され、CTIBench-RCM では security CVE-to-CWE classification の prompt variant が段階的に改善される様子が示されている。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="section warning" id="discussion">
+      <h2>課題と議論</h2>
+      <div class="callout warning-item">FAPO の重要な含意は、prompt optimization が software engineering に近づいていることだ。良い文言を探すだけでなく、評価 harness、artifact logging、failure attribution、scope boundary、review gate が必要になる。</div>
+      <div class="callout warning-item">一方で、FAPO の強さは tenant 設計と scorer の品質に依存する。何を評価し、何を変更してよいかが曖昧なら、optimizer は正しい改善ループを回せない。</div>
+      <div class="callout warning-item">構造変更は強力だが危険でもある。pipeline を変えれば性能は上がるかもしれないが、評価データ漏洩、scorer 変更、許可されていない shortcut につながる可能性がある。そのため reviewer と data hygiene が中心的な役割を持つ。</div>
+      <div class="callout warning-item">agent skill や運用手順に引くなら、失敗ログから直接手順を増やすのではなく、失敗分類、変更候補、検証、却下理由、保持した variant を分けて記録する設計が必要になる。</div>
+    </section>
+
+    <section class="section list-section" id="next">
+      <h2>次に読むなら</h2>
+      <ul class="reading-list">
+        <li>SkillOpt と並べると、自然言語 skill を external state として編集・検証する発想と、pipeline を scoped variant として改善する発想がつながる。</li>
+        <li>Counterfactual Trace Auditing と並べると、改善前後の trace divergence を見て、variant が何を変えたのか検査する方向へ広げられる。</li>
+        <li>Agentic Skills Eval と並べると、SKILL.md や workflow instruction が本当に agent behavior を変えているかを評価する設計に接続できる。</li>
+        <li>実務では、prompt / skill / scheduled job の改善に scope contract、variant reviewer、validation split、artifact registry を足せるかを点検するとよい。</li>
+      </ul>
+    </section>
+
+    <section id="qa">
+      <h2>読後Q&A</h2>
+      <article class="qa">
+        <h3>FAPO の中心問いは？</h3>
+        <p>multi-step LLM pipeline を、最終スコアだけでなく中間証拠と失敗帰属に基づいて、自律的かつ安全に改善できるかという問い。</p>
+      </article>
+      <article class="qa">
+        <h3>FAPO は普通の prompt optimizer と何が違う？</h3>
+        <p>prompt edit から始めるが、失敗証拠が示し、scope contract が許す場合だけ chain parameter や chain structure の変更へ進む。</p>
+      </article>
+      <article class="qa">
+        <h3>Claude Code は何をする？</h3>
+        <p>optimizer として tenant playbook を読み、評価を走らせ、失敗を分析し、scoped variant を作り、reviewer を通して再評価する。task model そのものとは別の orchestrator layer である。</p>
+      </article>
+      <article class="qa">
+        <h3>tenant workspace とは？</h3>
+        <p>タスクごとの prompt、chain variants、dataset conversion、scorers、eval configs、tests、storage config、optimization history を置く isolated workspace。</p>
+      </article>
+      <article class="qa">
+        <h3>scope contract はなぜ必要？</h3>
+        <p>何を変えてよいかを明確にし、prompt だけなのか、chain parameter や chain structure まで許すのかを決めるため。自律改善が評価条件を壊さないための境界になる。</p>
+      </article>
+      <article class="qa">
+        <h3>variant reviewer は何を確認する？</h3>
+        <p>scope compliance、placeholder integrity、data leakage、scorer compatibility、state protocol compliance、import safety などを確認する。</p>
+      </article>
+      <article class="qa">
+        <h3>prompt-first escalation とは？</h3>
+        <p>まず prompt edit を試し、prompt では解けない構造ボトルネックが failure attribution で見えた時だけ、許可範囲内で chain parameter や chain structure へ進む方針。</p>
+      </article>
+      <article class="qa">
+        <h3>実験結果の要点は？</h3>
+        <p>6 benchmarks と 3 task models の 18 comparisons で GEPA に 15 回勝ち、平均 +14.1pp。構造変更が必要な HoVer / IFBench では 6/6 で勝ち、平均 +33.8pp。</p>
+      </article>
+      <article class="qa">
+        <h3>この論文の限界は？</h3>
+        <p>tenant playbook、scope contract、scorer、validation protocol の品質に依存する。構造変更を許す場合は、データ漏洩や scorer 改変を防ぐレビューが不可欠。</p>
+      </article>
+      <article class="qa">
+        <h3>実務にどう使える？</h3>
+        <p>prompt や skill を直す時に、失敗分類、変更可能範囲、独立レビュー、評価 artifact、variant history を持つ改善ループとして設計できる。</p>
+      </article>
+    </section>
+      </div>
+    </div>
+
+  </main>
+  <footer>
+    <p>Source: <a href="https://arxiv.org/abs/2606.19605">arXiv:2606.19605 / FAPO</a>.</p>
+    <p>This page is a public reading artifact and does not include private workspace paths, logs, or internal metadata.</p>
+  </footer>
+
+</body>
+</html>
